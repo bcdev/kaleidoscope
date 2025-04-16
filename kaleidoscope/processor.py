@@ -75,8 +75,8 @@ class Processor(Processing):
             writer: Writing = self._create_writer(args)
 
             # open the source file
-            get_logger().debug(f"opening source dataset: {args.source_id}")
-            source = reader.read(args.source_id, depth_level=args.depth_level)
+            get_logger().debug(f"opening source dataset: {args.target_file}")
+            source = reader.read(args.target_file, depth_level=args.depth_level)
 
             # create the processing graph
             get_logger().info("starting creating processing graph")
@@ -85,9 +85,9 @@ class Processor(Processing):
 
             # write the target file
             get_logger().info(
-                f"starting writing target dataset: {args.target_id}"
+                f"starting writing target dataset: {args.target_file}"
             )
-            writer.write(target, args.target_id)
+            writer.write(target, args.target_file)
             get_logger().info("finished writing target dataset")
         finally:
             get_logger().info("starting closing datasets")

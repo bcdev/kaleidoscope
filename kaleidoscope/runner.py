@@ -29,9 +29,8 @@ class Runner:
     Runs a processor.
 
     Takes care of parsing command line arguments, setting up the logger,
-    configuring Dask, running (and optionally profiling) the processor,
-    handling exceptions, terminating Dask, and calling system exit with
-    an exit code.
+    configuring Dask, and running the processor, handling exceptions,
+    terminating Dask, and calling system exit with an exit code.
     """
 
     _parser: ArgumentParser
@@ -143,8 +142,6 @@ class Runner:
         get_logger().debug("starting initializing Dask")
         # noinspection PyTestUnpassedFixture
         dask.config.set({"temporary-directory": args.tmpdir})
-        if args.prof is not None:
-            args.mode = "synchronous"
         match args.mode:
             case "synchronous":
                 dask.config.set(scheduler="synchronous")
