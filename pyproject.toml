@@ -41,7 +41,6 @@ dependencies = [
     "matplotlib",
     "netcdf4",
     "xarray",
-    # no "xcube-core",
     "zarr",
 ]
 
