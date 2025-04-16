@@ -9,6 +9,7 @@ name = "kaleidoscope"
 dynamic = ["version"]
 authors = [
     { name = "Ralf Quast", email = "ralf.quast@brockmann-consult.de" },
+    { name = "Roman Shevchuk", email = "roman.shevchuk@brockmann-consult.de" },
 ]
 description = """\
   A Python package for Monte Carlo simulation of errors for ESA SCOPE\
@@ -17,7 +18,7 @@ keywords = [
     "SCOPE",
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 1 - Planning",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
