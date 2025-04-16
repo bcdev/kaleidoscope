@@ -1,0 +1,29 @@
+{
+    "_comments_": {
+        "copyright": "Copyright (c) Brockmann Consult GmbH, 2025",
+        "license": "MIT",
+        "summary": "This JSON file provides configuration parameters and semantic mappings."
+    },
+
+    "config.reader.chunks": {
+        "time": 1,
+        "lat": 720,
+        "lon": 720
+    },
+
+    "config.reader.engine": "h5netcdf",
+
+    "config.reader.decode_cf": "true",
+
+    "config.reader.decode_coords": "true",
+
+    "config.reader.decode_times": "false",
+
+    "config.reader.decode_timedelta": "false",
+
+    "config.reader.use_cftime": "false",
+
+    "config.reader.concat_characters": "true",
+
+    "config.reader.inline_array": "false"
+}

@@ -1,0 +1,4 @@
+theme: jekyll-theme-cayman
+title: "Kaleidoscope"
+description: "Monte Carlo simulation of errors for ESA SCOPE"
+show_downloads: true

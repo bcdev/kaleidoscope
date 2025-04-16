@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+title: Kaleidoscope
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Ralf
+    family-names: Quast
+    email: ralf.quast@brockmann-consult.de
+    affiliation: Brockmann Consult GmbH
+    orcid: 'https://orcid.org/0000-0002-6857-6503'
+license: MIT
+repository-code: >-
+  https://github.com/bcdev/kaleidoscope/
+abstract: >-
+  Monte Carlo simulation of errors for ESA SCOPE.

@@ -1,0 +1,108 @@
+#  Copyright (c) Brockmann Consult GmbH, 2024
+#  License: MIT
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kaleidoscope"
+dynamic = ["version"]
+authors = [
+    { name = "Ralf Quast", email = "ralf.quast@brockmann-consult.de" },
+]
+description = """\
+  A Python package for Monte Carlo simulation of errors for ESA SCOPE\
+  """
+keywords = [
+    "SCOPE",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: POSIX",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering :: Oceanography",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Private :: No Upload",
+]
+readme = { file = "README.md", content-type = "text/markdown" }
+license = { file = "LICENSE", content-type = "text/plain" }
+requires-python = ">=3.10"
+dependencies = [
+    "dask",
+    "dask-image",
+    "cartopy",
+    "h5netcdf",
+    "matplotlib",
+    "netcdf4",
+    "xarray",
+    # no "xcube-core",
+    "zarr",
+]
+
+[project.optional-dependencies]
+extra = [
+    "jupyterlab",
+    "seaborn",
+]
+test = [
+    "pytest",
+    "pytest-cov",
+]
+lint = [
+    "black",
+    "flake8",
+    "jupyterlab-black",
+]
+
+
+[project.scripts]
+kaleidoscope = "kaleidoscope.main.main:main"
+
+[project.urls]
+Repository = "https://github.com/bcdev/kaleidoscope/"
+
+[tool.black]
+line-length = 78
+target-version = ["py310"]
+
+[tool.coverage.report]
+exclude_also = [
+    "@nb.guvectorize",
+    "@nb.vectorize",
+]
+
+[tool.coverage.run]
+omit = [
+    "kaleidoscope/interface/*",
+    "kaleidoscope/templates/*",
+    "kaleidoscope/val/*",
+]
+
+[tool.pytest.ini_options]
+addopts = "-p no:warnings"
+testpaths = ["test"]
+
+[tool.setuptools.dynamic]
+version = { attr = "kaleidoscope.__version__" }
+
+[tool.setuptools.packages.find]
+include = [
+    "kaleidoscope*",
+]
+exclude = [
+    "test*",
+]
+
+[tool.setuptools.package-data]
+"kaleidoscope.config" = [
+    "*.json",
+    "*.yml",
+]
+"kaleidoscope.templates" = [
+    "*.cdl",
+]

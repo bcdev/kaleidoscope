@@ -1,0 +1,35 @@
+#  Copyright (c) Brockmann Consult GmbH, 2025
+#  License: MIT
+
+## The chunk size is determined by the reader
+chunk_size_lat:
+
+## The chunk size is determined by the reader
+chunk_size_lon:
+
+## Detect the reader engine automatically
+engine_reader:
+
+## Detect the writer engine automatically
+engine_writer:
+
+## The default log level
+log_level: "info"
+
+## The default mode ["multithreading", "synchronous"]
+mode: "multithreading"
+
+## The number of workers is determined by the system
+workers:
+
+## Disable progress bar display.
+progress: False
+
+## Disable stack traces.
+stack_traces: False
+
+## Disable test mode.
+test: False
+
+## Use the working directory for temporary files.
+tmpdir: "."

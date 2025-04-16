@@ -1,0 +1,21 @@
+{
+    "_comments_": {
+        "copyright": "Copyright (c) Brockmann Consult GmbH, 2025",
+        "license": "MIT",
+        "summary": "This JSON file provides configuration parameters and semantic mappings."
+    },
+
+    "config.writer.chunks": {
+        "time": 0,
+        "lat": 0,
+        "lon": 0
+    },
+
+    "config.writer.engine": "h5netcdf",
+
+    "config.writer.zlib": "true",
+
+    "config.writer.complevel": 1,
+
+    "config.writer.shuffle": "true"
+}

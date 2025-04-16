@@ -1,0 +1,31 @@
+#  Copyright (c) Brockmann Consult GmbH, 2024
+#  License: MIT
+name: kaleidoscope
+channels:
+  - conda-forge
+dependencies:
+  - python >= 3.10
+  #
+  # Imports
+  - cartopy
+  - dask
+  - dask-image
+  - matplotlib
+  - xarray
+  # runtime
+  - h5netcdf
+  - netcdf4
+  - zarr
+  #
+  # Extra
+  - jupyterlab
+  - seaborn
+  #
+  # Test
+  - pytest
+  - pytest-cov
+  #
+  # Lint
+  - black
+  - black-jupyter
+  - flake8
