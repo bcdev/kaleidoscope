@@ -12,9 +12,9 @@ and testing.
 ### Operational principles
 
 The processor is coded in Python and requires an environment described
-in [INSTALL.md](INSTALL.md). The [kaleidoscope](kaleidoscope) directory includes the `kaleidoscope`
-Python package, which includes the Kaleidoscope processor.
-The processor is invoked from the command line. Typing
+in [INSTALL.md](INSTALL.md). The [kaleidoscope](kaleidoscope) directory
+includes the `kaleidoscope` Python package, which includes the Kaleidoscope
+processor. The processor is invoked from the command line. Typing
 
     kaleidoscope --help
 
