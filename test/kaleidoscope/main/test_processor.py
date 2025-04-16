@@ -1,5 +1,5 @@
-#  Copyright (c) European Union, 2024
-#  License: Proprietary
+#  Copyright (c) Brockmann Consult GmbH, 2025
+#  License: MIT
 
 """This module provides integration test cases."""
 

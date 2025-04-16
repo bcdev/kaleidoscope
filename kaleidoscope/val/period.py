@@ -1,4 +1,4 @@
-#  Copyright (c) Brockmann Consult GmbH, 2024
+#  Copyright (c) Brockmann Consult GmbH, 2025
 #  License: MIT
 
 """This module defines a plain time period class."""
