@@ -20,14 +20,14 @@ class Generating(ABC):
         Returns a new integer random number.
 
         Generated random numbers are uniformly distributed in the
-        interval [0, 18446744073709551615].
+        interval [0, 9223372036854775808).
 
         :return: The new integer random number.
         """
 
 
 class Univariate(ABC):
-    """Univariate random variates."""
+    """Univariate random deviates."""
 
     @abstractmethod
     def random(self) -> float:
@@ -48,7 +48,7 @@ class Univariate(ABC):
 
 
 class Multivariate(ABC):
-    """Multivariate random variates."""
+    """Multivariate random deviates."""
 
     @abstractmethod
     def get(self, i: int) -> Univariate:
@@ -62,7 +62,7 @@ class Multivariate(ABC):
 
 class Normal(Univariate, Multivariate, ABC):
     """
-    Normal random variates.
+    Normal random deviates.
 
     Generated random numbers are standard normally distributed.
     """
@@ -70,7 +70,7 @@ class Normal(Univariate, Multivariate, ABC):
 
 class Uniform(Univariate, Multivariate, ABC):
     """
-    Uniform random variates.
+    Uniform random deviates.
 
     Generated random numbers are uniformly distributed in [0, 1).
     """
