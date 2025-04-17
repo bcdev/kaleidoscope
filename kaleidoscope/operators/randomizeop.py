@@ -46,6 +46,8 @@ class RandomizeOp(Operator):
         for name, array in source.data_vars.items():
             if array.dtype.kind != "f":
                 continue
+            if array.ndim < 1:
+                continue
             f = Randomize(array.dtype, array.ndim, array.ndim)
             source[name] = DataArray(
                 data=f.apply_to(array.data, test=self._args.test),
