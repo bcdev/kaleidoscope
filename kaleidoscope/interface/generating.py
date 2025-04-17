@@ -15,12 +15,12 @@ class Generating(ABC):
     """Random number generating interface."""
 
     @abstractmethod
-    def random(self) -> int:
+    def next_int64(self) -> int:
         """
         Returns a new integer random number.
 
         Generated random numbers are uniformly distributed in the
-        interval [0, 9223372036854775808).
+        interval [0, 9223372036854775807].
 
         :return: The new integer random number.
         """
@@ -30,7 +30,7 @@ class Univariate(ABC):
     """Univariate random deviates."""
 
     @abstractmethod
-    def random(self) -> float:
+    def next_double(self) -> float:
         """
         Returns a new random number.
 
@@ -38,11 +38,11 @@ class Univariate(ABC):
         """
 
     @abstractmethod
-    def randoms(self, randoms: np.ndarray) -> np.ndarray:
+    def next_doubles(self, doubles: np.ndarray) -> np.ndarray:
         """
         Returns a sequence of newly generated random numbers.
 
-        :param randoms: To store the sequence.
+        :param doubles: To store the sequence.
         :return: The sequence of newly generated random numbers.
         """
 
