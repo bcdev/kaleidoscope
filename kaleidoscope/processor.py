@@ -76,7 +76,7 @@ class Processor(Processing):
 
             # open the source file
             get_logger().debug(f"opening source dataset: {args.target_file}")
-            source = reader.read(args.target_file, depth_level=args.depth_level)
+            source = reader.read(args.target_file)
 
             # create the processing graph
             get_logger().info("starting creating processing graph")

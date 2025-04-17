@@ -19,7 +19,6 @@ dependencies:
   #
   # Extra
   - jupyterlab
-  - seaborn
   #
   # Test
   - pytest

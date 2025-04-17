@@ -47,7 +47,6 @@ dependencies = [
 [project.optional-dependencies]
 extra = [
     "jupyterlab",
-    "seaborn",
 ]
 test = [
     "pytest",
