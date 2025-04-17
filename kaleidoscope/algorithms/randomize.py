@@ -24,12 +24,12 @@ class Randomize(BlockAlgorithm):
     @property
     @override
     def created_axes(self) -> list[int] | None:
-        return [0]
+        return None
 
     @property
     @override
     def dropped_axes(self) -> list[int]:
-        return [0]
+        return []
 
     # noinspection PyMethodMayBeStatic
     def randomize(
