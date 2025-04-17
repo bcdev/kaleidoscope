@@ -23,6 +23,7 @@ from kaleidoscope.writer import Writer
 
 warnings.filterwarnings("ignore")
 
+
 class WriterTest(unittest.TestCase):
     """Tests the target product writer."""
 
@@ -61,7 +62,9 @@ class WriterTest(unittest.TestCase):
     def test_write(self):
         """Tests writing a generated target dataset."""
         for source_file in self.source_files:
-            target_file = Path(f"{source_file}".replace(".nc", ".randomized.nc"))
+            target_file = Path(
+                f"{source_file}".replace(".nc", ".randomized.nc")
+            )
             reader = Reader(self.reader_config)
             source = reader.read(source_file)
 
