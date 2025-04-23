@@ -1,4 +1,4 @@
-# Kaleidoscope
+# ![Kaleidoscope](/assets/img/kaleidoscope.png)
 
 Monte Carlo simulation of errors for ESA SCOPE.
 
