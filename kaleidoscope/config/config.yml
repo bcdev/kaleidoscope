@@ -7,6 +7,12 @@ chunk_size_lat:
 ## The chunk size is determined by the reader
 chunk_size_lon:
 
+## No default product type.
+product_type:
+
+## The default selector.
+selector: 0
+
 ## Detect the reader engine automatically
 engine_reader:
 
@@ -27,9 +33,6 @@ progress: False
 
 ## Disable stack traces.
 stack_traces: False
-
-## Disable test mode.
-test: False
 
 ## Use the working directory for temporary files.
 tmpdir: "."

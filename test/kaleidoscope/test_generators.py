@@ -14,12 +14,12 @@ class DefaultGeneratorTest(unittest.TestCase):
 
     def test_random(self):
         g = DefaultGenerator(42)
-        self.assertEqual(6164909031098000398, g.next_int64())
-        self.assertEqual(62765134502071353, g.next_int64())
-        self.assertEqual(6068961337446000720, g.next_int64())
-        self.assertEqual(3424215743300924766, g.next_int64())
-        self.assertEqual(1906168894638979906, g.next_int64())
-        self.assertEqual(1787925334117997081, g.next_int64())
+        self.assertEqual(6164909031098000398, g.next())
+        self.assertEqual(62765134502071353, g.next())
+        self.assertEqual(6068961337446000720, g.next())
+        self.assertEqual(3424215743300924766, g.next())
+        self.assertEqual(1906168894638979906, g.next())
+        self.assertEqual(1787925334117997081, g.next())
 
 
 if __name__ == "__main__":

@@ -21,17 +21,17 @@ processor. The processor is invoked from the command line. Typing
 will print a detailed usage message to the screen
 
     usage: kaleidoscope [-h] [--chunk-size-lat CHUNK_SIZE_LAT]
-                        [--chunk-size-lon CHUNK_SIZE_LON]
+                        [--chunk-size-lon CHUNK_SIZE_LON] [--selector SELECTOR]
                         [--engine-reader {h5netcdf,netcdf4,zarr}]
                         [--engine-writer {h5netcdf,netcdf4,zarr}]
                         [--log-level {debug,info,warning,error,off}]
                         [--mode {multithreading,synchronous}]
                         [--workers {1,2,3,4,5,6,7,8}] [--progress]
                         [--no-progress] [--stack-traces] [--no-stack-traces]
-                        [--test] [--no-test] [--tmpdir TMPDIR] [-v]
+                        [--tmpdir TMPDIR] [-v]
                         source_file target_file
     
-    This scientific processor simulates measurement errors.
+    This scientific processor simulates measurementerrors.
     
     positional arguments:
       source_file           the file path of the source dataset.
@@ -51,6 +51,7 @@ will print a detailed usage message to the screen
                             value of `-1` refers to full longitudinal chunk size
                             and a value of `0` refers to the chunk size used in
                             the source file. (default: None)
+      --selector SELECTOR   the Monte Carlo stream selector. (default: None)
       --engine-reader {h5netcdf,netcdf4,zarr}
                             specify the engine used to read the source product
                             file. (default: None)
@@ -72,8 +73,6 @@ will print a detailed usage message to the screen
       --no-progress         disable progress bar display. (default: True)
       --stack-traces        enable Python stack traces. (default: False)
       --no-stack-traces     disable Python stack traces. (default: True)
-      --test                enable test mode. (default: False)
-      --no-test             disable test mode. (default: True)
       --tmpdir TMPDIR       specify the path to the temporary directory.
                             (default: None)
       -v, --version         show program's version number and exit

@@ -58,7 +58,7 @@ class DefaultGenerator(Generating):
         self._g = default_generator(seed)
 
     @overrides
-    def next_int64(self) -> int:
+    def next(self) -> int:
         return self._g.integers(0x8000000000000000)
 
 
@@ -80,13 +80,13 @@ class DefaultUniform(Uniform):
         return self
 
     @overrides
-    def next_double(self) -> float:
+    def random(self) -> float:
         return self._g.random()
 
     @overrides
-    def next_doubles(self, doubles: np.ndarray) -> np.ndarray:
-        self._g.random(out=doubles)
-        return doubles
+    def randoms(self, randoms: np.ndarray) -> np.ndarray:
+        self._g.standard_normal(dtype=randoms.dtype, out=randoms)
+        return randoms
 
 
 class DefaultNormal(Normal):
@@ -107,10 +107,10 @@ class DefaultNormal(Normal):
         return self
 
     @overrides
-    def next_double(self) -> float:
+    def random(self) -> float:
         return self._g.standard_normal()
 
     @overrides
-    def next_doubles(self, doubles: np.ndarray) -> np.ndarray:
-        self._g.standard_normal(out=doubles)
-        return doubles
+    def randoms(self, randoms: np.ndarray) -> np.ndarray:
+        self._g.standard_normal(dtype=randoms.dtype, out=randoms)
+        return randoms

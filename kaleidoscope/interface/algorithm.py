@@ -7,7 +7,6 @@ This module defines algorithm interfaces.
 
 from abc import ABCMeta
 from abc import abstractmethod
-from typing import Any
 from typing import Literal
 
 import dask.array as da
@@ -190,94 +189,35 @@ class BlockAlgorithm(Algorithm, metaclass=ABCMeta):
         )
 
 
-class OverlapAlgorithm(Algorithm, metaclass=ABCMeta):
+class InformedBlockAlgorithm(Algorithm, metaclass=ABCMeta):
     """
     Interface class for an algorithm that constitutes a mapping of
-    blocks with overlap between blocks.
+    blocks without overlap between blocks and uses information on
+    where a block is within a Dask array.
     """
 
-    _overlaps: int | dict[int, int]
-    """
-    The number of elements that each block should share with its
-    neighbors. If a dictionary then this number can be different for each
-    axis, otherwise the same number of elements is shared along all axes.
-    """
-    _boundary: Any
-    """
-    How to extend beyond boundaries. Values include `None` and any
-    numeric value or "none". The default `None` implies that boundaries
-    are extended with the algorithm's implementation of `NaN`.
-    """
-    _trim: bool
-    """
-    Whether or not to trim `overlaps` elements from each block after
-    calling the compute function.
-    """
-    _align_arrays: bool
-    """
-    Whether to align chunks along equally sized dimensions when
-    multiple arrays are provided. This allows for larger chunks in some
-    arrays to be broken into smaller ones that match chunk sizes in other
-    arrays such that they are compatible for block function mapping. If
-    this is false, then an error will be thrown if arrays do not already
-    have the same number of blocks in each dimension.
-    """
-    _allow_rechunk: bool
-    """
-    Allows re-chunking, otherwise chunk sizes need to match, and core
-    dimensions are to consist only of one chunk.
-    """
-
-    def __init__(
-        self,
-        dtype: np.dtype,
-        m: int = 2,
-        n: int = 2,
-        overlaps: int | dict[int, int] = 0,
-        boundary: Any | None = None,
-        trim: bool = True,
-    ):
+    def __init__(self, dtype: np.dtype, m: int = 2, n: int = 2):
         """
         Creates a new algorithm instance.
 
         :param dtype: The result data type.
         :param m: The number of input array dimensions.
         :param n: The number of output array dimensions.
-        :param overlaps: The number of elements that each block should
-        share with its neighbors. If a dictionary then this number can be
-        different for each axis, otherwise the same number of elements is
-        shared along all axes.
-        :param boundary: How to extend beyond boundaries. Values include
-        `None` and any numeric value or "none". The default `None` implies
-        that boundaries are extended with the algorithm's implementation of
-        `NaN`.
-        :param trim: Whether to trim `overlaps` elements from each
-        block after calling the compute function. Set this to `False` if your
-        compute function already does this for you.
         """
         super().__init__(dtype, m, n)
-        self._overlaps = overlaps
-        if boundary is None:
-            boundary = super().nan
-        self._boundary = boundary
-        self._trim = trim
-        self._align_arrays = True
-        self._allow_rechunk = False
 
     @abstractmethod
     def chunks(self, *inputs: da.Array) -> tuple[int, ...] | None:
         """
-        Returns the shape of computed blocks, if not preserved.
-
-        If preserved, `None` is returned.
+        Returns the shape of computed blocks if `compute_blocks` does
+        not preserve shape. If the shape is preserved, `None` is returned.
         """
 
     @property
     @abstractmethod
     def created_axes(self) -> list[int] | None:
         """
-        Returns the list of dimensions created.
-
+        Returns the list of dimensions created by `compute_blocks`.
         If no dimensions are created, `None` is returned.
         """
 
@@ -285,8 +225,7 @@ class OverlapAlgorithm(Algorithm, metaclass=ABCMeta):
     @abstractmethod
     def dropped_axes(self) -> list[int]:
         """
-        Returns the list of dimensions annihilated.
-
+        Returns the list of dimensions annihilated by `compute_blocks`.
         If no dimensions are annihilated, an empty list is returned.
         """
 
@@ -302,34 +241,30 @@ class OverlapAlgorithm(Algorithm, metaclass=ABCMeta):
         """
 
     def compute_block_typed(
-        self, *inputs: np.ndarray, **kwargs
+        self, *inputs: np.ndarray, block_id=None, **kwargs
     ) -> np.ndarray:
         """
         Evaluates the algorithm for a single block of data and converts
         the result into the correct type, if necessary.
 
         :param inputs: The input data.
+        :param block_id: The block identifier.
         :param kwargs: Any additional keyword arguments of the computation.
         :return: The result of the computation.
         """
-        result = self.compute_block(*inputs, **kwargs)
+        result = self.compute_block(*inputs, block_id=block_id, **kwargs)
         assert result.ndim == self._n, (
-            f"algorithm '{self.name}' returned array of invalid dimension "
+            f"Algorithm {self.name} returned array of invalid dimension "
             f"{result.ndim} != {self._n}"
         )
         return result.astype(self.dtype, copy=False)
 
     @override
     def apply_to(self, *inputs: da.Array, **kwargs) -> da.Array:  # noqa: D102
-        return da.map_overlap(
+        result = da.map_blocks(
             self.compute_block_typed,
             *inputs,
-            depth=self._overlaps,
-            boundary=self._boundary,
-            trim=self._trim,
-            align_arrays=self._align_arrays,
-            allow_rechunk=self._allow_rechunk,
-            name=f"{self.category}-{self.name}",
+            name=f"{self.category}_{self.name}",
             dtype=self.dtype,
             chunks=self.chunks(*inputs),
             drop_axis=self.dropped_axes,
@@ -337,3 +272,9 @@ class OverlapAlgorithm(Algorithm, metaclass=ABCMeta):
             meta=self.meta,
             **kwargs,
         )
+        if self.created_axes is not None:
+            chunks: list = [None for _ in range(result.ndim)]
+            for i in self.created_axes:
+                chunks[i] = 1
+            result = result.rechunk(chunks)
+        return result

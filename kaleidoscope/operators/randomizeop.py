@@ -6,13 +6,24 @@ This module provides the randomize operator.
 """
 
 from argparse import Namespace
+from typing import Any
 
+import dask.array as da
 from typing_extensions import override
 from xarray import DataArray
 from xarray import Dataset
 
 from ..algorithms.randomize import Randomize
+from ..interface.logging import Logging
 from ..interface.operator import Operator
+from ..logger import get_logger
+
+
+def _hash(name: str) -> int:
+    h = 1
+    for c in name:
+        h = 31 * h + ord(c)
+    return h
 
 
 class RandomizeOp(Operator):
@@ -42,18 +53,237 @@ class RandomizeOp(Operator):
         :param source: The source dataset.
         :return: The result dataset.
         """
-
-        for name, array in source.data_vars.items():
-            if array.dtype.kind != "f":
+        target = Dataset(
+            data_vars=source.data_vars,
+            coords=source.coords,
+            attrs=source.attrs,
+        )
+        config: dict[str : dict[str:Any]] = self.config.get(
+            self._args.product_type, {}
+        )
+        for v, x in target.data_vars.items():
+            if v not in config:
                 continue
-            if array.ndim < 1:
-                continue
-            f = Randomize(array.dtype, array.ndim, array.ndim)
-            source[name] = DataArray(
-                data=f.apply_to(array.data, test=self._args.test),
-                coords=array.coords,
-                dims=array.dims,
-                name=array.name,
-                attrs=array.attrs,
+            attrs: dict[str:Any] = config[v]
+            f = Randomize(
+                x.dtype,
+                x.ndim,
+                dist=attrs["distribution"],
+                entropy=self.entropy(),
             )
-        return source
+            if "uncertainty" in attrs:
+                u = (
+                    target[attrs["uncertainty"]]
+                    if isinstance(attrs["uncertainty"], str)
+                    else DataArray(
+                        data=da.full(
+                            x.shape, attrs["uncertainty"], chunks=x.chunks
+                        ),
+                        coords=x.coords,
+                        dims=x.dims,
+                    )
+                )
+                target[v] = DataArray(
+                    data=f.apply_to(
+                        x.data,
+                        u.data,
+                        coverage_factor=attrs.get("coverage_factor", 1.0),
+                        relative=attrs.get("relative", False),
+                    ),
+                    coords=x.coords,
+                    dims=x.dims,
+                    name=x.name,
+                    attrs=x.attrs,
+                )
+            elif "bias" in attrs and "rmsd" in attrs:
+                b = target[attrs["bias"]]
+                r = target[attrs["rmsd"]]
+                target[v] = DataArray(
+                    data=f.apply_to(x.data, r.data, b.data),
+                    coords=x.coords,
+                    dims=x.dims,
+                    name=x.name,
+                    attrs=x.attrs,
+                )
+            if get_logger().is_enabled(Logging.DEBUG):
+                get_logger().debug(
+                    f"source[{v}] min:  {source[v].min().values.item() :.6f}"
+                )
+                get_logger().debug(
+                    f"target[{v}] min:  {target[v].min().values.item() :.6f}"
+                )
+                get_logger().debug(
+                    f"source[{v}] max:  {source[v].max().values.item() :.6f}"
+                )
+                get_logger().debug(
+                    f"target[{v}] max:  {target[v].max().values.item() :.6f}"
+                )
+                get_logger().debug(
+                    f"source[{v}] mean: {source[v].mean().values.item() :.6f}"
+                )
+                get_logger().debug(
+                    f"target[{v}] mean: {target[v].mean().values.item() :.6f}"
+                )
+                get_logger().debug(
+                    f"source[{v}] std:  {source[v].std().values.item() :.6f}"
+                )
+                get_logger().debug(
+                    f"target[{v}] std:  {target[v].std().values.item() :.6f}"
+                )
+        return target
+
+    @property
+    def config(self) -> dict[str : dict[str:Any]]:
+        """Returns the product type configuration."""
+        return {
+            "esa-cci-oc": {  # the product type
+                "Rrs_412": {  # the variable to randomize
+                    # the associated bias variable
+                    "bias": "Rrs_412_bias",
+                    # the associated RMSD variable
+                    "rmsd": "Rrs_412_rmsd",
+                    # the error distribution
+                    "distribution": "lognormal",
+                },
+                "Rrs_443": {
+                    "bias": "Rrs_443_bias",
+                    "rmsd": "Rrs_443_rmsd",
+                    "distribution": "lognormal",
+                },
+                "Rrs_490": {
+                    "bias": "Rrs_490_bias",
+                    "rmsd": "Rrs_490_rmsd",
+                    "distribution": "lognormal",
+                },
+                "Rrs_510": {
+                    "bias": "Rrs_510_bias",
+                    "rmsd": "Rrs_510_rmsd",
+                    "distribution": "lognormal",
+                },
+                "Rrs_560": {
+                    "bias": "Rrs_560_bias",
+                    "rmsd": "Rrs_560_rmsd",
+                    "distribution": "lognormal",
+                },
+                "Rrs_665": {
+                    "bias": "Rrs_665_bias",
+                    "rmsd": "Rrs_665_rmsd",
+                    "distribution": "lognormal",
+                },
+                "adg_412": {
+                    "bias": "adg_412_bias",
+                    "rmsd": "adg_412_rmsd",
+                    "distribution": "lognormal",
+                },
+                "adg_443": {
+                    "bias": "adg_443_bias",
+                    "rmsd": "adg_443_rmsd",
+                    "distribution": "lognormal",
+                },
+                "adg_490": {
+                    "bias": "adg_490_bias",
+                    "rmsd": "adg_490_rmsd",
+                    "distribution": "lognormal",
+                },
+                "adg_510": {
+                    "bias": "adg_510_bias",
+                    "rmsd": "adg_510_rmsd",
+                    "distribution": "lognormal",
+                },
+                "adg_560": {
+                    "bias": "adg_560_bias",
+                    "rmsd": "adg_560_rmsd",
+                    "distribution": "lognormal",
+                },
+                "adg_665": {
+                    "bias": "adg_665_bias",
+                    "rmsd": "adg_665_rmsd",
+                    "distribution": "lognormal",
+                },
+                "aph_412": {
+                    "bias": "aph_412_bias",
+                    "rmsd": "aph_412_rmsd",
+                    "distribution": "lognormal",
+                },
+                "aph_443": {
+                    "bias": "aph_443_bias",
+                    "rmsd": "aph_443_rmsd",
+                    "distribution": "lognormal",
+                },
+                "aph_490": {
+                    "bias": "aph_490_bias",
+                    "rmsd": "aph_490_rmsd",
+                    "distribution": "lognormal",
+                },
+                "aph_510": {
+                    "bias": "aph_510_bias",
+                    "rmsd": "aph_510_rmsd",
+                    "distribution": "lognormal",
+                },
+                "aph_560": {
+                    "bias": "aph_560_bias",
+                    "rmsd": "aph_560_rmsd",
+                    "distribution": "lognormal",
+                },
+                "aph_665": {
+                    "bias": "aph_665_bias",
+                    "rmsd": "aph_665_rmsd",
+                    "distribution": "lognormal",
+                },
+                "kd_490": {
+                    "bias": "kd_490_bias",
+                    "rmsd": "kd_490_rmsd",
+                    "distribution": "lognormal",
+                },
+                "chlor_a": {
+                    "bias": "chlor_a_log10_bias",
+                    "rmsd": "chlor_a_log10_rmsd",
+                    "distribution": "chlorophyll",
+                },
+            },
+            "esa-scope-exchange": {
+                "fco2": {
+                    "uncertainty": "fco2_tot_unc",
+                    # the uncertainty interval coverage factor
+                    "coverage_factor": 2.0,
+                    "distribution": "lognormal",
+                },
+                "flux": {
+                    "uncertainty": "flux_unc",
+                    # uncertainty is stated in relative terms
+                    "relative": True,
+                    "coverage_factor": 2.0,
+                    "distribution": "normal",
+                },
+                "ta": {
+                    "uncertainty": "ta_tot_unc",
+                    "coverage_factor": 2.0,
+                    "distribution": "lognormal",
+                },
+                "dic": {
+                    "uncertainty": "dic_tot_unc",
+                    "coverage_factor": 2.0,
+                    "distribution": "lognormal",
+                },
+                "ph": {
+                    "uncertainty": "ph_tot_unc",
+                    "coverage_factor": 2.0,
+                    "distribution": "lognormal",
+                },
+                "saturation_aragonite": {
+                    "uncertainty": "saturation_aragonite_tot_unc",
+                    "coverage_factor": 2.0,
+                    "distribution": "lognormal",
+                },
+            },
+            "ghrsst": {
+                "analysed_sst": {
+                    # the associated uncertainty variable or a constant value
+                    "uncertainty": "analysed_sst_uncertainty",
+                    "distribution": "normal",
+                },
+            },
+        }
+
+    def entropy(self) -> list[int]:
+        return [self._args.selector, _hash(self._args.source_file.stem)]

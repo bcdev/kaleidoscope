@@ -35,8 +35,10 @@ class Parser:
         """
         parser = _ArgumentParser(
             prog=f"{__name__}",
-            description="This scientific processor simulates measurement errors.",
-            epilog="Copyright (c) Brockmann Consult GmbH, 2025. License: MIT",
+            description="This scientific processor simulates measurement"
+            "errors.",
+            epilog="Copyright (c) Brockmann Consult GmbH, 2025. "
+            "License: MIT",
             exit_on_error=False,
             formatter_class=ArgumentDefaultsHelpFormatter,
         )
@@ -81,6 +83,21 @@ class Parser:
             type=Parser.IntType(-1),
             required=False,
             dest="chunk_size_lon",
+        )
+        parser.add_argument(
+            "--product-type",
+            help="the product type.",
+            choices=["esa-cci-oc", "esa-scope-exchange", "ghrsst", "glorys"],
+            required=False,
+            dest="product_type",
+        )
+        parser.add_argument(
+            "--selector",
+            help="the Monte Carlo stream selector. An integral number which"
+            "must not be negative.",
+            type=Parser.IntType(0),
+            required=False,
+            dest="selector",
         )
         parser.add_argument(
             "--engine-reader",
@@ -149,20 +166,6 @@ class Parser:
             action="store_false",
             required=False,
             dest="stack_traces",
-        )
-        parser.add_argument(
-            "--test",
-            help="enable test mode.",
-            action="store_true",
-            required=False,
-            dest="test",
-        )
-        parser.add_argument(
-            "--no-test",
-            help="disable test mode.",
-            action="store_false",
-            required=False,
-            dest="test",
         )
         parser.add_argument(
             "--tmpdir",

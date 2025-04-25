@@ -111,10 +111,13 @@ class Processor(Processing):
             get_logger().debug(f"reading resource: {resource}")
             with open(resource) as r:
                 config = json.load(r)
+        chunks = config["config.reader.chunks"]
+        chunks[DID_LAT] = chunks.get(args.product_type, chunks["_"])[DID_LAT]
+        chunks[DID_LON] = chunks.get(args.product_type, chunks["_"])[DID_LON]
         if args.chunk_size_lat is not None:
-            config["config.reader.chunks"][DID_LAT] = args.chunk_size_lat
+            chunks[DID_LAT] = args.chunk_size_lat
         if args.chunk_size_lon is not None:
-            config["config.reader.chunks"][DID_LON] = args.chunk_size_lon
+            chunks[DID_LON] = args.chunk_size_lon
         if args.engine_reader:
             config["config.reader.engine"] = args.engine_reader
         return ReaderFactory.create_reader(config=config)
@@ -127,10 +130,13 @@ class Processor(Processing):
             get_logger().debug(f"reading resource: {resource}")
             with open(resource) as r:
                 config = json.load(r)
+        chunks = config["config.writer.chunks"]
+        chunks[DID_LAT] = chunks.get(args.product_type, chunks["_"])[DID_LAT]
+        chunks[DID_LON] = chunks.get(args.product_type, chunks["_"])[DID_LON]
         if args.chunk_size_lat is not None:
-            config["config.writer.chunks"][DID_LAT] = args.chunk_size_lat
+            chunks[DID_LAT] = args.chunk_size_lat
         if args.chunk_size_lon is not None:
-            config["config.writer.chunks"][DID_LON] = args.chunk_size_lon
+            chunks[DID_LON] = args.chunk_size_lon
         if args.engine_writer:
             config["config.writer.engine"] = args.engine_writer
         return WriterFactory.create_writer(

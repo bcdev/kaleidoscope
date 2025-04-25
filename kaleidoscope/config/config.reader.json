@@ -8,7 +8,19 @@
     "config.reader.chunks": {
         "time": 1,
         "lat": 720,
-        "lon": 720
+        "lon": 720,
+
+        "esa-cci-oc": {
+            "time": 0,
+            "lat": 2160,
+            "lon": 2160
+        },
+
+        "_": {
+            "time": 0,
+            "lat": 0,
+            "lon": 0
+        }
     },
 
     "config.reader.engine": "h5netcdf",

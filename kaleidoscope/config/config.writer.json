@@ -8,7 +8,19 @@
     "config.writer.chunks": {
         "time": 0,
         "lat": 0,
-        "lon": 0
+        "lon": 0,
+
+        "esa-cci-oc": {
+            "time": 0,
+            "lat": 270,
+            "lon": 270
+        },
+
+        "_": {
+            "time": 0,
+            "lat": 0,
+            "lon": 0
+        }
     },
 
     "config.writer.engine": "h5netcdf",
