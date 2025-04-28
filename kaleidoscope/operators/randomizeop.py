@@ -64,6 +64,7 @@ class RandomizeOp(Operator):
         for v, x in target.data_vars.items():
             if v not in config:
                 continue
+            get_logger().info(f"starting graph for variable: {v}")
             attrs: dict[str:Any] = config[v]
             f = Randomize(
                 x.dtype,
@@ -87,8 +88,9 @@ class RandomizeOp(Operator):
                     data=f.apply_to(
                         x.data,
                         u.data,
-                        coverage_factor=attrs.get("coverage_factor", 1.0),
+                        coverage=attrs.get("coverage", 1.0),
                         relative=attrs.get("relative", False),
+                        clip=attrs.get("clip", None),
                     ),
                     coords=x.coords,
                     dims=x.dims,
@@ -99,7 +101,12 @@ class RandomizeOp(Operator):
                 b = target[attrs["bias"]]
                 r = target[attrs["rmsd"]]
                 target[v] = DataArray(
-                    data=f.apply_to(x.data, r.data, b.data),
+                    data=f.apply_to(
+                        x.data,
+                        r.data,
+                        b.data,
+                        clip=attrs.get("clip", [None, None]),
+                    ),
                     coords=x.coords,
                     dims=x.dims,
                     name=x.name,
@@ -107,29 +114,38 @@ class RandomizeOp(Operator):
                 )
             if get_logger().is_enabled(Logging.DEBUG):
                 get_logger().debug(
-                    f"source[{v}] min:  {source[v].min().values.item() :.6f}"
+                    f"source[{v}] min:  "
+                    f"{source[v].quantile(0.0001).values.item() :.6f}"
                 )
                 get_logger().debug(
-                    f"target[{v}] min:  {target[v].min().values.item() :.6f}"
+                    f"target[{v}] min:  "
+                    f"{target[v].quantile(0.0001).values.item() :.6f}"
                 )
                 get_logger().debug(
-                    f"source[{v}] max:  {source[v].max().values.item() :.6f}"
+                    f"source[{v}] max:  "
+                    f"{source[v].quantile(0.9999).values.item() :.6f}"
                 )
                 get_logger().debug(
-                    f"target[{v}] max:  {target[v].max().values.item() :.6f}"
+                    f"target[{v}] max:  "
+                    f"{target[v].quantile(0.9999).values.item() :.6f}"
                 )
                 get_logger().debug(
-                    f"source[{v}] mean: {source[v].mean().values.item() :.6f}"
+                    f"source[{v}] mean: "
+                    f"{source[v].mean().values.item() :.6f}"
                 )
                 get_logger().debug(
-                    f"target[{v}] mean: {target[v].mean().values.item() :.6f}"
+                    f"target[{v}] mean: "
+                    f"{target[v].mean().values.item() :.6f}"
                 )
                 get_logger().debug(
-                    f"source[{v}] std:  {source[v].std().values.item() :.6f}"
+                    f"source[{v}] std:  "
+                    f"{source[v].std().values.item() :.6f}"
                 )
                 get_logger().debug(
-                    f"target[{v}] std:  {target[v].std().values.item() :.6f}"
+                    f"target[{v}] std:  "
+                    f"{target[v].std().values.item() :.6f}"
                 )
+            get_logger().info(f"finished graph for variable: {v}")
         return target
 
     @property
@@ -168,7 +184,7 @@ class RandomizeOp(Operator):
                 "Rrs_665": {
                     "bias": "Rrs_665_bias",
                     "rmsd": "Rrs_665_rmsd",
-                    "distribution": "lognormal",
+                    "distribution": "normal",
                 },
                 "adg_412": {
                     "bias": "adg_412_bias",
@@ -245,35 +261,39 @@ class RandomizeOp(Operator):
                 "fco2": {
                     "uncertainty": "fco2_tot_unc",
                     # the uncertainty interval coverage factor
-                    "coverage_factor": 2.0,
+                    "coverage": 2.0,
                     "distribution": "lognormal",
                 },
                 "flux": {
                     "uncertainty": "flux_unc",
                     # uncertainty is stated in relative terms
                     "relative": True,
-                    "coverage_factor": 2.0,
+                    "coverage": 2.0,
                     "distribution": "normal",
                 },
                 "ta": {
                     "uncertainty": "ta_tot_unc",
-                    "coverage_factor": 2.0,
+                    "coverage": 2.0,
                     "distribution": "lognormal",
+                    # clip to interval
+                    "clip": (None, 3400.0),
                 },
                 "dic": {
                     "uncertainty": "dic_tot_unc",
-                    "coverage_factor": 2.0,
+                    "coverage": 2.0,
                     "distribution": "lognormal",
+                    "clip": (None, 3200.0),
                 },
-                "ph": {
-                    "uncertainty": "ph_tot_unc",
-                    "coverage_factor": 2.0,
-                    "distribution": "lognormal",
+                "pH": {
+                    "uncertainty": "pH_tot_unc",
+                    "coverage": 2.0,
+                    "distribution": "normal",
                 },
                 "saturation_aragonite": {
                     "uncertainty": "saturation_aragonite_tot_unc",
-                    "coverage_factor": 2.0,
+                    "coverage": 2.0,
                     "distribution": "lognormal",
+                    "clip": (None, 6.0),
                 },
             },
             "ghrsst": {

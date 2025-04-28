@@ -106,16 +106,18 @@ class Randomize(InformedBlockAlgorithm):
     def randomize(
         self,
         *data: np.ndarray,
-        coverage_factor: Any = 1.0,
+        coverage: Any = 1.0,
         relative: bool = False,
+        clip: tuple[Any, Any] | None = None,
         **kwargs,
     ) -> np.ndarray:
         """
         Randomizes data.
 
         :param data: The data.
-        :param coverage_factor: The uncertainty coverage factor.
+        :param coverage: The uncertainty coverage factor.
         :param relative: Uncertainty is given in relative terms.
+        :param clip: Where to clip measurement errors.
         :return: The measurement values randomized.
         """
         seed = _block_seed(kwargs["block_id"], self._root_seed)
@@ -126,11 +128,10 @@ class Randomize(InformedBlockAlgorithm):
             if len(data) == 2
             else np.sqrt(np.square(data[1]) - np.square(data[2]))
         )
-        if coverage_factor != 1.0:
-            u = u / coverage_factor
+        if coverage != 1.0:
+            u = u / coverage
         if relative:
             u = u * x
-
         match self._dist:
             case "normal":
                 y = _normal(seed, x, u)
@@ -140,6 +141,8 @@ class Randomize(InformedBlockAlgorithm):
                 y = _chlorophyll(seed, x, u)
             case _:
                 y = x
+        if clip is not None:
+            y = np.clip(y, a_min=clip[0], a_max=clip[1])
         return y
 
     compute_block = randomize

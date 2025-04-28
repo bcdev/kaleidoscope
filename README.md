@@ -21,7 +21,9 @@ processor. The processor is invoked from the command line. Typing
 will print a detailed usage message to the screen
 
     usage: kaleidoscope [-h] [--chunk-size-lat CHUNK_SIZE_LAT]
-                        [--chunk-size-lon CHUNK_SIZE_LON] [--selector SELECTOR]
+                        [--chunk-size-lon CHUNK_SIZE_LON]
+                        [--product-type {esa-cci-oc,esa-scope-exchange,ghrsst,glorys}]
+                        [--selector SELECTOR]
                         [--engine-reader {h5netcdf,netcdf4,zarr}]
                         [--engine-writer {h5netcdf,netcdf4,zarr}]
                         [--log-level {debug,info,warning,error,off}]
@@ -51,7 +53,10 @@ will print a detailed usage message to the screen
                             value of `-1` refers to full longitudinal chunk size
                             and a value of `0` refers to the chunk size used in
                             the source file. (default: None)
-      --selector SELECTOR   the Monte Carlo stream selector. (default: None)
+      --product-type {esa-cci-oc,esa-scope-exchange,ghrsst,glorys}
+                            the product type. (default: None)
+      --selector SELECTOR   the Monte Carlo stream selector. An integral number
+                            whichmust not be negative. (default: None)
       --engine-reader {h5netcdf,netcdf4,zarr}
                             specify the engine used to read the source product
                             file. (default: None)
@@ -76,9 +81,8 @@ will print a detailed usage message to the screen
       --tmpdir TMPDIR       specify the path to the temporary directory.
                             (default: None)
       -v, --version         show program's version number and exit
-    
-    Copyright (c) Brockmann Consult GmbH, 2025. License: MIT
 
+Copyright (c) Brockmann Consult GmbH, 2025. License: MIT
 ### Normal operations
 
 TBD.
