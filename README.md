@@ -20,8 +20,7 @@ processor. The processor is invoked from the command line. Typing
 
 will print a detailed usage message to the screen
 
-    usage: kaleidoscope [-h] [--chunk-size-lat CHUNK_SIZE_LAT]
-                        [--chunk-size-lon CHUNK_SIZE_LON]
+    usage: kaleidoscope [-h]
                         [--product-type {esa-cci-oc,esa-scope-exchange,ghrsst,glorys}]
                         [--selector SELECTOR]
                         [--engine-reader {h5netcdf,netcdf4,zarr}]
@@ -41,18 +40,6 @@ will print a detailed usage message to the screen
     
     options:
       -h, --help            show this help message and exit
-      --chunk-size-lat CHUNK_SIZE_LAT
-                            specify the chunk size along the latitudinal
-                            dimension for reading and computing data arrays. A
-                            value of `-1` refers to full latitudinal chunk size
-                            and a value of `0` refers to the chunk size used in
-                            the source file. (default: None)
-      --chunk-size-lon CHUNK_SIZE_LON
-                            specify the chunk size along the longitudinal
-                            dimension for reading and computing data arrays. A
-                            value of `-1` refers to full longitudinal chunk size
-                            and a value of `0` refers to the chunk size used in
-                            the source file. (default: None)
       --product-type {esa-cci-oc,esa-scope-exchange,ghrsst,glorys}
                             the product type. (default: None)
       --selector SELECTOR   the Monte Carlo stream selector. An integral number
@@ -81,8 +68,9 @@ will print a detailed usage message to the screen
       --tmpdir TMPDIR       specify the path to the temporary directory.
                             (default: None)
       -v, --version         show program's version number and exit
-
+    
 Copyright (c) Brockmann Consult GmbH, 2025. License: MIT
+
 ### Normal operations
 
 TBD.
