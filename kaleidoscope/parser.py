@@ -73,7 +73,7 @@ class Parser:
         )
         parser.add_argument(
             "--selector",
-            help="the Monte Carlo stream selector. An integral number which"
+            help="the Monte Carlo stream selector. An integral number which "
             "must not be negative.",
             type=Parser.IntType(0),
             required=False,
