@@ -7,10 +7,10 @@ This module provides the randomize operator.
 
 from argparse import Namespace
 from typing import Any
-from typing import override
 
 import dask.array as da
 import numpy as np
+from typing_extensions import override
 from xarray import DataArray
 from xarray import Dataset
 

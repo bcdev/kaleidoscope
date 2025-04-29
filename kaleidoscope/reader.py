@@ -8,7 +8,6 @@ This module provides the source dataset reader.
 from pathlib import Path
 from typing import Any
 
-import numpy as np
 import xarray as xr
 from typing_extensions import override
 from xarray import Dataset

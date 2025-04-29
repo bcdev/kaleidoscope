@@ -5,7 +5,6 @@
 This module provides the target dataset writer.
 """
 
-import uuid
 from pathlib import Path
 from typing import Any
 from typing import Literal

@@ -11,7 +11,6 @@ import warnings
 from importlib import resources
 from pathlib import Path
 from typing import Any
-from typing import final
 
 import numpy as np
 from dask.array import Array

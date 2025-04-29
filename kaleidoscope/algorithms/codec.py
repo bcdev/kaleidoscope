@@ -6,10 +6,10 @@ This module provides algorithms to encode and decode data
 according to CF conventions.
 """
 from typing import Any
-from typing import override
 
 import dask.array as da
 import numpy as np
+from typing_extensions import override
 
 from ..interface.algorithm import BlockAlgorithm
 

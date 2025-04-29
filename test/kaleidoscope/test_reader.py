@@ -15,8 +15,6 @@ from typing import Any
 from xarray import DataArray
 from xarray import Dataset
 
-from kaleidoscope.interface.constants import VID_LAT
-from kaleidoscope.interface.constants import VID_LON
 from kaleidoscope.interface.constants import VID_TIM
 from kaleidoscope.reader import Reader
 from kaleidoscope.util.ncbin import ncgen
