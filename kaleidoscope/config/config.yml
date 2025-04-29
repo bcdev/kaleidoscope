@@ -13,7 +13,7 @@ engine_reader:
 ## Detect the writer engine automatically
 engine_writer:
 
-## The default log level
+## The default log level ["error", "warning", "info", "debug", "off"]
 log_level: "info"
 
 ## The default mode ["multithreading", "synchronous"]
