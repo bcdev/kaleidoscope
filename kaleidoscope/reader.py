@@ -52,6 +52,12 @@ time units in {"days", "hours", "minutes", "seconds", "milliseconds",
 "microseconds"} into timedelta objects. The default is `false`.
 """
 
+_KEY_MASK_AND_SCALE: str = "config.reader.mask_and_scale"
+"""
+The key to configure whether to mask and scale variables. The default
+is `false`.
+"""
+
 _KEY_USE_CFTIME: str = "config.reader.use_cftime"
 """
 The key to configure whether to decode times into `cftime.datetime`
@@ -90,6 +96,7 @@ class Reader(Reading):
             _KEY_DECODE_COORDS: "true",
             _KEY_DECODE_TIMES: "false",
             _KEY_DECODE_TIMEDELTA: "false",
+            _KEY_MASK_AND_SCALE: "false",
             _KEY_USE_CFTIME: "false",
             _KEY_CONCAT_CHARACTERS: "true",
             _KEY_INLINE_ARRAY: "false",
@@ -115,7 +122,7 @@ class Reader(Reading):
             data_id,
             chunks=self._chunks,
             engine=self._auto_engine(data_id),
-            mask_and_scale=True,
+            mask_and_scale=self._mask_and_scale,
             decode_cf=self._decode_cf,
             decode_coords=self._decode_coords,
             decode_times=self._decode_times,
@@ -124,7 +131,7 @@ class Reader(Reading):
             concat_characters=self._concat_characters,
             inline_array=self._inline_array,
             backend_kwargs=kwargs,
-        ).astype(np.single, copy=False)
+        )
 
     def _auto_engine(self, data_id: str | Path) -> str:
         """This method does not belong to public API."""
@@ -163,6 +170,11 @@ class Reader(Reading):
     def _decode_timedelta(self) -> bool:
         """This method does not belong to public API."""
         return self._config[_KEY_DECODE_TIMEDELTA] == "true"
+
+    @property
+    def _mask_and_scale(self) -> bool:
+        """This method does not belong to public API."""
+        return self._config[_KEY_MASK_AND_SCALE] == "true"
 
     @property
     def _use_cftime(self) -> bool:

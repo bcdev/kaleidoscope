@@ -69,19 +69,24 @@ class ReaderTest(unittest.TestCase):
         self.source_files.clear()
 
     def test_read(self):
-        """Tests reading a generated source dataset."""
+        """Tests reading the generated source datasets."""
         for source_file in self.source_files:
-            reader = self.create_reader(source_file.stem)
-            source = reader.read(source_file)
-            self.assertIsInstance(source, Dataset)
+            source = None
+            try:
+                reader = self.create_reader(
+                    source_file.stem.replace("_", "-")
+                )
+                source = reader.read(source_file)
+                self.assertIsInstance(source, Dataset)
 
-            global_attrs = source.attrs
-            self.assertIsInstance(global_attrs, dict)
+                global_attrs = source.attrs
+                self.assertIsInstance(global_attrs, dict)
 
-            time = source[VID_TIM]
-            self.assertIsInstance(time, DataArray)
-
-            source.close()
+                time = source[VID_TIM]
+                self.assertIsInstance(time, DataArray)
+            finally:
+                if source is not None:
+                    source.close()
 
     def create_reader(self, product_type):
         chunks = self.config["config.reader.chunks"]

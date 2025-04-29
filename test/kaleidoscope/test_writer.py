@@ -11,6 +11,7 @@ import warnings
 from importlib import resources
 from pathlib import Path
 from typing import Any
+from typing import final
 
 import numpy as np
 from dask.array import Array
@@ -59,41 +60,71 @@ class WriterTest(unittest.TestCase):
                 if f.name.endswith(".cdl"):
                     self.source_files.append(ncgen(f))
 
-    def test_write(self):
+    def test_write_esa_cci_oc(self):
         """Tests writing a generated target dataset."""
+        self.assert_write("esa-cci-oc")
+
+    def test_write_esa_scope_exchange(self):
+        """Tests writing a generated target dataset."""
+        self.assert_write("esa-scope-exchange")
+
+    def test_write_ghrsst(self):
+        """Tests writing a generated target dataset."""
+        self.assert_write("ghrsst")
+
+    def test_write_glorys(self):
+        """Tests writing a generated target dataset."""
+        self.assert_write("glorys")
+
+    def assert_write(self, product_type):
+        """This method does not belong to public API."""
         for source_file in self.source_files:
-            target_file = Path(
-                f"{source_file}".replace(".nc", ".randomized.nc")
-            )
-            reader = self.create_reader(source_file.stem)
-            source = reader.read(source_file)
+            if source_file.stem.replace("_", "-") != product_type:
+                continue
 
-            # can be written?
-            writer = self.create_writer(source_file.stem)
-            writer.write(source, target_file)
-            self.assertTrue(target_file.exists())
+            source = None
+            target = None
+            target_dump = None
+            target_file = None
 
-            # can be read?
-            reader = Reader(self.reader_config)
-            target = reader.read(target_file)
-            self.assert_shapes(source, target)
+            try:
+                target_file = Path(
+                    f"{source_file}".replace(".nc", ".randomized.nc")
+                )
+                reader = self.create_reader(product_type)
+                source = reader.read(source_file)
 
-            # can be dumped?
-            target_dump = ncdump(target_file)
-            self.assertTrue(target_dump.exists())
+                # can be written?
+                writer = self.create_writer(product_type)
+                writer.write(source, target_file)
+                self.assertTrue(target_file.exists())
 
-            target.close()
-            source.close()
-            target_dump.unlink()
-            target_file.unlink()
+                # can be read?
+                target = reader.read(target_file)
+                self.assert_shapes(source, target)
+
+                # can be dumped?
+                target_dump = ncdump(target_file)
+                self.assertTrue(target_dump.exists())
+            finally:
+                if target is not None:
+                    target.close()
+                if source is not None:
+                    source.close()
+                if target_dump is not None:
+                    target_dump.unlink()
+                if target_file is not None:
+                    target_file.unlink()
 
     def create_reader(self, product_type):
+        """This method does not belong to public API."""
         chunks = self.reader_config["config.reader.chunks"]
         for k, v in chunks.get(product_type, chunks["_"]).items():
             chunks[k] = v
         return Reader(self.reader_config)
 
     def create_writer(self, product_type):
+        """This method does not belong to public API."""
         chunks = self.writer_config["config.writer.chunks"]
         for k, v in chunks.get(product_type, chunks["_"]).items():
             chunks[k] = v

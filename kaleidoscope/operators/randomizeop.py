@@ -7,12 +7,15 @@ This module provides the randomize operator.
 
 from argparse import Namespace
 from typing import Any
+from typing import override
 
 import dask.array as da
-from typing_extensions import override
+import numpy as np
 from xarray import DataArray
 from xarray import Dataset
 
+from ..algorithms.codec import Decode
+from ..algorithms.codec import Encode
 from ..algorithms.randomize import Randomize
 from ..interface.logging import Logging
 from ..interface.operator import Operator
@@ -24,6 +27,34 @@ def _hash(name: str) -> int:
     for c in name:
         h = 31 * h + ord(c)
     return h
+
+
+def _decode(
+    x: da.Array, a: dict[str:Any], dtype: np.dtype = np.single
+) -> da.Array:
+    f = Decode(dtype, x.ndim)
+    y = f.apply_to(
+        x,
+        add_offset=a.get("add_offset", None),
+        scale_factor=a.get("add_offset", None),
+        fill_value=a.get("_FillValue", None),
+        valid_min=a.get("valid_min", None),
+        valid_max=a.get("valid_max", None),
+    )
+    return y
+
+
+def _encode(x: da.Array, a: dict[str:Any], dtype: np.dtype) -> da.Array:
+    f = Encode(dtype, x.ndim)
+    y = f.apply_to(
+        x,
+        add_offset=a.get("add_offset", None),
+        scale_factor=a.get("add_offset", None),
+        fill_value=a.get("_FillValue", None),
+        valid_min=a.get("valid_min", None),
+        valid_max=a.get("valid_max", None),
+    )
+    return y
 
 
 class RandomizeOp(Operator):
@@ -65,52 +96,67 @@ class RandomizeOp(Operator):
             if v not in config:
                 continue
             get_logger().info(f"starting graph for variable: {v}")
-            attrs: dict[str:Any] = config[v]
+            a: dict[str:Any] = config[v]
             f = Randomize(
-                x.dtype,
+                np.single,
                 x.ndim,
-                dist=attrs["distribution"],
+                dist=a["distribution"],
                 entropy=self.entropy(),
             )
-            if "uncertainty" in attrs:
+            if "uncertainty" in a:
                 u = (
-                    target[attrs["uncertainty"]]
-                    if isinstance(attrs["uncertainty"], str)
+                    target[a["uncertainty"]]
+                    if isinstance(a["uncertainty"], str)
                     else DataArray(
                         data=da.full(
-                            x.shape, attrs["uncertainty"], chunks=x.chunks
+                            x.shape, a["uncertainty"], chunks=x.chunks
                         ),
                         coords=x.coords,
                         dims=x.dims,
+                        attrs={},
                     )
                 )
                 target[v] = DataArray(
-                    data=f.apply_to(
-                        x.data,
-                        u.data,
-                        coverage=attrs.get("coverage", 1.0),
-                        relative=attrs.get("relative", False),
-                        clip=attrs.get("clip", None),
+                    data=_encode(
+                        f.apply_to(
+                            _decode(x.data, x.attrs),
+                            _decode(u.data, u.attrs),
+                            coverage=a.get("coverage", 1.0),
+                            relative=a.get("relative", False),
+                            clip=a.get("clip", [None, None]),
+                        ),
+                        x.attrs,
+                        x.dtype,
                     ),
                     coords=x.coords,
                     dims=x.dims,
-                    name=x.name,
                     attrs=x.attrs,
                 )
-            elif "bias" in attrs and "rmsd" in attrs:
-                b = target[attrs["bias"]]
-                r = target[attrs["rmsd"]]
+            elif "bias" in a and "rmsd" in a:
+                b = target[a["bias"]]
+                r = target[a["rmsd"]]
                 target[v] = DataArray(
-                    data=f.apply_to(
-                        x.data,
-                        r.data,
-                        b.data,
-                        clip=attrs.get("clip", [None, None]),
+                    data=_encode(
+                        f.apply_to(
+                            _decode(x.data, x.attrs),
+                            _decode(r.data, r.attrs),
+                            _decode(b.data, b.attrs),
+                            clip=a.get("clip", [None, None]),
+                        ),
+                        x.attrs,
+                        x.dtype,
                     ),
                     coords=x.coords,
                     dims=x.dims,
-                    name=x.name,
                     attrs=x.attrs,
+                )
+            if "actual_range" in target[v].attrs:
+                target[v].attrs["actual_range"] = np.array(
+                    [
+                        target[v].min().values.item(),
+                        target[v].max().values.item(),
+                    ],
+                    dtype=x.dtype,
                 )
             if get_logger().is_enabled(Logging.DEBUG):
                 get_logger().debug(
@@ -300,6 +346,12 @@ class RandomizeOp(Operator):
                 "analysed_sst": {
                     # the associated uncertainty variable or a constant value
                     "uncertainty": "analysed_sst_uncertainty",
+                    "distribution": "normal",
+                },
+            },
+            "glorys": {
+                "so": {
+                    "uncertainty": 0.1,
                     "distribution": "normal",
                 },
             },
