@@ -81,7 +81,7 @@ class Randomize(InformedBlockAlgorithm):
         Creates a new algorithm instance.
 
         :param dtype: The result data type.
-        :param m: The number of input array dimensions.
+        :param m: The number of input data dimensions.
         :param dist: The type of measurement error distribution.
         :param entropy: The entropy to create the seed sequence.
         """
