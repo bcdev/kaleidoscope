@@ -33,7 +33,9 @@ process() {
   "${procCmd}" \
     --engine-reader "${reader}" \
     --engine-writer "${writer}" \
-    --log-level info
+    --log-level warning \
+    --progress \
+    "$@"
 }
 
 
