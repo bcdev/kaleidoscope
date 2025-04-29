@@ -65,11 +65,11 @@ class WriterTest(unittest.TestCase):
             target_file = Path(
                 f"{source_file}".replace(".nc", ".randomized.nc")
             )
-            reader = Reader(self.reader_config)
+            reader = self.create_reader(source_file.stem)
             source = reader.read(source_file)
 
             # can be written?
-            writer = Writer(self.writer_config, engine="h5netcdf")
+            writer = self.create_writer(source_file.stem)
             writer.write(source, target_file)
             self.assertTrue(target_file.exists())
 
@@ -86,6 +86,18 @@ class WriterTest(unittest.TestCase):
             source.close()
             target_dump.unlink()
             target_file.unlink()
+
+    def create_reader(self, product_type):
+        chunks = self.reader_config["config.reader.chunks"]
+        for k, v in chunks.get(product_type, chunks["_"]).items():
+            chunks[k] = v
+        return Reader(self.reader_config)
+
+    def create_writer(self, product_type):
+        chunks = self.writer_config["config.writer.chunks"]
+        for k, v in chunks.get(product_type, chunks["_"]).items():
+            chunks[k] = v
+        return Writer(self.writer_config, engine="h5netcdf")
 
     def assert_almost_no_difference(
         self, source: Dataset, target: Dataset, delta=0.0, q=1.0

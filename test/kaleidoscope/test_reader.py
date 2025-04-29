@@ -71,7 +71,7 @@ class ReaderTest(unittest.TestCase):
     def test_read(self):
         """Tests reading a generated source dataset."""
         for source_file in self.source_files:
-            reader = Reader(self.config)
+            reader = self.create_reader(source_file.stem)
             source = reader.read(source_file)
             self.assertIsInstance(source, Dataset)
 
@@ -81,13 +81,13 @@ class ReaderTest(unittest.TestCase):
             time = source[VID_TIM]
             self.assertIsInstance(time, DataArray)
 
-            lat = source[VID_LAT]
-            self.assertIsInstance(lat, DataArray)
-
-            lon = source[VID_LON]
-            self.assertIsInstance(lon, DataArray)
-
             source.close()
+
+    def create_reader(self, product_type):
+        chunks = self.config["config.reader.chunks"]
+        for k, v in chunks.get(product_type, chunks["_"]).items():
+            chunks[k] = v
+        return Reader(self.config)
 
 
 if __name__ == "__main__":

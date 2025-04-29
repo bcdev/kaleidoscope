@@ -16,8 +16,6 @@ from xarray import Dataset
 
 from . import __name__
 from . import __version__
-from .interface.constants import DID_LAT
-from .interface.constants import DID_LON
 from .interface.processing import Processing
 from .interface.reading import Reading
 from .interface.writing import Writing
@@ -112,12 +110,8 @@ class Processor(Processing):
             with open(resource) as r:
                 config = json.load(r)
         chunks = config["config.reader.chunks"]
-        chunks[DID_LAT] = chunks.get(args.product_type, chunks["_"])[DID_LAT]
-        chunks[DID_LON] = chunks.get(args.product_type, chunks["_"])[DID_LON]
-        if args.chunk_size_lat is not None:
-            chunks[DID_LAT] = args.chunk_size_lat
-        if args.chunk_size_lon is not None:
-            chunks[DID_LON] = args.chunk_size_lon
+        for k, v in chunks.get(args.product_type, chunks["_"]).items():
+            chunks[k] = v
         if args.engine_reader:
             config["config.reader.engine"] = args.engine_reader
         return ReaderFactory.create_reader(config=config)
@@ -131,12 +125,8 @@ class Processor(Processing):
             with open(resource) as r:
                 config = json.load(r)
         chunks = config["config.writer.chunks"]
-        chunks[DID_LAT] = chunks.get(args.product_type, chunks["_"])[DID_LAT]
-        chunks[DID_LON] = chunks.get(args.product_type, chunks["_"])[DID_LON]
-        if args.chunk_size_lat is not None:
-            chunks[DID_LAT] = args.chunk_size_lat
-        if args.chunk_size_lon is not None:
-            chunks[DID_LON] = args.chunk_size_lon
+        for k, v in chunks.get(args.product_type, chunks["_"]).items():
+            chunks[k] = v
         if args.engine_writer:
             config["config.writer.engine"] = args.engine_writer
         return WriterFactory.create_writer(

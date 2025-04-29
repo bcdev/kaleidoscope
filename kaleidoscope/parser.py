@@ -65,26 +65,6 @@ class Parser:
     def _add_options(parser):
         """This method does not belong to public API."""
         parser.add_argument(
-            "--chunk-size-lat",
-            help="specify the chunk size along the latitudinal dimension "
-            "for reading and computing data arrays. A value of `-1` refers "
-            "to full latitudinal chunk size and a value of `0` refers "
-            "to the chunk size used in the source file.",
-            type=Parser.IntType(-1),
-            required=False,
-            dest="chunk_size_lat",
-        )
-        parser.add_argument(
-            "--chunk-size-lon",
-            help="specify the chunk size along the longitudinal dimension "
-            "for reading and computing data arrays. A value of `-1` refers "
-            "to full longitudinal chunk size and a value of `0` refers "
-            "to the chunk size used in the source file.",
-            type=Parser.IntType(-1),
-            required=False,
-            dest="chunk_size_lon",
-        )
-        parser.add_argument(
             "--product-type",
             help="the product type.",
             choices=["esa-cci-oc", "esa-scope-exchange", "ghrsst", "glorys"],

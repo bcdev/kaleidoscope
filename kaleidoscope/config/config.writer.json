@@ -6,20 +6,25 @@
     },
 
     "config.writer.chunks": {
-        "time": 0,
-        "lat": 0,
-        "lon": 0,
-
         "esa-cci-oc": {
             "time": 0,
             "lat": 270,
             "lon": 270
         },
 
+        "esa-scope-exchange": {
+            "time": 12,
+            "latitude": 0,
+            "longitude": 0
+        },
+
         "_": {
             "time": 0,
             "lat": 0,
-            "lon": 0
+            "latitude": 0,
+            "lon": 0,
+            "longitude": 0,
+            "depth": 0
         }
     },
 

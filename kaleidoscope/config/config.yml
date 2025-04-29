@@ -1,12 +1,6 @@
 #  Copyright (c) Brockmann Consult GmbH, 2025
 #  License: MIT
 
-## The chunk size is determined by the reader
-chunk_size_lat:
-
-## The chunk size is determined by the reader
-chunk_size_lon:
-
 ## No default product type.
 product_type:
 
