@@ -43,7 +43,7 @@ will print a detailed usage message to the screen
       --product-type {esa-cci-oc,esa-scope-exchange,ghrsst,glorys}
                             the product type. (default: None)
       --selector SELECTOR   the Monte Carlo stream selector. An integral number
-                            whichmust not be negative. (default: None)
+                            which must not be negative. (default: None)
       --engine-reader {h5netcdf,netcdf4,zarr}
                             specify the engine used to read the source product
                             file. (default: None)
@@ -73,7 +73,40 @@ will print a detailed usage message to the screen
 
 ### Normal operations
 
-TBD.
+To invoke the processor from the terminal, for instance, type 
+
+    kaleidoscope --product-type ghrsst --selector 17 in.nc out.nc
+
+which normally will log information to the terminal, e.g.,
+
+    2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] starting running processor
+    2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: engine_reader = None
+    2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: engine_writer = None
+    2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: log_level = info
+    2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: mode = multithreading
+    2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: processor_name = kaleidoscope
+    2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: processor_version = 2025.1.0
+    2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: product_type = ghrsst
+    2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: progress = False
+    2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: selector = 17
+    2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: source_file = in.nc
+    2025-04-30T09:42:11.929000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: stack_traces = False
+    2025-04-30T09:42:11.929000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: target_file = out.nc
+    2025-04-30T09:42:11.929000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: tmpdir = .
+    2025-04-30T09:42:11.929000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: workers = 2
+    2025-04-30T09:42:12.149000Z <node> kaleidoscope 2025.1.0 [76069] [I] starting creating processing graph
+    2025-04-30T09:42:12.150000Z <node> kaleidoscope 2025.1.0 [76069] [I] starting graph for variable: analysed_sst
+    2025-04-30T09:42:14.765000Z <node> kaleidoscope 2025.1.0 [76069] [I] finished graph for variable: analysed_sst
+    2025-04-30T09:42:14.765000Z <node> kaleidoscope 2025.1.0 [76069] [I] finished creating processing graph
+    2025-04-30T09:42:14.765000Z <node> kaleidoscope 2025.1.0 [76069] [I] starting writing target dataset: out.nc
+    2025-04-30T09:42:20.637000Z <node> kaleidoscope 2025.1.0 [76069] [I] finished writing target dataset
+    2025-04-30T09:42:20.638000Z <node> kaleidoscope 2025.1.0 [76069] [I] starting closing datasets
+    2025-04-30T09:42:20.638000Z <node> kaleidoscope 2025.1.0 [76069] [I] finished closing datasets
+    2025-04-30T09:42:20.638000Z <node> kaleidoscope 2025.1.0 [76069] [I] finished running processor
+    2025-04-30T09:42:20.639000Z <node> kaleidoscope 2025.1.0 [76069] [I] elapsed time (seconds):    8.710
+
+and eventually produce a forecast output dataset. Normally, the processor
+will terminate with an exit code of `0`. 
 
 ### Error conditions
 
