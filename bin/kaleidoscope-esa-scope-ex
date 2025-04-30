@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) Brockmann Consult GmbH, 2025
+# License: MIT
+#
+set -e
+## Produces Monte Carlo variants of the ESA SCOPE Exchange product.
+#
+#  ./kaleidoscope-esa-scope-ex
+#
+for selector in 003 005 007 011 013 017 019 023 029 031; do
+  echo "$(tput setaf 2)$(date -u "+%Y-%m-%dT%H:%M:%S") [INFO] Selector ${selector} ...$(tput sgr0)"
+  kaleidoscope \
+    --selector ${selector} \
+    --product-type esa-scope-exchange \
+    --log-level off \
+    --progress \
+    Ford_et_al_UExP-FNN-U_physics_carbonatesystem_ESASCOPE_v5.nc \
+    Ford_et_al_UExP-FNN-U_physics_carbonatesystem_ESASCOPE_v5.${selector}.nc
+done
