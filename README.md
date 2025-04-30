@@ -32,7 +32,7 @@ will print a detailed usage message to the screen
                         [--tmpdir TMPDIR] [-v]
                         source_file target_file
     
-    This scientific processor simulates measurementerrors.
+    This scientific processor simulates measurement errors.
     
     positional arguments:
       source_file           the file path of the source dataset.
