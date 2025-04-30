@@ -68,7 +68,7 @@ class Parser:
             "--product-type",
             help="the product type.",
             choices=["esa-cci-oc", "esa-scope-exchange", "ghrsst", "glorys"],
-            required=False,
+            required=True,
             dest="product_type",
         )
         parser.add_argument(
@@ -76,7 +76,7 @@ class Parser:
             help="the Monte Carlo stream selector. An integral number which "
             "must not be negative.",
             type=Parser.IntType(0),
-            required=False,
+            required=True,
             dest="selector",
         )
         parser.add_argument(

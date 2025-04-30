@@ -21,8 +21,8 @@ processor. The processor is invoked from the command line. Typing
 will print a detailed usage message to the screen
 
     usage: kaleidoscope [-h]
-                        [--product-type {esa-cci-oc,esa-scope-exchange,ghrsst,glorys}]
-                        [--selector SELECTOR]
+                        --product-type {esa-cci-oc,esa-scope-exchange,ghrsst,glorys}
+                        --selector SELECTOR
                         [--engine-reader {h5netcdf,netcdf4,zarr}]
                         [--engine-writer {h5netcdf,netcdf4,zarr}]
                         [--log-level {debug,info,warning,error,off}]
