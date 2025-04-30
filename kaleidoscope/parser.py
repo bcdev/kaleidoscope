@@ -35,7 +35,7 @@ class Parser:
         """
         parser = _ArgumentParser(
             prog=f"{__name__}",
-            description="This scientific processor simulates measurement"
+            description="This scientific processor simulates measurement "
             "errors.",
             epilog="Copyright (c) Brockmann Consult GmbH, 2025. "
             "License: MIT",
