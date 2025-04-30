@@ -66,14 +66,32 @@ class ReaderTest(unittest.TestCase):
             f.unlink()
         self.source_files.clear()
 
-    def test_read(self):
+    def test_read_esa_cci_oc(self):
+        """Tests writing a generated target dataset."""
+        self.assert_read("esa-cci-oc")
+
+    def test_read_esa_scope_exchange(self):
+        """Tests writing a generated target dataset."""
+        self.assert_read("esa-scope-exchange")
+
+    def test_read_ghrsst(self):
+        """Tests writing a generated target dataset."""
+        self.assert_read("ghrsst")
+
+    def test_read_glorys(self):
+        """Tests writing a generated target dataset."""
+        self.assert_read("glorys")
+
+    def assert_read(self, product_type):
         """Tests reading the generated source datasets."""
         for source_file in self.source_files:
+            if source_file.stem.replace("_", "-") != product_type:
+                continue
+
             source = None
+
             try:
-                reader = self.create_reader(
-                    source_file.stem.replace("_", "-")
-                )
+                reader = self.create_reader(product_type)
                 source = reader.read(source_file)
                 self.assertIsInstance(source, Dataset)
 
