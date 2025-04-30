@@ -69,7 +69,7 @@ will print a detailed usage message to the screen
                             (default: None)
       -v, --version         show program's version number and exit
     
-Copyright (c) Brockmann Consult GmbH, 2025. License: MIT
+    Copyright (c) Brockmann Consult GmbH, 2025. License: MIT
 
 ### Normal operations
 
