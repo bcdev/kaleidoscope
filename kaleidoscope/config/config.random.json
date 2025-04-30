@@ -1,0 +1,166 @@
+{
+  "_comments_": {
+    "copyright": "Copyright (c) Brockmann Consult GmbH, 2025",
+    "license": "MIT",
+    "summary": "This JSON file provides configuration parameters and semantic mappings."
+  },
+  "esa-cci-oc": {
+    "Rrs_412": {
+      "bias": "Rrs_412_bias",
+      "rmsd": "Rrs_412_rmsd",
+      "distribution": "lognormal"
+    },
+    "Rrs_443": {
+      "bias": "Rrs_443_bias",
+      "rmsd": "Rrs_443_rmsd",
+      "distribution": "lognormal"
+    },
+    "Rrs_490": {
+      "bias": "Rrs_490_bias",
+      "rmsd": "Rrs_490_rmsd",
+      "distribution": "lognormal"
+    },
+    "Rrs_510": {
+      "bias": "Rrs_510_bias",
+      "rmsd": "Rrs_510_rmsd",
+      "distribution": "lognormal"
+    },
+    "Rrs_560": {
+      "bias": "Rrs_560_bias",
+      "rmsd": "Rrs_560_rmsd",
+      "distribution": "lognormal"
+    },
+    "Rrs_665": {
+      "bias": "Rrs_665_bias",
+      "rmsd": "Rrs_665_rmsd",
+      "distribution": "normal"
+    },
+    "adg_412": {
+      "bias": "adg_412_bias",
+      "rmsd": "adg_412_rmsd",
+      "distribution": "lognormal"
+    },
+    "adg_443": {
+      "bias": "adg_443_bias",
+      "rmsd": "adg_443_rmsd",
+      "distribution": "lognormal"
+    },
+    "adg_490": {
+      "bias": "adg_490_bias",
+      "rmsd": "adg_490_rmsd",
+      "distribution": "lognormal"
+    },
+    "adg_510": {
+      "bias": "adg_510_bias",
+      "rmsd": "adg_510_rmsd",
+      "distribution": "lognormal"
+    },
+    "adg_560": {
+      "bias": "adg_560_bias",
+      "rmsd": "adg_560_rmsd",
+      "distribution": "lognormal"
+    },
+    "adg_665": {
+      "bias": "adg_665_bias",
+      "rmsd": "adg_665_rmsd",
+      "distribution": "lognormal"
+    },
+    "aph_412": {
+      "bias": "aph_412_bias",
+      "rmsd": "aph_412_rmsd",
+      "distribution": "lognormal"
+    },
+    "aph_443": {
+      "bias": "aph_443_bias",
+      "rmsd": "aph_443_rmsd",
+      "distribution": "lognormal"
+    },
+    "aph_490": {
+      "bias": "aph_490_bias",
+      "rmsd": "aph_490_rmsd",
+      "distribution": "lognormal"
+    },
+    "aph_510": {
+      "bias": "aph_510_bias",
+      "rmsd": "aph_510_rmsd",
+      "distribution": "lognormal"
+    },
+    "aph_560": {
+      "bias": "aph_560_bias",
+      "rmsd": "aph_560_rmsd",
+      "distribution": "lognormal"
+    },
+    "aph_665": {
+      "bias": "aph_665_bias",
+      "rmsd": "aph_665_rmsd",
+      "distribution": "lognormal"
+    },
+    "kd_490": {
+      "bias": "kd_490_bias",
+      "rmsd": "kd_490_rmsd",
+      "distribution": "lognormal"
+    },
+    "chlor_a": {
+      "bias": "chlor_a_log10_bias",
+      "rmsd": "chlor_a_log10_rmsd",
+      "distribution": "chlorophyll"
+    }
+  },
+  "esa-scope-exchange": {
+    "fco2": {
+      "uncertainty": "fco2_tot_unc",
+      "coverage": 2.0,
+      "distribution": "lognormal"
+    },
+    "flux": {
+      "uncertainty": "flux_unc",
+      "relative": true,
+      "coverage": 2.0,
+      "distribution": "normal"
+    },
+    "ta": {
+      "uncertainty": "ta_tot_unc",
+      "coverage": 2.0,
+      "distribution": "lognormal",
+      "clip": [
+        0.0,
+        3400.0
+      ]
+    },
+    "dic": {
+      "uncertainty": "dic_tot_unc",
+      "coverage": 2.0,
+      "distribution": "lognormal",
+      "clip": [
+        0.0,
+        3200.0
+      ]
+    },
+    "pH": {
+      "uncertainty": "pH_tot_unc",
+      "coverage": 2.0,
+      "distribution": "normal"
+    },
+    "saturation_aragonite": {
+      "uncertainty": "saturation_aragonite_tot_unc",
+      "coverage": 2.0,
+      "distribution": "lognormal",
+      "clip": [
+        0.0,
+        6.0
+      ]
+    }
+  },
+  "ghrsst": {
+    "analysed_sst": {
+      "uncertainty": "analysed_sst_uncertainty",
+      "distribution": "normal"
+    }
+  },
+  "glorys": {
+    "so": {
+      "uncertainty": 0.1,
+      "distribution": "normal"
+    }
+  }
+}

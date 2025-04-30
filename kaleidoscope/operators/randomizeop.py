@@ -4,8 +4,9 @@
 """
 This module provides the randomize operator.
 """
-
+import json
 from argparse import Namespace
+from importlib import resources
 from typing import Any
 
 import dask.array as da
@@ -95,7 +96,9 @@ class RandomizeOp(Operator):
         for v, x in target.data_vars.items():
             if v not in config:
                 continue
+
             get_logger().info(f"starting graph for variable: {v}")
+
             a: dict[str:Any] = config[v]
             f = Randomize(
                 np.single,
@@ -116,246 +119,60 @@ class RandomizeOp(Operator):
                         attrs={},
                     )
                 )
-                target[v] = DataArray(
-                    data=_encode(
-                        f.apply_to(
-                            _decode(x.data, x.attrs),
-                            _decode(u.data, u.attrs),
-                            coverage=a.get("coverage", 1.0),
-                            relative=a.get("relative", False),
-                            clip=a.get("clip", [None, None]),
-                        ),
-                        x.attrs,
-                        x.dtype,
-                    ),
-                    coords=x.coords,
-                    dims=x.dims,
-                    attrs=x.attrs,
+                z = f.apply_to(
+                    _decode(x.data, x.attrs),
+                    _decode(u.data, u.attrs),
+                    coverage=a.get("coverage", 1.0),
+                    relative=a.get("relative", False),
+                    clip=a.get("clip", None),
                 )
-            elif "bias" in a and "rmsd" in a:
+            else:
                 b = target[a["bias"]]
                 r = target[a["rmsd"]]
-                target[v] = DataArray(
-                    data=_encode(
-                        f.apply_to(
-                            _decode(x.data, x.attrs),
-                            _decode(r.data, r.attrs),
-                            _decode(b.data, b.attrs),
-                            clip=a.get("clip", [None, None]),
-                        ),
-                        x.attrs,
-                        x.dtype,
-                    ),
-                    coords=x.coords,
-                    dims=x.dims,
-                    attrs=x.attrs,
+                z = f.apply_to(
+                    _decode(x.data, x.attrs),
+                    _decode(r.data, r.attrs),
+                    _decode(b.data, b.attrs),
+                    clip=a.get("clip", None),
                 )
+
+            target[v] = DataArray(
+                data=_encode(
+                    z,
+                    x.attrs,
+                    x.dtype,
+                ),
+                coords=x.coords,
+                dims=x.dims,
+                attrs=x.attrs,
+            )
             if "actual_range" in target[v].attrs:
                 target[v].attrs["actual_range"] = np.array(
                     [
-                        target[v].min().values.item(),
-                        target[v].max().values.item(),
+                        da.nanmin(z).compute(),
+                        da.nanmax(z).compute(),
                     ],
                     dtype=x.dtype,
                 )
+
             if get_logger().is_enabled(Logging.DEBUG):
-                get_logger().debug(
-                    f"source[{v}] min:  "
-                    f"{source[v].quantile(0.0001).values.item() :.6f}"
-                )
-                get_logger().debug(
-                    f"target[{v}] min:  "
-                    f"{target[v].quantile(0.0001).values.item() :.6f}"
-                )
-                get_logger().debug(
-                    f"source[{v}] max:  "
-                    f"{source[v].quantile(0.9999).values.item() :.6f}"
-                )
-                get_logger().debug(
-                    f"target[{v}] max:  "
-                    f"{target[v].quantile(0.9999).values.item() :.6f}"
-                )
-                get_logger().debug(
-                    f"source[{v}] mean: "
-                    f"{source[v].mean().values.item() :.6f}"
-                )
-                get_logger().debug(
-                    f"target[{v}] mean: "
-                    f"{target[v].mean().values.item() :.6f}"
-                )
-                get_logger().debug(
-                    f"source[{v}] std:  "
-                    f"{source[v].std().values.item() :.6f}"
-                )
-                get_logger().debug(
-                    f"target[{v}] std:  "
-                    f"{target[v].std().values.item() :.6f}"
-                )
+                get_logger().debug(f"min:  {da.nanmin(z).compute() :.6f}")
+                get_logger().debug(f"max:  {da.nanmax(z).compute() :.6f}")
+                get_logger().debug(f"mean: {da.nanmean(z).compute() :.6f}")
+                get_logger().debug(f"std:  {da.nanstd(z).compute() :.6f}")
             get_logger().info(f"finished graph for variable: {v}")
         return target
 
     @property
     def config(self) -> dict[str : dict[str:Any]]:
         """Returns the product type configuration."""
-        return {
-            "esa-cci-oc": {  # the product type
-                "Rrs_412": {  # the variable to randomize
-                    # the associated bias variable
-                    "bias": "Rrs_412_bias",
-                    # the associated RMSD variable
-                    "rmsd": "Rrs_412_rmsd",
-                    # the error distribution
-                    "distribution": "lognormal",
-                },
-                "Rrs_443": {
-                    "bias": "Rrs_443_bias",
-                    "rmsd": "Rrs_443_rmsd",
-                    "distribution": "lognormal",
-                },
-                "Rrs_490": {
-                    "bias": "Rrs_490_bias",
-                    "rmsd": "Rrs_490_rmsd",
-                    "distribution": "lognormal",
-                },
-                "Rrs_510": {
-                    "bias": "Rrs_510_bias",
-                    "rmsd": "Rrs_510_rmsd",
-                    "distribution": "lognormal",
-                },
-                "Rrs_560": {
-                    "bias": "Rrs_560_bias",
-                    "rmsd": "Rrs_560_rmsd",
-                    "distribution": "lognormal",
-                },
-                "Rrs_665": {
-                    "bias": "Rrs_665_bias",
-                    "rmsd": "Rrs_665_rmsd",
-                    "distribution": "normal",
-                },
-                "adg_412": {
-                    "bias": "adg_412_bias",
-                    "rmsd": "adg_412_rmsd",
-                    "distribution": "lognormal",
-                },
-                "adg_443": {
-                    "bias": "adg_443_bias",
-                    "rmsd": "adg_443_rmsd",
-                    "distribution": "lognormal",
-                },
-                "adg_490": {
-                    "bias": "adg_490_bias",
-                    "rmsd": "adg_490_rmsd",
-                    "distribution": "lognormal",
-                },
-                "adg_510": {
-                    "bias": "adg_510_bias",
-                    "rmsd": "adg_510_rmsd",
-                    "distribution": "lognormal",
-                },
-                "adg_560": {
-                    "bias": "adg_560_bias",
-                    "rmsd": "adg_560_rmsd",
-                    "distribution": "lognormal",
-                },
-                "adg_665": {
-                    "bias": "adg_665_bias",
-                    "rmsd": "adg_665_rmsd",
-                    "distribution": "lognormal",
-                },
-                "aph_412": {
-                    "bias": "aph_412_bias",
-                    "rmsd": "aph_412_rmsd",
-                    "distribution": "lognormal",
-                },
-                "aph_443": {
-                    "bias": "aph_443_bias",
-                    "rmsd": "aph_443_rmsd",
-                    "distribution": "lognormal",
-                },
-                "aph_490": {
-                    "bias": "aph_490_bias",
-                    "rmsd": "aph_490_rmsd",
-                    "distribution": "lognormal",
-                },
-                "aph_510": {
-                    "bias": "aph_510_bias",
-                    "rmsd": "aph_510_rmsd",
-                    "distribution": "lognormal",
-                },
-                "aph_560": {
-                    "bias": "aph_560_bias",
-                    "rmsd": "aph_560_rmsd",
-                    "distribution": "lognormal",
-                },
-                "aph_665": {
-                    "bias": "aph_665_bias",
-                    "rmsd": "aph_665_rmsd",
-                    "distribution": "lognormal",
-                },
-                "kd_490": {
-                    "bias": "kd_490_bias",
-                    "rmsd": "kd_490_rmsd",
-                    "distribution": "lognormal",
-                },
-                "chlor_a": {
-                    "bias": "chlor_a_log10_bias",
-                    "rmsd": "chlor_a_log10_rmsd",
-                    "distribution": "chlorophyll",
-                },
-            },
-            "esa-scope-exchange": {
-                "fco2": {
-                    "uncertainty": "fco2_tot_unc",
-                    # the uncertainty interval coverage factor
-                    "coverage": 2.0,
-                    "distribution": "lognormal",
-                },
-                "flux": {
-                    "uncertainty": "flux_unc",
-                    # uncertainty is stated in relative terms
-                    "relative": True,
-                    "coverage": 2.0,
-                    "distribution": "normal",
-                },
-                "ta": {
-                    "uncertainty": "ta_tot_unc",
-                    "coverage": 2.0,
-                    "distribution": "lognormal",
-                    # clip to interval
-                    "clip": (None, 3400.0),
-                },
-                "dic": {
-                    "uncertainty": "dic_tot_unc",
-                    "coverage": 2.0,
-                    "distribution": "lognormal",
-                    "clip": (None, 3200.0),
-                },
-                "pH": {
-                    "uncertainty": "pH_tot_unc",
-                    "coverage": 2.0,
-                    "distribution": "normal",
-                },
-                "saturation_aragonite": {
-                    "uncertainty": "saturation_aragonite_tot_unc",
-                    "coverage": 2.0,
-                    "distribution": "lognormal",
-                    "clip": (None, 6.0),
-                },
-            },
-            "ghrsst": {
-                "analysed_sst": {
-                    # the associated uncertainty variable or a constant value
-                    "uncertainty": "analysed_sst_uncertainty",
-                    "distribution": "normal",
-                },
-            },
-            "glorys": {
-                "so": {
-                    "uncertainty": 0.1,
-                    "distribution": "normal",
-                },
-            },
-        }
+        package = "kaleidoscope.config"
+        name = "config.random.json"
+        with resources.path(package, name) as resource:
+            get_logger().debug(f"reading resource: {resource}")
+            with open(resource) as r:
+                config = json.load(r)
+        return config
 
     def entropy(self) -> list[int]:
         return [self._args.selector, _hash(self._args.source_file.stem)]

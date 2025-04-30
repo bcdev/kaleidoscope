@@ -19,8 +19,8 @@ log_level: "info"
 ## The default mode ["multithreading", "synchronous"]
 mode: "multithreading"
 
-## The number of workers is determined by the system
-workers:
+## The number of workers
+workers: 2
 
 ## Disable progress bar display.
 progress: False
