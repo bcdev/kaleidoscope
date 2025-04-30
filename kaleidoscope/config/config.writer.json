@@ -1,38 +1,31 @@
 {
-    "_comments_": {
-        "copyright": "Copyright (c) Brockmann Consult GmbH, 2025",
-        "license": "MIT",
-        "summary": "This JSON file provides configuration parameters and semantic mappings."
+  "_comments_": {
+    "copyright": "Copyright (c) Brockmann Consult GmbH, 2025",
+    "license": "MIT",
+    "summary": "This JSON file provides configuration parameters and semantic mappings."
+  },
+  "config.writer.chunks": {
+    "esa-cci-oc": {
+      "time": 0,
+      "lat": 270,
+      "lon": 270
     },
-
-    "config.writer.chunks": {
-        "esa-cci-oc": {
-            "time": 0,
-            "lat": 270,
-            "lon": 270
-        },
-
-        "esa-scope-exchange": {
-            "time": 12,
-            "latitude": 0,
-            "longitude": 0
-        },
-
-        "_": {
-            "time": 0,
-            "lat": 0,
-            "latitude": 0,
-            "lon": 0,
-            "longitude": 0,
-            "depth": 0
-        }
+    "esa-scope-exchange": {
+      "time": 12,
+      "latitude": 0,
+      "longitude": 0
     },
-
-    "config.writer.engine": "h5netcdf",
-
-    "config.writer.zlib": "true",
-
-    "config.writer.complevel": 1,
-
-    "config.writer.shuffle": "true"
+    "_": {
+      "time": 0,
+      "lat": 0,
+      "latitude": 0,
+      "lon": 0,
+      "longitude": 0,
+      "depth": 0
+    }
+  },
+  "config.writer.engine": "h5netcdf",
+  "config.writer.zlib": "true",
+  "config.writer.complevel": 1,
+  "config.writer.shuffle": "true"
 }
