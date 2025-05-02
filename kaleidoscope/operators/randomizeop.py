@@ -24,9 +24,14 @@ from ..logger import get_logger
 
 
 def _hash(name: str) -> int:
-    h = 1
+    """
+    Daniel J. Bernstein hash function.
+
+    Returns a positive hash value.
+    """
+    h = 5381
     for c in name:
-        h = 31 * h + ord(c)
+        h = ((h << 5) + h) + ord(c)
     return h
 
 
