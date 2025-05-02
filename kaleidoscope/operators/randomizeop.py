@@ -104,7 +104,7 @@ class RandomizeOp(Operator):
                 np.single,
                 x.ndim,
                 dist=a["distribution"],
-                entropy=self.entropy,
+                entropy=self.entropy(v),
             )
             if "uncertainty" in a:
                 u = (
@@ -174,7 +174,15 @@ class RandomizeOp(Operator):
                 config = json.load(r)
         return config
 
-    @property
-    def entropy(self) -> list[int]:
-        """Returns the entropy of the seed sequence."""
-        return [self._args.selector, _hash(self._args.source_file.stem)]
+    def entropy(self, v: str) -> list[int]:
+        """
+        Returns the entropy of the seed sequence used for a given variable.
+
+        :param v: The name of the variable.
+        :return: The entropy.
+        """
+        return [
+            self._args.selector,
+            _hash(v),
+            _hash(self._args.source_file.stem),
+        ]
