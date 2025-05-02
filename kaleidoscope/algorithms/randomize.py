@@ -26,10 +26,14 @@ def _block_seed(
 
 
 def _hash(block_id: tuple[int, ...]) -> int:
-    """Returns a positive hash value."""
-    h = 1
+    """
+    Daniel J. Bernstein hash function.
+
+    Returns a positive hash value.
+    """
+    h = 5381
     for i in block_id:
-        h = 31 * h + i
+        h = ((h << 5) + h) + i
     return h
 
 
