@@ -4,17 +4,17 @@
 # License: MIT
 #
 set -e
-## Produces Monte Carlo variants of the ESA SCOPE Exchange product.
+## Produces Monte Carlo variants of the GLORYS product.
 #
-#  ./kaleidoscope-esa-scope-ex
+#  ./kaleidoscope-glorys <file>
 #
 for selector in 001 002 003 004 005 006 007 008 009 010; do
   echo "$(tput setaf 2)$(date -u "+%Y-%m-%dT%H:%M:%S") [INFO] Selector ${selector} ...$(tput sgr0)"
   kaleidoscope \
     --selector ${selector} \
-    --product-type esa-scope-exchange \
+    --product-type esa-cci-oc \
     --log-level warning \
     --progress \
-    Ford_et_al_UExP-FNN-U_physics_carbonatesystem_ESASCOPE_v5.nc \
-    Ford_et_al_UExP-FNN-U_physics_carbonatesystem_ESASCOPE_v5.${selector}.nc
+    "${1}" \
+    "${1%.nc}"."${selector}".nc
 done

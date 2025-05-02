@@ -18,6 +18,7 @@ from xarray import Dataset
 from ..algorithms.codec import Decode
 from ..algorithms.codec import Encode
 from ..algorithms.randomize import Randomize
+from ..generators import DefaultGenerator
 from ..interface.logging import Logging
 from ..interface.operator import Operator
 from ..logger import get_logger
@@ -90,6 +91,10 @@ class RandomizeOp(Operator):
         :param source: The source dataset.
         :return: The result dataset.
         """
+        source_id = source.attrs.get(
+            "tracking_id",
+            source.attrs.get("uuid", self._args.source_file.stem),
+        )
         target = Dataset(
             data_vars=source.data_vars,
             coords=source.coords,
@@ -106,10 +111,9 @@ class RandomizeOp(Operator):
 
             a: dict[str:Any] = config[v]
             f = Randomize(
-                np.single,
-                x.ndim,
+                m=x.ndim,
                 dist=a["distribution"],
-                entropy=self.entropy(v),
+                entropy=self.entropy(v, source_id),
             )
             if "uncertainty" in a:
                 u = (
@@ -179,15 +183,20 @@ class RandomizeOp(Operator):
                 config = json.load(r)
         return config
 
-    def entropy(self, v: str) -> list[int]:
+    def entropy(self, vid: str, did: str, n: int = 8) -> list[int]:
         """
         Returns the entropy of the seed sequence used for a given variable.
 
-        :param v: The name of the variable.
+        Entropy is generated using the Philox bit generator, which produces
+        truly independent sequences for different values of the seed.
+
+        :param vid: The variable ID.
+        :param did: The dataset ID.
+        :param n: The length of the seed sequence.
         :return: The entropy.
         """
-        return [
-            self._args.selector,
-            _hash(v),
-            _hash(self._args.source_file.stem),
-        ]
+        from numpy.random import Philox
+
+        seed = _hash(f"{vid}-{did}") + self._args.selector
+        g = DefaultGenerator(Philox(seed))
+        return [g.next() for _ in range(n)]

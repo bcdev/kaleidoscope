@@ -76,8 +76,8 @@ class Randomize(InformedBlockAlgorithm):
 
     def __init__(
         self,
-        dtype: np.dtype,
-        m: int,
+        dtype: np.dtype = np.single,
+        m: int = 2,
         dist: Literal["normal", "lognormal", "chlorophyll"] | str = "normal",
         entropy: int | list[int] | None = None,
     ):
