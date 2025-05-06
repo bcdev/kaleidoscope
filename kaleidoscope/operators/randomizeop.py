@@ -148,6 +148,9 @@ class RandomizeOp(Operator):
                 ],
                 dtype=z.dtype,
             )
+            target[v].attrs["kaleidoscope_entropy"] = np.array(
+                self.entropy(v, source_id)
+            )
             get_logger().info(f"finished graph for variable: {v}")
         return target
 
@@ -162,20 +165,20 @@ class RandomizeOp(Operator):
                 config = json.load(r)
         return config
 
-    def entropy(self, vid: str, did: str, n: int = 8) -> list[int]:
+    def entropy(self, name: str, uuid: str, n: int = 8) -> list[int]:
         """
         Returns the entropy of the seed sequence used for a given variable.
 
         Entropy is generated using the Philox bit generator, which produces
         truly independent sequences for different values of the seed.
 
-        :param vid: The variable ID.
-        :param did: The dataset ID.
+        :param name: The variable name.
+        :param uuid: The dataset UUID.
         :param n: The length of the seed sequence.
         :return: The entropy.
         """
         from numpy.random import Philox
 
-        seed = _hash(f"{vid}-{did}") + self._args.selector
+        seed = _hash(f"{name}-{uuid}") + self._args.selector
         g = DefaultGenerator(Philox(seed))
         return [g.next() for _ in range(n)]
