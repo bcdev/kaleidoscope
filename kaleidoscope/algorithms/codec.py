@@ -18,6 +18,7 @@ class Decode(BlockAlgorithm):
     """
     The algorithm to decode data according to CF conventions.
     """
+
     def __init__(self, dtype: np.dtype, m: int):
         """
         Creates a new algorithm instance.
