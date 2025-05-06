@@ -148,8 +148,8 @@ class RandomizeOp(Operator):
                 ],
                 dtype=z.dtype,
             )
-            target[v].attrs["kaleidoscope_entropy"] = np.array(
-                self.entropy(v, source_id)
+            target[v].attrs["entropy"] = np.array(
+                self.entropy(v, source_id), dtype=np.int64
             )
             get_logger().info(f"finished graph for variable: {v}")
         return target
