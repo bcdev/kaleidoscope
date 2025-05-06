@@ -139,7 +139,11 @@
     "pH": {
       "uncertainty": "pH_tot_unc",
       "coverage": 2.0,
-      "distribution": "normal"
+      "distribution": "normal",
+      "clip": [
+        0.0,
+        14.0
+      ]
     },
     "saturation_aragonite": {
       "uncertainty": "saturation_aragonite_tot_unc",
@@ -154,7 +158,11 @@
   "ghrsst": {
     "analysed_sst": {
       "uncertainty": "analysed_sst_uncertainty",
-      "distribution": "normal"
+      "distribution": "normal",
+      "clip": [
+        270.15,
+        318.15
+      ]
     }
   },
   "glorys": {
