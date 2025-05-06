@@ -160,7 +160,11 @@
   "glorys": {
     "so": {
       "uncertainty": 0.1,
-      "distribution": "normal"
+      "distribution": "normal",
+      "clip": [
+        0.0,
+        41.73711352050302
+      ]
     }
   }
 }

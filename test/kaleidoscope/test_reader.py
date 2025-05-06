@@ -82,16 +82,16 @@ class ReaderTest(unittest.TestCase):
         """Tests writing a generated target dataset."""
         self.assert_read("glorys")
 
-    def assert_read(self, product_type):
+    def assert_read(self, source_type):
         """Tests reading the generated source datasets."""
         for source_file in self.source_files:
-            if source_file.stem.replace("_", "-") != product_type:
+            if source_file.stem.replace("_", "-") != source_type:
                 continue
 
             source = None
 
             try:
-                reader = self.create_reader(product_type)
+                reader = self.create_reader(source_type)
                 source = reader.read(source_file)
                 self.assertIsInstance(source, Dataset)
 
@@ -104,9 +104,9 @@ class ReaderTest(unittest.TestCase):
                 if source is not None:
                     source.close()
 
-    def create_reader(self, product_type):
+    def create_reader(self, source_type):
         chunks = self.config["config.reader.chunks"]
-        for k, v in chunks.get(product_type, chunks["_"]).items():
+        for k, v in chunks.get(source_type, chunks["_"]).items():
             chunks[k] = v
         return Reader(self.config)
 

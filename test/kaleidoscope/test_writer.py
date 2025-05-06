@@ -75,10 +75,10 @@ class WriterTest(unittest.TestCase):
         """Tests writing a generated target dataset."""
         self.assert_write("glorys")
 
-    def assert_write(self, product_type):
+    def assert_write(self, source_type):
         """This method does not belong to public API."""
         for source_file in self.source_files:
-            if source_file.stem.replace("_", "-") != product_type:
+            if source_file.stem.replace("_", "-") != source_type:
                 continue
 
             source = None
@@ -90,11 +90,11 @@ class WriterTest(unittest.TestCase):
                 target_file = Path(
                     f"{source_file}".replace(".nc", ".randomized.nc")
                 )
-                reader = self.create_reader(product_type)
+                reader = self.create_reader(source_type)
                 source = reader.read(source_file)
 
                 # can be written?
-                writer = self.create_writer(product_type)
+                writer = self.create_writer(source_type)
                 writer.write(source, target_file)
                 self.assertTrue(target_file.exists())
 
@@ -115,17 +115,17 @@ class WriterTest(unittest.TestCase):
                 if target_file is not None:
                     target_file.unlink()
 
-    def create_reader(self, product_type):
+    def create_reader(self, source_type):
         """This method does not belong to public API."""
         chunks = self.reader_config["config.reader.chunks"]
-        for k, v in chunks.get(product_type, chunks["_"]).items():
+        for k, v in chunks.get(source_type, chunks["_"]).items():
             chunks[k] = v
         return Reader(self.reader_config)
 
-    def create_writer(self, product_type):
+    def create_writer(self, source_type):
         """This method does not belong to public API."""
         chunks = self.writer_config["config.writer.chunks"]
-        for k, v in chunks.get(product_type, chunks["_"]).items():
+        for k, v in chunks.get(source_type, chunks["_"]).items():
             chunks[k] = v
         return Writer(self.writer_config, engine="h5netcdf")
 

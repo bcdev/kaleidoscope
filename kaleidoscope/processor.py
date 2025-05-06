@@ -110,7 +110,7 @@ class Processor(Processing):
             with open(resource) as r:
                 config = json.load(r)
         chunks = config["config.reader.chunks"]
-        for k, v in chunks.get(args.product_type, chunks["_"]).items():
+        for k, v in chunks.get(args.source_type, chunks["_"]).items():
             chunks[k] = v
         if args.engine_reader:
             config["config.reader.engine"] = args.engine_reader
@@ -125,7 +125,7 @@ class Processor(Processing):
             with open(resource) as r:
                 config = json.load(r)
         chunks = config["config.writer.chunks"]
-        for k, v in chunks.get(args.product_type, chunks["_"]).items():
+        for k, v in chunks.get(args.source_type, chunks["_"]).items():
             chunks[k] = v
         if args.engine_writer:
             config["config.writer.engine"] = args.engine_writer

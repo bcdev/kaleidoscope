@@ -21,7 +21,7 @@ processor. The processor is invoked from the command line. Typing
 will print a detailed usage message to the screen
 
     usage: kaleidoscope [-h]
-                        --product-type {esa-cci-oc,esa-scope-exchange,ghrsst,glorys}
+                        --source-type {esa-cci-oc,esa-scope-exchange,ghrsst,glorys}
                         --selector SELECTOR
                         [--engine-reader {h5netcdf,netcdf4,zarr}]
                         [--engine-writer {h5netcdf,netcdf4,zarr}]
@@ -40,8 +40,8 @@ will print a detailed usage message to the screen
     
     options:
       -h, --help            show this help message and exit
-      --product-type {esa-cci-oc,esa-scope-exchange,ghrsst,glorys}
-                            the product type. (default: None)
+      --source-type {esa-cci-oc,esa-scope-exchange,ghrsst,glorys}
+                            the source type. (default: None)
       --selector SELECTOR   the Monte Carlo stream selector. An integral number
                             which must not be negative. (default: None)
       --engine-reader {h5netcdf,netcdf4,zarr}
@@ -75,7 +75,7 @@ will print a detailed usage message to the screen
 
 To invoke the processor from the terminal, for instance, type 
 
-    kaleidoscope --product-type ghrsst --selector 17 in.nc out.nc
+    kaleidoscope --source-type ghrsst --selector 17 in.nc out.nc
 
 which normally will log information to the terminal, e.g.,
 
@@ -86,7 +86,7 @@ which normally will log information to the terminal, e.g.,
     2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: mode = multithreading
     2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: processor_name = kaleidoscope
     2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: processor_version = 2025.1.0
-    2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: product_type = ghrsst
+    2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: source_type = ghrsst
     2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: progress = False
     2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: selector = 17
     2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: source_file = in.nc

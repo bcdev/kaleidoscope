@@ -113,7 +113,7 @@ class Writer(Writing):
         encodings: dict[str, dict[str, Any]] = {}
 
         for name, array in dataset.data_vars.items():
-            dtype = array.dtype
+            dtype = array.attrs.pop("dtype", array.dtype)
             attrs = array.attrs
             data = array.data
 

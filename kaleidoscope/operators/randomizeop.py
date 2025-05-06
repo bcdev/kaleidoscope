@@ -16,7 +16,6 @@ from xarray import DataArray
 from xarray import Dataset
 
 from ..algorithms.codec import Decode
-from ..algorithms.codec import Encode
 from ..algorithms.randomize import Randomize
 from ..generators import DefaultGenerator
 from ..interface.logging import Logging
@@ -37,26 +36,13 @@ def _hash(name: str) -> int:
 
 
 def _decode(
-    x: da.Array, a: dict[str:Any], dtype: np.dtype = np.single
+    x: da.Array, a: dict[str:Any], dtype: np.dtype = np.double
 ) -> da.Array:
     f = Decode(dtype, x.ndim)
     y = f.apply_to(
         x,
         add_offset=a.get("add_offset", None),
-        scale_factor=a.get("add_offset", None),
-        fill_value=a.get("_FillValue", None),
-        valid_min=a.get("valid_min", None),
-        valid_max=a.get("valid_max", None),
-    )
-    return y
-
-
-def _encode(x: da.Array, a: dict[str:Any], dtype: np.dtype) -> da.Array:
-    f = Encode(dtype, x.ndim)
-    y = f.apply_to(
-        x,
-        add_offset=a.get("add_offset", None),
-        scale_factor=a.get("add_offset", None),
+        scale_factor=a.get("scale_factor", None),
         fill_value=a.get("_FillValue", None),
         valid_min=a.get("valid_min", None),
         valid_max=a.get("valid_max", None),
@@ -95,20 +81,18 @@ class RandomizeOp(Operator):
             "tracking_id",
             source.attrs.get("uuid", self._args.source_file.stem),
         )
-        target = Dataset(
+        target: Dataset = Dataset(
             data_vars=source.data_vars,
             coords=source.coords,
             attrs=source.attrs,
         )
         config: dict[str : dict[str:Any]] = self.config.get(
-            self._args.product_type, {}
+            self._args.source_type, {}
         )
         for v, x in target.data_vars.items():
-            if v not in config:
+            if v not in config or self._args.selector == 0:
                 continue
-
             get_logger().info(f"starting graph for variable: {v}")
-
             a: dict[str:Any] = config[v]
             f = Randomize(
                 m=x.ndim,
@@ -144,31 +128,24 @@ class RandomizeOp(Operator):
                     _decode(b.data, b.attrs),
                     clip=a.get("clip", None),
                 )
-
-            target[v] = DataArray(
-                data=_encode(
-                    z,
-                    x.attrs,
-                    x.dtype,
-                ),
-                coords=x.coords,
-                dims=x.dims,
-                attrs=x.attrs,
-            )
-            if "actual_range" in target[v].attrs:
-                target[v].attrs["actual_range"] = np.array(
-                    [
-                        da.nanmin(z).compute(),
-                        da.nanmax(z).compute(),
-                    ],
-                    dtype=x.dtype,
-                )
-
             if get_logger().is_enabled(Logging.DEBUG):
-                get_logger().debug(f"min:  {da.nanmin(z).compute() :.6f}")
-                get_logger().debug(f"max:  {da.nanmax(z).compute() :.6f}")
-                get_logger().debug(f"mean: {da.nanmean(z).compute() :.6f}")
-                get_logger().debug(f"std:  {da.nanstd(z).compute() :.6f}")
+                get_logger().debug(f"min:  {da.nanmin(z).compute() :.3f}")
+                get_logger().debug(f"max:  {da.nanmax(z).compute() :.3f}")
+                get_logger().debug(f"mean: {da.nanmean(z).compute() :.3f}")
+                get_logger().debug(f"std:  {da.nanstd(z).compute() :.3f}")
+            target[v] = DataArray(
+                data=z, coords=x.coords, dims=x.dims, attrs=x.attrs
+            )
+            # target[v].attrs.pop("valid_min", None)
+            # target[v].attrs.pop("valid_max", None)
+            target[v].attrs["dtype"] = x.dtype
+            target[v].attrs["actual_range"] = np.array(
+                [
+                    da.nanmin(z).compute(),
+                    da.nanmax(z).compute(),
+                ],
+                dtype=z.dtype,
+            )
             get_logger().info(f"finished graph for variable: {v}")
         return target
 

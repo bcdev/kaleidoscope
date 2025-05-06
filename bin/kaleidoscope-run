@@ -6,18 +6,19 @@
 set -e
 ## Produces Monte Carlo variants of the GLORYS product.
 #
-#  ./kaleidoscope-glorys <file>
+#  ./kaleidoscope-run <source-type> <file>
 #
 for selector in 000 001 002 003 004 005 006 007 008 009 010; do
   echo "$(tput setaf 2)$(date -u "+%Y-%m-%dT%H:%M:%S") [INFO] Selector ${selector} ...$(tput sgr0)"
-  source_file="${1}"
-  target_file="${1%.nc}"."${selector}".nc
+  source_type="${1}"
+  source_file="${2}"
+  target_file="${2%.nc}"."${selector}".nc
   if [ -f "${target_file}" ]; then
     continue
   fi
   kaleidoscope \
     --selector ${selector} \
-    --source-type glorys \
+    --source-type "${source_type}" \
     --log-level warning \
     --progress \
     "${source_file}" \

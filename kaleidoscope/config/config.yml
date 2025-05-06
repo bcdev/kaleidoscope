@@ -1,8 +1,8 @@
 #  Copyright (c) Brockmann Consult GmbH, 2025
 #  License: MIT
 
-## No default product type.
-product_type:
+## No default source type.
+source_type:
 
 ## The default selector.
 selector: 0

@@ -65,11 +65,11 @@ class Parser:
     def _add_options(parser):
         """This method does not belong to public API."""
         parser.add_argument(
-            "--product-type",
-            help="the product type.",
+            "--source-type",
+            help="the source type.",
             choices=["esa-cci-oc", "esa-scope-exchange", "ghrsst", "glorys"],
             required=True,
-            dest="product_type",
+            dest="source_type",
         )
         parser.add_argument(
             "--selector",
