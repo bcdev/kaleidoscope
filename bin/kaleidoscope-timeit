@@ -6,7 +6,7 @@
 set -e
 ## Times the processor. Usage example:
 #
-#  ./kaleidoscope-timeit --source-type ghrsst source.nc target.nc
+#  ./kaleidoscope-timeit --source-type ghrsst --selector 17 source.nc target.nc
 #
 procCmd="$(which kaleidoscope)"
 timeCmd="$(which time)"
