@@ -136,8 +136,6 @@ class RandomizeOp(Operator):
             target[v] = DataArray(
                 data=z, coords=x.coords, dims=x.dims, attrs=x.attrs
             )
-            # target[v].attrs.pop("valid_min", None)
-            # target[v].attrs.pop("valid_max", None)
             target[v].attrs["dtype"] = x.dtype
             target[v].attrs["actual_range"] = np.array(
                 [
