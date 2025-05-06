@@ -165,7 +165,7 @@ class RandomizeOp(Operator):
                 config = json.load(r)
         return config
 
-    def entropy(self, name: str, uuid: str, n: int = 8) -> list[int]:
+    def entropy(self, name: str, uuid: str, n: int = 4) -> list[int]:
         """
         Returns the entropy of the seed sequence used for a given variable.
 
