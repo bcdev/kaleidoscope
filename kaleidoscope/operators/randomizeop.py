@@ -132,25 +132,26 @@ class RandomizeOp(Operator):
                     _decode(b.data, b.attrs),
                     clip=a.get("clip", None),
                 )
+            target[v] = DataArray(
+                data=z, coords=x.coords, dims=x.dims, attrs=x.attrs
+            )
+            if "actual_range" in target[v].attrs:
+                target[v].attrs["actual_range"] = np.array(
+                    [
+                        da.nanmin(z).compute(),
+                        da.nanmax(z).compute(),
+                    ],
+                    dtype=z.dtype,
+                )
+            target[v].attrs["dtype"] = x.dtype
+            target[v].attrs["entropy"] = np.array(
+                self.entropy(v, source_id), dtype=np.int64
+            )
             if get_logger().is_enabled(Logging.DEBUG):
                 get_logger().debug(f"min:  {da.nanmin(z).compute() :.3f}")
                 get_logger().debug(f"max:  {da.nanmax(z).compute() :.3f}")
                 get_logger().debug(f"mean: {da.nanmean(z).compute() :.3f}")
                 get_logger().debug(f"std:  {da.nanstd(z).compute() :.3f}")
-            target[v] = DataArray(
-                data=z, coords=x.coords, dims=x.dims, attrs=x.attrs
-            )
-            target[v].attrs["dtype"] = x.dtype
-            target[v].attrs["actual_range"] = np.array(
-                [
-                    da.nanmin(z).compute(),
-                    da.nanmax(z).compute(),
-                ],
-                dtype=z.dtype,
-            )
-            target[v].attrs["entropy"] = np.array(
-                self.entropy(v, source_id), dtype=np.int64
-            )
             get_logger().info(f"finished graph for variable: {v}")
         return target
 
