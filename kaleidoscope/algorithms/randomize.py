@@ -91,7 +91,7 @@ class Randomize(InformedBlockAlgorithm):
         """
         super().__init__(dtype, m, m)
         self._dist = dist
-        self._root_seed = SeedSequence(entropy).generate_state(4)
+        self._root_seed = SeedSequence(entropy).generate_state(6)
 
     @override
     def chunks(self, *inputs: da.Array) -> tuple[int, ...] | None:
