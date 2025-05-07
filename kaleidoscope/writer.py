@@ -10,9 +10,7 @@ from typing import Any
 from typing import Literal
 
 import numpy as np
-from dask.array import Array
 from typing_extensions import override
-from xarray import DataArray
 from xarray import Dataset
 
 from .interface.writing import Writing
@@ -113,10 +111,7 @@ class Writer(Writing):
         encodings: dict[str, dict[str, Any]] = {}
 
         for name, array in dataset.data_vars.items():
-            dtype = array.attrs.pop("dtype", array.dtype)
-            attrs = array.attrs
             data = array.data
-
             dims: list = list(array.dims)
             if array.ndim == 0:  # not an array
                 continue
@@ -138,7 +133,7 @@ class Writer(Writing):
                 else:
                     chunks.append(data.chunksize[i])
             encodings[name] = self._encode_compress(
-                dtype, attrs, chunks, to_zarr
+                data.dtype, chunks, to_zarr
             )
         return encodings
 
@@ -180,28 +175,14 @@ class Writer(Writing):
         """This method does not belong to public API."""
         return self._config[_KEY_SHUFFLE] == "true"
 
-    @staticmethod
-    def _encode_variable(
-        name: str, dims: list[str], attrs: dict[str, Any], array: Array
-    ) -> DataArray:
-        """This method does not belong to public API."""
-        return DataArray(data=array, dims=dims, name=name, attrs=attrs)
-
     def _encode_compress(
         self,
         dtype: np.dtype,
-        attrs: dict[str:Any],
         chunks: list[int],
         to_zarr: bool = True,
     ) -> dict[str, Any]:
         """This method does not belong to public API."""
         enc = {"dtype": dtype}
-        if "_FillValue" in attrs:
-            enc["_FillValue"] = attrs.pop("_FillValue")
-        if "add_offset" in attrs:
-            enc["add_offset"] = attrs.pop("add_offset")
-        if "scale_factor" in attrs:
-            enc["scale_factor"] = attrs.pop("scale_factor")
         if chunks:
             if to_zarr:
                 enc["chunks"] = tuple(chunks)

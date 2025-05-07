@@ -17,6 +17,7 @@ from xarray import DataArray
 from xarray import Dataset
 
 from ..algorithms.codec import Decode
+from ..algorithms.codec import Encode
 from ..algorithms.randomize import Randomize
 from ..generators import DefaultGenerator
 from ..interface.logging import Logging
@@ -36,10 +37,21 @@ def _hash(name: str) -> int:
     return h
 
 
-def _decode(
-    x: da.Array, a: dict[str:Any], dtype: np.dtype = np.double
-) -> da.Array:
-    f = Decode(dtype, x.ndim)
+def _decode(x: da.Array, a: dict[str:Any]) -> da.Array:
+    f = Decode(np.single if x.dtype == np.single else np.double, x.ndim)
+    y = f.apply_to(
+        x,
+        add_offset=a.get("add_offset", None),
+        scale_factor=a.get("scale_factor", None),
+        fill_value=a.get("_FillValue", None),
+        valid_min=a.get("valid_min", None),
+        valid_max=a.get("valid_max", None),
+    )
+    return y
+
+
+def _encode(x: da.Array, a: dict[str:Any], dtype: np.dtype) -> da.Array:
+    f = Encode(dtype, x.ndim)
     y = f.apply_to(
         x,
         add_offset=a.get("add_offset", None),
@@ -79,11 +91,7 @@ class RandomizeOp(Operator):
         :return: The result dataset.
         """
         source_id = source.attrs.get(
-            "tracking_id",
-            source.attrs.get(
-                "uuid",
-                f"{uuid.uuid5(uuid.NAMESPACE_URL, self._args.source_file.stem)}",
-            ),
+            "tracking_id", source.attrs.get("uuid", f"{self.uuid}")
         )
         target: Dataset = Dataset(
             data_vars=source.data_vars,
@@ -130,7 +138,10 @@ class RandomizeOp(Operator):
                     clip=a.get("clip", None),
                 )
             target[v] = DataArray(
-                data=z, coords=x.coords, dims=x.dims, attrs=x.attrs
+                data=_encode(z, x.attrs, x.dtype),
+                coords=x.coords,
+                dims=x.dims,
+                attrs=x.attrs,
             )
             if "actual_range" in target[v].attrs:
                 target[v].attrs["actual_range"] = np.array(
@@ -140,7 +151,6 @@ class RandomizeOp(Operator):
                     ],
                     dtype=z.dtype,
                 )
-            target[v].attrs["dtype"] = x.dtype
             target[v].attrs["entropy"] = np.array(s, dtype=np.int64)
             if get_logger().is_enabled(Logging.DEBUG):
                 get_logger().debug(f"entropy: {s}")
@@ -162,6 +172,7 @@ class RandomizeOp(Operator):
                 config = json.load(r)
         return config
 
+    # noinspection PyShadowingNames
     def entropy(self, name: str, uuid: str, n: int = 4) -> list[int]:
         """
         Returns the entropy of the seed sequence used for a given variable.
@@ -179,3 +190,10 @@ class RandomizeOp(Operator):
         seed = _hash(f"{name}-{uuid}") + self._args.selector
         g = DefaultGenerator(Philox(seed))
         return [g.next() for _ in range(n)]
+
+    @property
+    def uuid(self) -> uuid.UUID:
+        """
+        Returns a UUID constructed from the basename of the source file.
+        """
+        return uuid.uuid5(uuid.NAMESPACE_URL, self._args.source_file.stem)
