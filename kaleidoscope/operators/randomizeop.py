@@ -82,7 +82,7 @@ class RandomizeOp(Operator):
             "tracking_id",
             source.attrs.get(
                 "uuid",
-                f"{uuid.uuid5(uuid.NAMESPACE_URL, self._args.source_file.resolve().as_uri())}",
+                f"{uuid.uuid5(uuid.NAMESPACE_URL, self._args.source_file.stem)}",
             ),
         )
         target: Dataset = Dataset(
