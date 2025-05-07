@@ -82,7 +82,7 @@ class RandomizeOp(Operator):
             "tracking_id",
             source.attrs.get(
                 "uuid",
-                f"{uuid.uuid3(uuid.NAMESPACE_URL, self._args.source_file.resolve().as_uri())}",
+                f"{uuid.uuid5(uuid.NAMESPACE_URL, self._args.source_file.resolve().as_uri())}",
             ),
         )
         target: Dataset = Dataset(
@@ -162,7 +162,7 @@ class RandomizeOp(Operator):
                 config = json.load(r)
         return config
 
-    def entropy(self, name: str, uuid: str, n: int = 4) -> list[int]:
+    def entropy(self, name: str, uuid: str, n: int = 2) -> list[int]:
         """
         Returns the entropy of the seed sequence used for a given variable.
 
