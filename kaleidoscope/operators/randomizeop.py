@@ -100,6 +100,9 @@ class RandomizeOp(Operator):
             coords=source.coords,
             attrs=source.attrs,
         )
+        target.attrs["tracking_id"] = (
+            f"{source_id}:{self._args.selector :04d}"
+        )
         config: dict[str : dict[str:Any]] = self.config.get(
             self._args.source_type, {}
         )
