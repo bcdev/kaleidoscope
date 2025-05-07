@@ -92,16 +92,10 @@ class RandomizeOp(Operator):
         :param source: The source dataset.
         :return: The result dataset.
         """
-        source_id = source.attrs.get(
-            "tracking_id", source.attrs.get("uuid", f"{self.uuid}")
-        )
         target: Dataset = Dataset(
             data_vars=source.data_vars,
             coords=source.coords,
             attrs=source.attrs,
-        )
-        target.attrs["tracking_id"] = (
-            f"{source_id}:{self._args.selector :04d}"
         )
         config: dict[str : dict[str:Any]] = self.config.get(
             self._args.source_type, {}
@@ -110,7 +104,7 @@ class RandomizeOp(Operator):
             if v not in config or self._args.selector == 0:
                 continue
             get_logger().info(f"starting graph for variable: {v}")
-            s: list[int] = self.entropy(v, source_id)
+            s: list[int] = self.entropy(v, self.uuid)
             a: dict[str:Any] = config[v]
             f = Randomize(m=x.ndim, dist=a["distribution"], entropy=s)
             if "uncertainty" in a:
@@ -197,8 +191,10 @@ class RandomizeOp(Operator):
         return [g.next() for _ in range(n)]
 
     @property
-    def uuid(self) -> uuid.UUID:
+    def uuid(self) -> str:
         """
         Returns a UUID constructed from the basename of the source file.
         """
-        return uuid.uuid5(uuid.NAMESPACE_URL, self._args.source_file.stem)
+        return f"{uuid.uuid5(
+            uuid.NAMESPACE_URL, self._args.source_file.stem
+        )}"
