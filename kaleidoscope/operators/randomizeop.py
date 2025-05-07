@@ -195,6 +195,6 @@ class RandomizeOp(Operator):
         """
         Returns a UUID constructed from the basename of the source file.
         """
-        return f"{uuid.uuid5(
-            uuid.NAMESPACE_URL, self._args.source_file.stem
-        )}"
+        return (
+            f"{uuid.uuid5(uuid.NAMESPACE_URL, self._args.source_file.stem)}"
+        )
