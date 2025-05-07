@@ -38,6 +38,7 @@ def _hash(name: str) -> int:
 
 
 def _decode(x: da.Array, a: dict[str:Any]) -> da.Array:
+    """Returns decoded data."""
     f = Decode(np.single if x.dtype == np.single else np.double, x.ndim)
     y = f.apply_to(
         x,
@@ -51,6 +52,7 @@ def _decode(x: da.Array, a: dict[str:Any]) -> da.Array:
 
 
 def _encode(x: da.Array, a: dict[str:Any], dtype: np.dtype) -> da.Array:
+    """Returns encoded data."""
     f = Encode(dtype, x.ndim)
     y = f.apply_to(
         x,
