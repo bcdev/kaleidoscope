@@ -82,7 +82,7 @@ class RandomizeOp(Operator):
             "tracking_id",
             source.attrs.get(
                 "uuid",
-                f"{uuid.uuid3(uuid.NAMESPACE_URL, self._args.source_file.stem)}",
+                f"{uuid.uuid3(uuid.NAMESPACE_URL, self._args.source_file.resolve().as_uri())}",
             ),
         )
         target: Dataset = Dataset(
@@ -97,12 +97,9 @@ class RandomizeOp(Operator):
             if v not in config or self._args.selector == 0:
                 continue
             get_logger().info(f"starting graph for variable: {v}")
+            s: list[int] = self.entropy(v, source_id)
             a: dict[str:Any] = config[v]
-            f = Randomize(
-                m=x.ndim,
-                dist=a["distribution"],
-                entropy=self.entropy(v, source_id),
-            )
+            f = Randomize(m=x.ndim, dist=a["distribution"], entropy=s)
             if "uncertainty" in a:
                 u = (
                     target[a["uncertainty"]]
@@ -144,10 +141,9 @@ class RandomizeOp(Operator):
                     dtype=z.dtype,
                 )
             target[v].attrs["dtype"] = x.dtype
-            target[v].attrs["entropy"] = np.array(
-                self.entropy(v, source_id), dtype=np.int64
-            )
+            target[v].attrs["entropy"] = np.array(s, dtype=np.int64)
             if get_logger().is_enabled(Logging.DEBUG):
+                get_logger().debug(f"entropy: {s}")
                 get_logger().debug(f"min:  {da.nanmin(z).compute() :.3f}")
                 get_logger().debug(f"max:  {da.nanmax(z).compute() :.3f}")
                 get_logger().debug(f"mean: {da.nanmean(z).compute() :.3f}")
