@@ -7,8 +7,6 @@ This module provides signal handlers.
 
 import signal
 
-from typing_extensions import override
-
 from .interface.signalhandling import SignalHandling
 
 
@@ -19,7 +17,6 @@ class AbortHandler(SignalHandling):
     This handler raises a `RuntimeError`.
     """
 
-    @override
     def __call__(self, signal_number: int, frame):  # noqa: D102
         if signal_number == signal.SIGABRT:
             raise RuntimeError("abnormal process termination (SIGABRT)")
@@ -32,7 +29,6 @@ class KeyboardInterruptHandler(SignalHandling):
     raise a `KeyboardInterrupt`.
     """
 
-    @override
     def __call__(self, signal_number: int, frame):  # noqa: D102
         if signal_number == signal.SIGINT:
             raise KeyboardInterrupt("keyboard interrupt by user (SIGINT)")
@@ -44,7 +40,6 @@ class TerminationRequestHandler(SignalHandling):
     This handler raises a `RuntimeError`.
     """
 
-    @override
     def __call__(self, signal_number: int, frame):  # noqa: D102
         if signal_number == signal.SIGTERM:
             raise RuntimeError("process termination request sent (SIGTERM)")

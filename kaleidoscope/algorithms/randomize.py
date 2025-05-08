@@ -10,7 +10,6 @@ from typing import Literal
 import dask.array as da
 import numpy as np
 from numpy.random import SeedSequence
-from typing_extensions import override
 
 from ..generators import DefaultNormal
 from ..interface.algorithm import InformedBlockAlgorithm
@@ -93,17 +92,14 @@ class Randomize(InformedBlockAlgorithm):
         self._dist = dist
         self._root_seed = SeedSequence(entropy).generate_state(8)
 
-    @override
     def chunks(self, *inputs: da.Array) -> tuple[int, ...] | None:
         return None
 
     @property
-    @override
     def created_axes(self) -> list[int] | None:
         return None
 
     @property
-    @override
     def dropped_axes(self) -> list[int]:
         return []
 
@@ -152,6 +148,5 @@ class Randomize(InformedBlockAlgorithm):
     compute_block = randomize
 
     @property
-    @override
     def name(self) -> str:
         return "randomize"

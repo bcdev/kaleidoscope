@@ -12,8 +12,6 @@ import time
 from typing import Literal
 from typing import TextIO
 
-from typing_extensions import override
-
 from .interface.logging import Logging
 
 
@@ -83,23 +81,18 @@ class _DefaultLogger(Logging):
             handler.setLevel(self._levels[level])
         return handler
 
-    @override
     def debug(self, msg: str, *args, **kwargs):  # noqa: D102
         self._logger.debug(msg, *args, **kwargs)
 
-    @override
     def info(self, msg: str, *args, **kwargs):  # noqa: D102
         self._logger.info(msg, *args, **kwargs)
 
-    @override
     def warning(self, msg: str, *args, **kwargs):  # noqa: D102
         self._logger.warning(msg, *args, **kwargs)
 
-    @override
     def error(self, msg: str, *args, **kwargs):  # noqa: D102
         self._logger.critical(msg, *args, **kwargs)
 
-    @override
     def is_enabled(  # noqa: D102
         self, level: Literal["debug", "info", "warning", "error"]
     ) -> bool:
@@ -113,23 +106,18 @@ class _SilentLogger(Logging):
     Does not issue any messages.
     """
 
-    @override
     def debug(self, msg: str, *args, **kwargs):  # noqa: D102
         pass
 
-    @override
     def info(self, msg: str, *args, **kwargs):  # noqa: D102
         pass
 
-    @override
     def warning(self, msg: str, *args, **kwargs):  # noqa: D102
         pass
 
-    @override
     def error(self, msg: str, *args, **kwargs):  # noqa: D102
         pass
 
-    @override
     def is_enabled(  # noqa: D102
         self, level: Literal["debug", "info", "warning", "error"]
     ) -> bool:

@@ -11,7 +11,6 @@ from typing import Literal
 
 import dask.array as da
 import numpy as np
-from typing_extensions import override
 
 
 class Algorithm(metaclass=ABCMeta):
@@ -174,7 +173,6 @@ class BlockAlgorithm(Algorithm, metaclass=ABCMeta):
         )
         return result.astype(self.dtype, copy=False)
 
-    @override
     def apply_to(self, *inputs: da.Array, **kwargs) -> da.Array:  # noqa: D102
         return da.map_blocks(
             self.compute_block_typed,
@@ -259,7 +257,6 @@ class InformedBlockAlgorithm(Algorithm, metaclass=ABCMeta):
         )
         return result.astype(self.dtype, copy=False)
 
-    @override
     def apply_to(self, *inputs: da.Array, **kwargs) -> da.Array:  # noqa: D102
         result = da.map_blocks(
             self.compute_block_typed,

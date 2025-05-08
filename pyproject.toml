@@ -39,7 +39,6 @@ dependencies = [  # imports and runtime
     "dask-image",
     "h5netcdf",
     "matplotlib",
-    "typing-extensions",
     "xarray",
 ]
 

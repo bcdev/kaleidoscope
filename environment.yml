@@ -10,7 +10,6 @@ dependencies:
   - dask
   - dask-image
   - matplotlib
-  - typing-extensions
   - xarray
   # Runtime
   - h5netcdf

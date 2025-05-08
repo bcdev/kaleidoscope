@@ -12,7 +12,6 @@ from typing import Any
 
 import dask.array as da
 import numpy as np
-from typing_extensions import override
 from xarray import DataArray
 from xarray import Dataset
 
@@ -80,11 +79,9 @@ class RandomizeOp(Operator):
         self._args = args
 
     @property
-    @override
     def name(self) -> str:  # noqa: D102
         return "randomize"
 
-    @override
     def run(self, source: Dataset) -> Dataset:  # noqa: D102
         """
         Runs the operator.

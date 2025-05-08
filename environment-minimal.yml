@@ -8,7 +8,6 @@ dependencies:
   # Imports
   - dask
   - dask-image
-  - typing-extensions
   - xarray
   # Runtime
   - h5netcdf

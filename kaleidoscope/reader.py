@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Any
 
 import xarray as xr
-from typing_extensions import override
 from xarray import Dataset
 
 from .interface.reading import Reading
@@ -103,7 +102,6 @@ class Reader(Reading):
         if config is not None:
             self._config.update(config)
 
-    @override
     def read(
         self,
         data_id: str | Path,

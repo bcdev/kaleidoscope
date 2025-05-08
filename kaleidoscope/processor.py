@@ -11,7 +11,6 @@ from importlib import resources
 from typing import Any
 
 import yaml
-from typing_extensions import override
 from xarray import Dataset
 
 from . import __name__
@@ -37,11 +36,9 @@ class Processor(Processing):
         """
         self._config_package = config_package
 
-    @override
     def get_config_package(self):  # noqa: D102
         return self._config_package
 
-    @override
     def get_default_config(self) -> dict[str:Any]:  # noqa: D102
         package = self.get_config_package()
         name = "config.yml"
@@ -52,15 +49,12 @@ class Processor(Processing):
                 config["processor_version"] = self.get_version()
                 return config
 
-    @override
     def get_name(self):  # noqa: D102
         return __name__
 
-    @override
     def get_version(self):  # noqa: D102
         return __version__
 
-    @override
     def run(self, args: Namespace):  # noqa: D102
         config = sorted(vars(args).items(), key=lambda item: item[0])
         for name, value in config:
@@ -95,7 +89,6 @@ class Processor(Processing):
                 source.close()
             get_logger().info("finished closing datasets")
 
-    @override
     def get_result(  # noqa: D102
         self, args: Namespace, *inputs: Dataset
     ) -> Dataset:

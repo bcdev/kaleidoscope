@@ -12,7 +12,6 @@ from abc import abstractmethod
 
 import numpy as np
 from dask.callbacks import Callback
-from typing_extensions import override
 
 from .logger import get_logger
 
@@ -33,7 +32,6 @@ class NodeFilter(metaclass=ABCMeta):
 class AcceptAlgorithmsOnly(NodeFilter):
     """A filter to accept nodes representing Kaleidoscope algorithms only."""
 
-    @override
     def accept(self, key: tuple[str, int, ...] | str) -> bool:
         return key[0].startswith("kaleidoscope")
 
@@ -41,7 +39,6 @@ class AcceptAlgorithmsOnly(NodeFilter):
 class AcceptAll(NodeFilter):
     """A filter accepting all nodes."""
 
-    @override
     def accept(self, key: tuple[str, int, ...] | str) -> bool:
         return True
 
@@ -49,7 +46,6 @@ class AcceptAll(NodeFilter):
 class RejectAll(NodeFilter):
     """A filter rejecting all nodes."""
 
-    @override
     def accept(self, key: tuple[str, int, ...] | str) -> bool:
         return False
 
@@ -99,12 +95,10 @@ class AlgorithmMonitor(SelectiveCallback):
         """Creates a new callback instance."""
         super().__init__(AcceptAlgorithmsOnly())
 
-    @override
     def _pretask_impl(self, key, dask, state):
         logger = get_logger()
         logger.debug(f"starting computing: {key}")
 
-    @override
     def _posttask_impl(self, key, result, dask, state, worker_id):
         logger = get_logger()
         logger.debug(f"finished computing: {key} {worker_id}")
@@ -128,11 +122,9 @@ class AlgorithmTimer(SelectiveCallback):
         self._started = {}
         self._stopped = {}
 
-    @override
     def _pretask_impl(self, key, dask, state):
         self.start(key)
 
-    @override
     def _posttask_impl(self, key, result, dask, state, worker_id):
         self.stop(key)
 
@@ -207,11 +199,9 @@ class StatusLogger(SelectiveCallback):
         super().__init__(AcceptAll())
         self._n = n
 
-    @override
     def _pretask_impl(self, key, dask, state):
         pass
 
-    @override
     def _posttask_impl(self, key, result, dask, state, worker_id):
         self._show_progress(self._computation_status(state))
 

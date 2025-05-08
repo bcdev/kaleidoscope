@@ -9,7 +9,6 @@ from typing import Any
 
 import dask.array as da
 import numpy as np
-from typing_extensions import override
 
 from ..interface.algorithm import BlockAlgorithm
 
@@ -28,17 +27,14 @@ class Decode(BlockAlgorithm):
         """
         super().__init__(dtype, m, m)
 
-    @override
     def chunks(self, *inputs: da.Array) -> tuple[int, ...] | None:
         return None
 
     @property
-    @override
     def created_axes(self) -> list[int] | None:
         return None
 
     @property
-    @override
     def dropped_axes(self) -> list[int]:
         return []
 
@@ -89,7 +85,6 @@ class Decode(BlockAlgorithm):
     compute_block = decode
 
     @property
-    @override
     def name(self) -> str:
         return "decode"
 
@@ -108,17 +103,14 @@ class Encode(BlockAlgorithm):
         """
         super().__init__(dtype, m, m)
 
-    @override
     def chunks(self, *inputs: da.Array) -> tuple[int, ...] | None:
         return None
 
     @property
-    @override
     def created_axes(self) -> list[int] | None:
         return None
 
     @property
-    @override
     def dropped_axes(self) -> list[int]:
         return []
 
@@ -169,6 +161,5 @@ class Encode(BlockAlgorithm):
     compute_block = encode
 
     @property
-    @override
     def name(self) -> str:
         return "encode"

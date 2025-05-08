@@ -10,7 +10,6 @@ from typing import Any
 from typing import Literal
 
 import numpy as np
-from typing_extensions import override
 from xarray import Dataset
 
 from .interface.writing import Writing
@@ -85,7 +84,6 @@ class Writer(Writing):
             self._config[_KEY_ENGINE] = engine
         self._progress = progress
 
-    @override
     def write(
         self, dataset: Dataset, data_id: str | Path, **kwargs
     ):  # noqa: D102

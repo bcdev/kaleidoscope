@@ -8,7 +8,6 @@ This module provides random number generators.
 import numpy as np
 from numpy.random import BitGenerator
 from numpy.random import Generator
-from typing_extensions import override
 
 from .interface.generating import Generating
 from .interface.generating import Normal
@@ -57,7 +56,6 @@ class DefaultGenerator(Generating):
         """
         self._g = default_generator(seed)
 
-    @override
     def next(self) -> int:
         return self._g.integers(0x8000000000000000)
 
@@ -75,15 +73,12 @@ class DefaultUniform(Uniform):
         """
         self._g = default_generator(seed)
 
-    @override
     def get(self, i: int) -> Univariate:
         return self
 
-    @override
     def random(self) -> float:
         return self._g.random()
 
-    @override
     def randoms(self, randoms: np.ndarray) -> np.ndarray:
         self._g.standard_normal(dtype=randoms.dtype, out=randoms)
         return randoms
@@ -102,15 +97,12 @@ class DefaultNormal(Normal):
         """
         self._g = default_generator(seed)
 
-    @override
     def get(self, i: int) -> Univariate:
         return self
 
-    @override
     def random(self) -> float:
         return self._g.standard_normal()
 
-    @override
     def randoms(self, randoms: np.ndarray) -> np.ndarray:
         self._g.standard_normal(dtype=randoms.dtype, out=randoms)
         return randoms
