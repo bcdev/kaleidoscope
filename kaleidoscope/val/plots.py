@@ -9,10 +9,6 @@ from typing import Any
 
 import dask.array as da
 import numpy as np
-from cartopy.crs import LambertConformal
-from cartopy.crs import PlateCarree
-from cartopy.crs import Projection
-from cartopy.feature import NaturalEarthFeature
 from matplotlib import colors as plc
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
@@ -22,14 +18,10 @@ from xarray import Dataset
 
 from ..interface.plot import Plot
 
-_LAND = NaturalEarthFeature(
-    "physical", "land", "10m", edgecolor="face", facecolor="#e8e5db"
-)
 
-
-class ScenePlot(Plot):
+class WorldPlot(Plot):
     """
-    A scene plot, usually for plotting the values for a single time step
+    A world plot, usually for plotting the values for a single time step
     of a variable in a data cube or of a quantity derived thereof.
     """
 
@@ -47,22 +39,14 @@ class ScenePlot(Plot):
         cbar_label: str | None = None,
         cmap: str = "viridis",
         norm: plc.Normalize | None = None,
-        projection: Projection | None = None,
+        projection: Any = None,
         xlocs: tuple[Any, ...] | None = None,
         ylocs: tuple[Any, ...] | None = None,
         vmin: Any | None = None,
         vmax: Any | None = None,
     ) -> Figure:
         if projection is None:
-            mid_lat = round(data.lat.mean().item(), ndigits=1)
-            mid_lon = round(data.lon.mean().item(), ndigits=1)
-            max_lat = np.ceil(data.lat.max()).item()
-            min_lat = np.floor(data.lat.min()).item()
-            projection = LambertConformal(
-                central_latitude=mid_lat,
-                central_longitude=mid_lon,
-                standard_parallels=(min_lat, max_lat),
-            )
+            projection = self.projection
         fig, ax = plt.subplots(
             subplot_kw={"projection": projection},
         )
@@ -74,14 +58,14 @@ class ScenePlot(Plot):
             x="lon",
             y="lat",
             robust=True,
-            transform=PlateCarree(),
+            transform=self.transform,
             vmin=vmin,
             vmax=vmax,
             norm=norm,
             cmap=cmap,
             cbar_kwargs=cbar_kwargs,
         )
-        ax.add_feature(_LAND)
+        ax.add_feature(self.land)
         ax.autoscale_view()
         ax.gridlines(
             alpha=0.1,
@@ -99,6 +83,32 @@ class ScenePlot(Plot):
             fig.show()
         plt.close()
         return fig
+
+    @property
+    def land(self):
+        """Returns the cartographic land feature."""
+        from cartopy.feature import NaturalEarthFeature
+
+        return NaturalEarthFeature(
+            "physical", "land", "10m", edgecolor="face", facecolor="#e8e5db"
+        )
+
+    @property
+    def projection(self):
+        """Returns the default projection."""
+        from cartopy.crs import InterruptedGoodeHomolosine
+
+        return InterruptedGoodeHomolosine(
+            central_longitude=-160.0,
+            emphasis="ocean",
+        )
+
+    @property
+    def transform(self):
+        """Returns the default transform."""
+        from cartopy.crs import PlateCarree
+
+        return PlateCarree()
 
 
 class HistogramPlot(Plot):
