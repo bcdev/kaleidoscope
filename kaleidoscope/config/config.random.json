@@ -38,72 +38,146 @@
     "adg_412": {
       "bias": "adg_412_bias",
       "rmsd": "adg_412_rmsd",
-      "distribution": "lognormal"
+      "distribution": "lognormal",
+      "clip": [
+        0.0,
+        10.0
+      ]
     },
     "adg_443": {
       "bias": "adg_443_bias",
       "rmsd": "adg_443_rmsd",
-      "distribution": "lognormal"
+      "distribution": "lognormal",
+      "clip": [
+        0.0,
+        10.0
+      ]
     },
     "adg_490": {
       "bias": "adg_490_bias",
       "rmsd": "adg_490_rmsd",
-      "distribution": "lognormal"
+      "distribution": "lognormal",
+      "clip": [
+        0.0,
+        10.0
+      ]
     },
     "adg_510": {
       "bias": "adg_510_bias",
       "rmsd": "adg_510_rmsd",
-      "distribution": "lognormal"
+      "distribution": "lognormal",
+      "clip": [
+        0.0,
+        10.0
+      ]
     },
     "adg_560": {
       "bias": "adg_560_bias",
       "rmsd": "adg_560_rmsd",
-      "distribution": "lognormal"
+      "distribution": "lognormal",
+      "clip": [
+        0.0,
+        10.0
+      ]
     },
     "adg_665": {
       "bias": "adg_665_bias",
       "rmsd": "adg_665_rmsd",
-      "distribution": "lognormal"
+      "distribution": "lognormal",
+      "clip": [
+        0.0,
+        10.0
+      ]
     },
     "aph_412": {
       "bias": "aph_412_bias",
       "rmsd": "aph_412_rmsd",
-      "distribution": "lognormal"
+      "distribution": "lognormal",
+      "clip": [
+        0.0,
+        10.0
+      ]
     },
     "aph_443": {
       "bias": "aph_443_bias",
       "rmsd": "aph_443_rmsd",
-      "distribution": "lognormal"
+      "distribution": "lognormal",
+      "clip": [
+        0.0,
+        10.0
+      ]
     },
     "aph_490": {
       "bias": "aph_490_bias",
       "rmsd": "aph_490_rmsd",
-      "distribution": "lognormal"
+      "distribution": "lognormal",
+      "clip": [
+        0.0,
+        10.0
+      ]
     },
     "aph_510": {
       "bias": "aph_510_bias",
       "rmsd": "aph_510_rmsd",
-      "distribution": "lognormal"
+      "distribution": "lognormal",
+      "clip": [
+        0.0,
+        10.0
+      ]
     },
     "aph_560": {
       "bias": "aph_560_bias",
       "rmsd": "aph_560_rmsd",
-      "distribution": "lognormal"
+      "distribution": "lognormal",
+      "clip": [
+        0.0,
+        10.0
+      ]
     },
     "aph_665": {
       "bias": "aph_665_bias",
       "rmsd": "aph_665_rmsd",
-      "distribution": "lognormal"
+      "distribution": "lognormal",
+      "clip": [
+        0.0,
+        10.0
+      ]
+    },
+    "atot_412": {
+      "total": ["aph_412", "adg_412"]
+    },
+    "atot_443": {
+      "total": ["aph_443", "adg_443"]
+    },
+    "atot_490": {
+      "total": ["aph_490", "adg_490"]
+    },
+    "atot_510": {
+      "total": ["aph_510", "adg_510"]
+    },
+    "atot_560": {
+      "total": ["aph_560", "adg_560"]
+    },
+    "atot_665": {
+      "total": ["aph_665", "adg_665"]
     },
     "kd_490": {
       "bias": "kd_490_bias",
       "rmsd": "kd_490_rmsd",
-      "distribution": "lognormal"
+      "distribution": "lognormal",
+      "clip": [
+        0.0,
+        10.0
+      ]
     },
     "chlor_a": {
       "bias": "chlor_a_log10_bias",
       "rmsd": "chlor_a_log10_rmsd",
-      "distribution": "chlorophyll"
+      "distribution": "chlorophyll",
+      "clip": [
+        0.0,
+        100.0
+      ]
     }
   },
   "esa-scope-exchange": {

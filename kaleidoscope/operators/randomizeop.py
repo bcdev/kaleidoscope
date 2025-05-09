@@ -89,77 +89,25 @@ class RandomizeOp(Operator):
         :param source: The source dataset.
         :return: The result dataset.
         """
+        config: dict[str : dict[str:Any]] = self.config.get(
+            self._args.source_type, {}
+        )
         target: Dataset = Dataset(
             data_vars=source.data_vars,
             coords=source.coords,
             attrs=source.attrs,
         )
-        config: dict[str : dict[str:Any]] = self.config.get(
-            self._args.source_type, {}
-        )
         for v, x in target.data_vars.items():
             if v not in config or self._args.selector == 0:
                 continue
             get_logger().info(f"starting graph for variable: {v}")
-            s: list[int] = self.entropy(v, self.uuid)
-            a: dict[str:Any] = config[v]
-            f = Randomize(m=x.ndim, dist=a["distribution"], entropy=s)
-            if "uncertainty" in a:
-                u = (
-                    target[a["uncertainty"]]
-                    if isinstance(a["uncertainty"], str)
-                    else DataArray(
-                        data=da.full(
-                            x.shape, a["uncertainty"], chunks=x.chunks
-                        ),
-                        coords=x.coords,
-                        dims=x.dims,
-                        attrs={},
-                    )
-                )
-                z = f.apply_to(
-                    _decode(x.data, x.attrs),
-                    _decode(u.data, u.attrs),
-                    coverage=a.get("coverage", 1.0),
-                    relative=a.get("relative", False),
-                    clip=a.get("clip", None),
-                )
-            else:
-                b = target[a["bias"]]
-                r = target[a["rmsd"]]
-                z = f.apply_to(
-                    _decode(x.data, x.attrs),
-                    _decode(r.data, r.attrs),
-                    _decode(b.data, b.attrs),
-                    clip=a.get("clip", None),
-                )
-            target[v] = DataArray(
-                data=_encode(z, x.attrs, x.dtype),
-                coords=x.coords,
-                dims=x.dims,
-                attrs=x.attrs,
-            )
-            if "actual_range" in target[v].attrs:
-                target[v].attrs["actual_range"] = np.array(
-                    [
-                        da.nanmin(z).compute(),
-                        da.nanmax(z).compute(),
-                    ],
-                    dtype=z.dtype,
-                )
-            target[v].attrs["entropy"] = np.array(s, dtype=np.int64)
-            if get_logger().is_enabled(Logging.DEBUG):
-                get_logger().debug(f"entropy: {s}")
-                get_logger().debug(f"min:  {da.nanmin(z).compute() :.3f}")
-                get_logger().debug(f"max:  {da.nanmax(z).compute() :.3f}")
-                get_logger().debug(f"mean: {da.nanmean(z).compute() :.3f}")
-                get_logger().debug(f"std:  {da.nanstd(z).compute() :.3f}")
+            self.randomize(source, target, v, x, config[v])
             get_logger().info(f"finished graph for variable: {v}")
         return target
 
     @property
     def config(self) -> dict[str : dict[str:Any]]:
-        """Returns the product type configuration."""
+        """Returns the randomization configuration."""
         package = "kaleidoscope.config"
         name = "config.random.json"
         with resources.path(package, name) as resource:
@@ -186,6 +134,86 @@ class RandomizeOp(Operator):
         seed = _hash(f"{name}-{uuid}") + self._args.selector
         g = DefaultGenerator(Philox(seed))
         return [g.next() for _ in range(n)]
+
+    def randomize(
+        self,
+        source: Dataset,
+        target: Dataset,
+        v: str,
+        x: DataArray,
+        config: dict[str:Any],
+    ):
+        """
+        Creates the graph to randomize a variable.
+
+        :param source: The source dataset.
+        :param target: The target dataset.
+        :param v: The name of the variable.
+        :param x: The data of the variable.
+        :param config: The randomization configuration.
+        """
+        if "total" in config:
+            s: list[int] = []
+            z = _decode(x.data, x.attrs)
+            for ref in config["total"]:
+                a = _decode(target[ref].data, target[ref].attrs)
+                b = _decode(source[ref].data, source[ref].attrs)
+                z = z + (a - b)
+        elif "uncertainty" in config:
+            s: list[int] = self.entropy(v, self.uuid)
+            f = Randomize(m=x.ndim, dist=config["distribution"], entropy=s)
+            u = (
+                target[config["uncertainty"]]
+                if isinstance(config["uncertainty"], str)
+                else DataArray(
+                    data=da.full(
+                        x.shape, config["uncertainty"], chunks=x.chunks
+                    ),
+                    coords=x.coords,
+                    dims=x.dims,
+                    attrs={},
+                )
+            )
+            z = f.apply_to(
+                _decode(x.data, x.attrs),
+                _decode(u.data, u.attrs),
+                coverage=config.get("coverage", 1.0),
+                relative=config.get("relative", False),
+                clip=config.get("clip", None),
+            )
+        else:
+            s: list[int] = self.entropy(v, self.uuid)
+            f = Randomize(m=x.ndim, dist=config["distribution"], entropy=s)
+            b = target[config["bias"]]
+            r = target[config["rmsd"]]
+            z = f.apply_to(
+                _decode(x.data, x.attrs),
+                _decode(r.data, r.attrs),
+                _decode(b.data, b.attrs),
+                clip=config.get("clip", None),
+            )
+        target[v] = DataArray(
+            data=_encode(z, x.attrs, x.dtype),
+            coords=x.coords,
+            dims=x.dims,
+            attrs=x.attrs,
+        )
+        if "actual_range" in target[v].attrs:
+            target[v].attrs["actual_range"] = np.array(
+                [
+                    da.nanmin(z).compute(),
+                    da.nanmax(z).compute(),
+                ],
+                dtype=z.dtype,
+            )
+        if s:
+            target[v].attrs["entropy"] = np.array(s, dtype=np.int64)
+        if get_logger().is_enabled(Logging.DEBUG):
+            get_logger().debug(f"entropy: {s}")
+            get_logger().debug(f"min:  {da.nanmin(z).compute() :.3f}")
+            get_logger().debug(f"max:  {da.nanmax(z).compute() :.3f}")
+            get_logger().debug(f"mean: {da.nanmean(z).compute() :.3f}")
+            get_logger().debug(f"std:  {da.nanstd(z).compute() :.3f}")
 
     @property
     def uuid(self) -> str:
