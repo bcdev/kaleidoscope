@@ -56,6 +56,7 @@ class DefaultGenerator(Generating):
         """
         self._g = default_generator(seed)
 
+    # noinspection PyTypeChecker
     def next(self) -> int:
         return self._g.integers(0x8000000000000000)
 
@@ -80,7 +81,7 @@ class DefaultUniform(Uniform):
         return self._g.random()
 
     def randoms(self, randoms: np.ndarray) -> np.ndarray:
-        self._g.standard_normal(dtype=randoms.dtype, out=randoms)
+        self._g.random(dtype=randoms.dtype, out=randoms)
         return randoms
 
 
