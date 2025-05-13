@@ -44,6 +44,8 @@ class WorldPlot(Plot):
         ylocs: tuple[Any, ...] | None = None,
         vmin: Any | None = None,
         vmax: Any | None = None,
+        x: str = "lon",
+        y: str = "lat",
     ) -> Figure:
         if projection is None:
             projection = self.projection
@@ -55,8 +57,8 @@ class WorldPlot(Plot):
             cbar_kwargs["label"] = cbar_label
         data.plot(
             ax=ax,
-            x="lon",
-            y="lat",
+            x=x,
+            y=y,
             robust=True,
             transform=self.transform,
             vmin=vmin,
