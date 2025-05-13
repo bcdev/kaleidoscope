@@ -9,31 +9,10 @@ from typing import Literal
 
 import dask.array as da
 import numpy as np
-from numpy.random import SeedSequence
 
 from ..generators import DefaultNormal
 from ..interface.algorithm import InformedBlockAlgorithm
 from ..interface.generating import Normal
-
-
-def _block_seed(
-    block_id: tuple[int, ...], root_seed: np.ndarray
-) -> np.ndarray:
-    """Returns a random seed array for a given block."""
-    work_seed = SeedSequence(_hash(block_id)).generate_state(1)
-    return np.array([i for i in work_seed] + [i for i in root_seed])
-
-
-def _hash(block_id: tuple[int, ...]) -> int:
-    """
-    Daniel J. Bernstein hash function.
-
-    Returns a positive hash value.
-    """
-    h = 5381
-    for i in block_id:
-        h = ((h << 5) + h) + i
-    return h
 
 
 def _chlorophyll(
@@ -78,7 +57,7 @@ class Randomize(InformedBlockAlgorithm):
         dtype: np.dtype = np.single,
         m: int = 2,
         dist: Literal["normal", "lognormal", "chlorophyll"] | str = "normal",
-        entropy: int | list[int] | None = None,
+        seed: np.ndarray | None = None,
     ):
         """
         Creates a new algorithm instance.
@@ -86,11 +65,11 @@ class Randomize(InformedBlockAlgorithm):
         :param dtype: The result data type.
         :param m: The number of input data dimensions.
         :param dist: The type of measurement error distribution.
-        :param entropy: The entropy to create the seed sequence.
+        :param seed: The root seed.
         """
         super().__init__(dtype, m, m)
         self._dist = dist
-        self._root_seed = SeedSequence(entropy).generate_state(8)
+        self._root_seed = seed
 
     def chunks(self, *inputs: da.Array) -> tuple[int, ...] | None:
         return None
@@ -120,7 +99,7 @@ class Randomize(InformedBlockAlgorithm):
         :param clip: Where to clip measurement errors.
         :return: The measurement values randomized.
         """
-        seed = _block_seed(kwargs["block_id"], self._root_seed)
+        seed = self.block_seed(kwargs["block_id"])
 
         x = data[0]
         u = (
@@ -143,9 +122,13 @@ class Randomize(InformedBlockAlgorithm):
                 y = x
         if clip is not None:
             y = np.clip(y, a_min=clip[0], a_max=clip[1])
-        return y
+        return np.where(np.isfinite(y), y, x)
 
     compute_block = randomize
+
+    def block_seed(self, block_id: tuple[int, ...]) -> np.ndarray:
+        """Returns the block seed."""
+        return np.array([i for i in block_id] + [i for i in self._root_seed])
 
     @property
     def name(self) -> str:

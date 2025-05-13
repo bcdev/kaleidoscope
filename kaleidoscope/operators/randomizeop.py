@@ -24,18 +24,6 @@ from ..interface.operator import Operator
 from ..logger import get_logger
 
 
-def _hash(name: str) -> int:
-    """
-    Daniel J. Bernstein hash function.
-
-    Returns a positive hash value.
-    """
-    h = 5381
-    for c in name:
-        h = ((h << 5) + h) + ord(c)
-    return h
-
-
 def _decode(x: da.Array, a: dict[str:Any]) -> da.Array:
     """Returns decoded data."""
     f = Decode(np.single if x.dtype == np.single else np.double, x.ndim)
@@ -101,7 +89,7 @@ class RandomizeOp(Operator):
             if v not in config or self._args.selector == 0:
                 continue
             get_logger().info(f"starting graph for variable: {v}")
-            self.randomize(source, target, v, x, config[v])
+            self.randomize(target, v, x, config[v])
             get_logger().info(f"finished graph for variable: {v}")
         return target
 
@@ -116,28 +104,8 @@ class RandomizeOp(Operator):
                 config = json.load(r)
         return config
 
-    # noinspection PyShadowingNames
-    def entropy(self, name: str, uuid: str, n: int = 4) -> list[int]:
-        """
-        Returns the entropy of the seed sequence used for a given variable.
-
-        Entropy is generated using the Philox bit generator, which produces
-        truly independent sequences for different values of the seed.
-
-        :param name: The variable name.
-        :param uuid: The dataset UUID.
-        :param n: The length of the seed sequence.
-        :return: The entropy.
-        """
-        from numpy.random import Philox
-
-        seed = _hash(f"{name}-{uuid}") + self._args.selector
-        g = DefaultGenerator(Philox(seed))
-        return [g.next() for _ in range(n)]
-
     def randomize(
         self,
-        source: Dataset,
         target: Dataset,
         v: str,
         x: DataArray,
@@ -146,22 +114,14 @@ class RandomizeOp(Operator):
         """
         Creates the graph to randomize a variable.
 
-        :param source: The source dataset.
         :param target: The target dataset.
         :param v: The name of the variable.
         :param x: The data of the variable.
         :param config: The randomization configuration.
         """
-        if "total" in config:
-            s: list[int] = []
-            z = _decode(x.data, x.attrs)
-            for ref in config["total"]:
-                a = _decode(target[ref].data, target[ref].attrs)
-                b = _decode(source[ref].data, source[ref].attrs)
-                z = z + (a - b)
-        elif "uncertainty" in config:
-            s: list[int] = self.entropy(v, self.uuid)
-            f = Randomize(m=x.ndim, dist=config["distribution"], entropy=s)
+        if "uncertainty" in config:
+            s = self.seed(self.uuid(v))
+            f = Randomize(m=x.ndim, dist=config["distribution"], seed=s)
             u = (
                 target[config["uncertainty"]]
                 if isinstance(config["uncertainty"], str)
@@ -182,8 +142,8 @@ class RandomizeOp(Operator):
                 clip=config.get("clip", None),
             )
         else:
-            s: list[int] = self.entropy(v, self.uuid)
-            f = Randomize(m=x.ndim, dist=config["distribution"], entropy=s)
+            s = self.seed(self.uuid(v))
+            f = Randomize(m=x.ndim, dist=config["distribution"], seed=s)
             b = target[config["bias"]]
             r = target[config["rmsd"]]
             z = f.apply_to(
@@ -206,20 +166,38 @@ class RandomizeOp(Operator):
                 ],
                 dtype=z.dtype,
             )
-        if s:
-            target[v].attrs["entropy"] = np.array(s, dtype=np.int64)
+        target[v].attrs["seed"] = s
         if get_logger().is_enabled(Logging.DEBUG):
-            get_logger().debug(f"entropy: {s}")
+            get_logger().debug(f"seed: {s}")
             get_logger().debug(f"min:  {da.nanmin(z).compute() :.3f}")
             get_logger().debug(f"max:  {da.nanmax(z).compute() :.3f}")
             get_logger().debug(f"mean: {da.nanmean(z).compute() :.3f}")
             get_logger().debug(f"std:  {da.nanstd(z).compute() :.3f}")
 
-    @property
-    def uuid(self) -> str:
+    # noinspection PyShadowingNames
+    def seed(self, uuid: uuid.UUID, n: int = 4) -> np.ndarray:
         """
-        Returns a UUID constructed from the basename of the source file.
+        Returns the seed sequence used for a given variable.
+
+        The seed sequence is generated using the Philox bit generator,
+        which produces truly independent sequences of random numbers for
+        different values of the seed.
+
+        :param uuid: The variable and dataset UUID.
+        :param n: The length of the seed sequence.
+        :return: The seed sequence.
         """
-        return (
-            f"{uuid.uuid5(uuid.NAMESPACE_URL, self._args.source_file.stem)}"
+        from numpy.random import Philox
+
+        seed = uuid.int + self._args.selector
+        g = DefaultGenerator(Philox(seed))
+        return np.array([g.next() for _ in range(n)], dtype=np.int64)
+
+    def uuid(self, v: str) -> uuid.UUID:
+        """
+        Returns a UUID constructed from the variable name and the
+        basename of the source file.
+        """
+        return uuid.uuid5(
+            uuid.NAMESPACE_URL, f"{v}-{self._args.source_file.stem}"
         )
