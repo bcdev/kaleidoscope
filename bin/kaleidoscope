@@ -6,11 +6,11 @@
 set -e
 ## Runs kaleidoscope. Usage example:
 #
-#  ./kaleidoscope --source-type --selector 001 ghrsst source.nc source.001.nc
+#  ./kaleidoscope --source-type ghrsst --selector 001 ghrsst.nc ghrsst.001.nc
 #
 #  will produce variant
 #
-#  source.001.nc
+#  ghrsst.001.nc
 #
 bin="$(dirname "${0}")"
 src="$(dirname "${bin}")"
