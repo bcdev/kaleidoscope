@@ -143,24 +143,6 @@
         10.0
       ]
     },
-    "atot_412": {
-      "total": ["aph_412", "adg_412"]
-    },
-    "atot_443": {
-      "total": ["aph_443", "adg_443"]
-    },
-    "atot_490": {
-      "total": ["aph_490", "adg_490"]
-    },
-    "atot_510": {
-      "total": ["aph_510", "adg_510"]
-    },
-    "atot_560": {
-      "total": ["aph_560", "adg_560"]
-    },
-    "atot_665": {
-      "total": ["aph_665", "adg_665"]
-    },
     "kd_490": {
       "bias": "kd_490_bias",
       "rmsd": "kd_490_rmsd",
