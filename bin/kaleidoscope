@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) Brockmann Consult GmbH, 2025
+# License: MIT
+#
+set -e
+## Runs kaleidoscope. Usage example:
+#
+#  ./kaleidoscope --source-type --selector 001 ghrsst source.nc source.001.nc
+#
+#  will produce variant
+#
+#  source.001.nc
+#
+bin="$(dirname "${0}")"
+src="$(dirname "${bin}")"
+
+export PYTHONPATH="${src}":"${PYTHONPATH}"
+
+"${src}"/kaleidoscope/main/main.py "$@"
