@@ -26,8 +26,8 @@ class Generating(ABC):
         """
 
 
-class Univariate(ABC):
-    """Univariate random deviates."""
+class Deviate(ABC):
+    """Random deviates."""
 
     @abstractmethod
     def random(self) -> float:
@@ -47,20 +47,7 @@ class Univariate(ABC):
         """
 
 
-class Multivariate(ABC):
-    """Multivariate random deviates."""
-
-    @abstractmethod
-    def get(self, i: int) -> Univariate:
-        """
-        Returns a univariate random variate for a given dimension.
-
-        :param i: The dimension.
-        :return: The univariate random variate for the given dimension.
-        """
-
-
-class Normal(Univariate, Multivariate, ABC):
+class Normal(Deviate, ABC):
     """
     Normal random deviates.
 
@@ -68,7 +55,7 @@ class Normal(Univariate, Multivariate, ABC):
     """
 
 
-class Uniform(Univariate, Multivariate, ABC):
+class Uniform(Deviate, ABC):
     """
     Uniform random deviates.
 

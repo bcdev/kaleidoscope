@@ -12,7 +12,6 @@ from numpy.random import Generator
 from .interface.generating import Generating
 from .interface.generating import Normal
 from .interface.generating import Uniform
-from .interface.generating import Univariate
 
 
 def default_bit_generator(
@@ -68,14 +67,11 @@ class DefaultUniform(Uniform):
 
     def __init__(self, seed: int | np.ndarray | BitGenerator | None = None):
         """
-        Creates a new random variate.
+        Creates a new random deviate.
 
         :param seed: The seed.
         """
         self._g = default_generator(seed)
-
-    def get(self, i: int) -> Univariate:
-        return self
 
     def random(self) -> float:
         return self._g.random()
@@ -92,14 +88,11 @@ class DefaultNormal(Normal):
 
     def __init__(self, seed: int | np.ndarray | BitGenerator | None = None):
         """
-        Creates a new random variate.
+        Creates a new random deviate.
 
         :param seed: The seed.
         """
         self._g = default_generator(seed)
-
-    def get(self, i: int) -> Univariate:
-        return self
 
     def random(self) -> float:
         return self._g.standard_normal()
