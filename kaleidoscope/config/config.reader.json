@@ -7,8 +7,8 @@
   "config.reader.chunks": {
     "esa-cci-oc": {
       "time": 0,
-      "lat": 4320,
-      "lon": 4320
+      "lat": 2160,
+      "lon": 2160
     },
     "esa-scope-exchange": {
       "time": 12,
