@@ -6,6 +6,7 @@ This module defines several functions for plotting data.
 """
 
 from typing import Any
+from typing import Literal
 
 import dask.array as da
 import numpy as np
@@ -44,8 +45,8 @@ class WorldPlot(Plot):
         ylocs: tuple[Any, ...] | None = None,
         vmin: Any | None = None,
         vmax: Any | None = None,
-        x: str = "lon",
-        y: str = "lat",
+        x: Literal["lon", "longitude"] | None = None,
+        y: Literal["lat", "latitude"] | None = None,
     ) -> Figure:
         if projection is None:
             projection = self.projection
