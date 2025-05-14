@@ -15,32 +15,6 @@ from ..interface.algorithm import InformedBlockAlgorithm
 from ..interface.generating import Normal
 
 
-def _chlorophyll(
-    seed: np.ndarray, x: np.ndarray, u: np.ndarray
-) -> np.ndarray:
-    """
-    Returns randomized values for ESA CCI ocean colour chlorophyll.
-
-    Uses ESA CCI OC PUG (Equation 2.10).
-    """
-    return _lognormal(
-        seed, x, x * np.sqrt(np.exp(np.square(np.log(10.0) * u)) - 1.0)
-    )
-
-
-def _lognormal(seed: np.ndarray, x: np.ndarray, u: np.ndarray) -> np.ndarray:
-    """Returns randomized values for log-normally distributed errors."""
-    v = np.log(1.0 + np.square(u / x))
-    m = np.log(x) - 0.5 * v
-    return np.exp(_normal(seed, m, np.sqrt(v)))
-
-
-def _normal(seed: np.ndarray, x: np.ndarray, u: np.ndarray) -> np.ndarray:
-    """Returns randomized values for normally distributed errors."""
-    z: Normal = DefaultNormal(seed)
-    return x + u * z.randoms(np.empty(x.shape, x.dtype))
-
-
 class Randomize(InformedBlockAlgorithm):
     """
     The algorithm to randomize data.
@@ -113,11 +87,11 @@ class Randomize(InformedBlockAlgorithm):
             u = u * x
         match self._dist:
             case "normal":
-                y = _normal(seed, x, u)
+                y = self._normal(seed, x, u)
             case "lognormal":
-                y = _lognormal(seed, x, u)
+                y = self._lognormal(seed, x, u)
             case "chlorophyll":
-                y = _chlorophyll(seed, x, u)
+                y = self._chlorophyll(seed, x, u)
             case _:
                 y = x
         if clip is not None:
@@ -129,6 +103,38 @@ class Randomize(InformedBlockAlgorithm):
     def block_seed(self, block_id: tuple[int, ...]) -> np.ndarray:
         """Returns the block seed."""
         return np.array([i for i in block_id] + [i for i in self._root_seed])
+
+    def _chlorophyll(
+        self, seed: np.ndarray, x: np.ndarray, u: np.ndarray
+    ) -> np.ndarray:
+        """
+        Returns randomized values for ESA CCI ocean colour chlorophyll.
+
+        Uses ESA CCI OC PUG (Equation 2.10).
+        """
+        return self._lognormal(
+            seed, x, x * np.sqrt(np.exp(np.square(np.log(10.0) * u)) - 1.0)
+        )
+
+    def _lognormal(
+        self, seed: np.ndarray, x: np.ndarray, u: np.ndarray
+    ) -> np.ndarray:
+        """
+        Returns randomized values for log-normally distributed errors.
+        """
+        v = np.log(1.0 + np.square(u / x))
+        m = np.log(x) - 0.5 * v
+        return np.exp(self._normal(seed, m, np.sqrt(v)))
+
+    # noinspection PyMethodMayBeStatic
+    def _normal(
+        self, seed: np.ndarray, x: np.ndarray, u: np.ndarray
+    ) -> np.ndarray:
+        """
+        Returns randomized values for normally distributed errors.
+        """
+        z: Normal = DefaultNormal(seed)
+        return x + u * z.randoms(np.empty(x.shape, x.dtype))
 
     @property
     def name(self) -> str:
