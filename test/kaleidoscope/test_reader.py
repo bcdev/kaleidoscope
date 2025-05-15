@@ -70,9 +70,9 @@ class ReaderTest(unittest.TestCase):
         """Tests writing a generated target dataset."""
         self.assert_read("esa-cci-oc")
 
-    def test_read_esa_scope_exchange(self):
+    def test_read_esa_scope_cs(self):
         """Tests writing a generated target dataset."""
-        self.assert_read("esa-scope-exchange")
+        self.assert_read("esa-scope-cs")
 
     def test_read_ghrsst(self):
         """Tests writing a generated target dataset."""

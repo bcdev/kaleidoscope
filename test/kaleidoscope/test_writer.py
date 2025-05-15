@@ -63,9 +63,9 @@ class WriterTest(unittest.TestCase):
         """Tests writing a generated target dataset."""
         self.assert_write("esa-cci-oc")
 
-    def test_write_esa_scope_exchange(self):
+    def test_write_esa_scope_cs(self):
         """Tests writing a generated target dataset."""
-        self.assert_write("esa-scope-exchange")
+        self.assert_write("esa-scope-cs")
 
     def test_write_ghrsst(self):
         """Tests writing a generated target dataset."""

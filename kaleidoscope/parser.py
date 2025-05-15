@@ -67,7 +67,13 @@ class Parser:
         parser.add_argument(
             "--source-type",
             help="the source type.",
-            choices=["esa-cci-oc", "esa-scope-exchange", "ghrsst", "glorys"],
+            choices=[
+                "esa-cci-oc",
+                "esa-scope-cs",
+                "esa-scope-pp-parameters",
+                "ghrsst",
+                "glorys",
+            ],
             required=True,
             dest="source_type",
         )

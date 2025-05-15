@@ -162,7 +162,7 @@
       ]
     }
   },
-  "esa-scope-exchange": {
+  "esa-scope-cs": {
     "fco2": {
       "uncertainty": "fco2_tot_unc",
       "coverage": 2.0,
@@ -210,6 +210,28 @@
         6.0
       ]
     }
+  },
+  "esa-scope-pp-parameters": {
+      "rho": {
+        "uncertainty": 0.1,
+        "distribution": "lognormal"
+      },
+      "sigma": {
+        "uncertainty": 1.0,
+        "distribution": "lognormal"
+      },
+      "zm": {
+        "uncertainty": 1.0,
+        "distribution": "lognormal"
+      },
+      "alphaB": {
+        "uncertainty": 0.01,
+        "distribution": "lognormal"
+      },
+      "PmB": {
+        "uncertainty": 0.1,
+        "distribution": "normal"
+      }
   },
   "ghrsst": {
     "analysed_sst": {

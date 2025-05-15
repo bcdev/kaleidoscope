@@ -21,7 +21,7 @@ processor. The processor is invoked from the command line. Typing
 will print a detailed usage message to the screen
 
     usage: kaleidoscope [-h]
-                        --source-type {esa-cci-oc,esa-scope-exchange,ghrsst,glorys}
+                        --source-type {esa-cci-oc,esa-scope-cs,esa-scope-pp-parameters,ghrsst,glorys}
                         --selector SELECTOR
                         [--engine-reader {h5netcdf,netcdf4,zarr}]
                         [--engine-writer {h5netcdf,netcdf4,zarr}]
@@ -40,7 +40,7 @@ will print a detailed usage message to the screen
     
     options:
       -h, --help            show this help message and exit
-      --source-type {esa-cci-oc,esa-scope-exchange,ghrsst,glorys}
+      --source-type {esa-cci-oc,esa-scope-cs,esa-scope-pp-parameters,ghrsst,glorys}
                             the source type. (default: None)
       --selector SELECTOR   the Monte Carlo stream selector. An integral number
                             which must not be negative. (default: None)

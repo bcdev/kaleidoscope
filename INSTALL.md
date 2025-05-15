@@ -81,4 +81,5 @@ The `pytest` output will be printed to the console and will read like, e.g.:
     test/kaleidoscope/test_generators.py .                                 [ 42%]
     test/kaleidoscope/test_reader.py ....                                  [ 71%]
     test/kaleidoscope/test_writer.py ....                                  [100%]
-    ======================= 14 passed in 152.59s (0:02:32) =======================
+
+    ======================= 14 passed in 145.04s (0:02:25) =======================
