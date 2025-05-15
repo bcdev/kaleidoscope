@@ -26,6 +26,7 @@ class Plot(metaclass=ABCMeta):
         ylim: tuple[Any, Any] | None = None,
         title: str | None = None,
         fn: str | None = None,
+        plot_size: tuple[Any, Any] | None = None,
         show: bool = False,
         **kwargs,
     ) -> Figure:
@@ -39,6 +40,7 @@ class Plot(metaclass=ABCMeta):
         :param ylim: The limits for the y-axis.
         :param title: The title of the plot.
         :param fn: The file name to save the figure.
+        :param plot_size: The size of the plot.
         :param show: Show the figure.
         :param kwargs: Additional keyword arguments.
         :return: The plot.

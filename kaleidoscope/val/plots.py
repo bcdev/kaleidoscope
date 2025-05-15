@@ -10,6 +10,7 @@ from typing import Literal
 
 import dask.array as da
 import numpy as np
+from IPython.core.pylabtools import figsize
 from matplotlib import colors as plc
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
@@ -35,6 +36,7 @@ class WorldPlot(Plot):
         ylim: tuple[Any, Any] | None = None,
         title: str | None = None,
         fn: str | None = None,
+        plot_size: tuple[Any, Any] | None = None,
         show: bool = False,
         *,
         cbar_label: str | None = None,
@@ -51,6 +53,7 @@ class WorldPlot(Plot):
         if projection is None:
             projection = self.projection
         fig, ax = plt.subplots(
+            figsize=plot_size,
             subplot_kw={"projection": projection},
         )
         cbar_kwargs = {}
@@ -130,6 +133,7 @@ class HistogramPlot(Plot):
         ylim: tuple[Any, Any] | None = None,
         title: str | None = None,
         fn: str | None = None,
+        plot_size: tuple[Any, Any] | None = None,
         show: bool = False,
         *,
         bins: int | None = None,
@@ -137,7 +141,7 @@ class HistogramPlot(Plot):
         log: bool = False,
         hist_range: tuple[Any, Any] | None = None,
     ) -> Figure:
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=plot_size)
         data.plot.hist(
             ax=ax, bins=bins, range=hist_range, density=density, log=log
         )
@@ -166,6 +170,7 @@ class DensityPlot(Plot):
         ylim: tuple[Any, Any] | None = None,
         title: str | None = None,
         fn: str | None = None,
+        plot_size: tuple[Any, Any] | None = None,
         show: bool = False,
         *,
         bins: tuple[int, int] | None = None,
@@ -177,7 +182,7 @@ class DensityPlot(Plot):
         vmin: Any | None = None,
         vmax: Any | None = None,
     ) -> Figure:
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=plot_size)
         cbar_kwargs = {}
         if cbar_label is not None:
             cbar_kwargs["label"] = cbar_label
@@ -217,6 +222,7 @@ class ScatterPlot(Plot):
         ylim: tuple[Any, Any] | None = None,
         title: str | None = None,
         fn: str | None = None,
+        plot_size: tuple[Any, Any] | None = None,
         show: bool = False,
         *,
         point_alpha: Any | None = None,
@@ -224,7 +230,7 @@ class ScatterPlot(Plot):
         point_marker: str | None = ".",
         sample_count: int = 4000,
     ) -> Figure:
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=plot_size)
         rand(data, sample_count).plot.scatter(
             ax=ax,
             x="x",
@@ -262,12 +268,13 @@ class TimeSeriesPlot(Plot):
         ylim: tuple | None = None,
         title: str | None = None,
         fn: str | None = None,
+        plot_size: tuple[Any, Any] | None = None,
         show: bool = False,
         *,
         point_marker: str = ".",
         group_by: str | None = "time.month",
     ) -> Figure:
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=plot_size)
 
         if group_by is not None:
             for _, period in time_series(data).groupby(group_by):
