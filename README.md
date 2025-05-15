@@ -86,10 +86,10 @@ which normally will log information to the terminal, e.g.,
     2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: mode = multithreading
     2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: processor_name = kaleidoscope
     2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: processor_version = 2025.1.0
-    2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: source_type = ghrsst
     2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: progress = False
     2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: selector = 17
     2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: source_file = in.nc
+    2025-04-30T09:42:11.928000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: source_type = ghrsst
     2025-04-30T09:42:11.929000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: stack_traces = False
     2025-04-30T09:42:11.929000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: target_file = out.nc
     2025-04-30T09:42:11.929000Z <node> kaleidoscope 2025.1.0 [76069] [I] config: tmpdir = .
@@ -105,7 +105,7 @@ which normally will log information to the terminal, e.g.,
     2025-04-30T09:42:20.638000Z <node> kaleidoscope 2025.1.0 [76069] [I] finished running processor
     2025-04-30T09:42:20.639000Z <node> kaleidoscope 2025.1.0 [76069] [I] elapsed time (seconds):    8.710
 
-and eventually produce a forecast output dataset. Normally, the processor
+and eventually produce a randomized output dataset. Normally, the processor
 will terminate with an exit code of `0`. 
 
 ### Error conditions
