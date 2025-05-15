@@ -15,6 +15,8 @@ import numpy as np
 from xarray import DataArray
 from xarray import Dataset
 
+from .. import __name__
+from .. import __version__
 from ..algorithms.codec import Decode
 from ..algorithms.codec import Encode
 from ..algorithms.randomize import Randomize
@@ -91,6 +93,8 @@ class RandomizeOp(Operator):
             get_logger().info(f"starting graph for variable: {v}")
             self.randomize(target, v, x, config[v])
             get_logger().info(f"finished graph for variable: {v}")
+        target.attrs["monte_carlo_software"] = __name__
+        target.attrs["monte_carlo_software_version"] = __version__
         return target
 
     @property
