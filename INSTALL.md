@@ -67,4 +67,18 @@ the `kaleidoscope` directory and type
 
     pytest
 
-The `pytest` output is printed to the console.
+The `pytest` output will be printed to the console and will read like, e.g.:
+
+    ============================ test session starts =============================
+    platform ...
+    rootdir: Developer/github/kaleidoscope
+    configfile: pyproject.toml
+    testpaths: test
+    plugins: ...
+    collected 14 items                                                           
+
+    test/kaleidoscope/main/test_processor.py .....                         [ 35%]
+    test/kaleidoscope/test_generators.py .                                 [ 42%]
+    test/kaleidoscope/test_reader.py ....                                  [ 71%]
+    test/kaleidoscope/test_writer.py ....                                  [100%]
+    ======================= 14 passed in 152.59s (0:02:32) =======================

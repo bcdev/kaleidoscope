@@ -117,3 +117,21 @@ otherwise. Warning and error messages are sent to the standard error stream.
 ### Recovery operations
 
 There are no recovery operations.
+
+## Expected output
+
+Kaleidoscope generates variants of source data which exhibit simulated errors.
+At present, only uncorrelated random errors are simulated. Normalized errors
+will have a mean value of zero and a standard deviation of unity, with statistical
+deviations implied by constraints on the error probability distribution and the
+(limited) number of variants generated.
+
+![Map](/doc/map-mean-Sea%20surface%20temperature.png)
+![Map](/doc/map-std-Sea%20surface%20temperature.png)
+![Map](/doc/map-range-Sea%20surface%20temperature.png)
+
+Examples above illustrate the mean, the standard deviation and the minimum-to-maximum
+range of normalized simulated errors for an ensemble of ten variants of global monthly
+sea surface temperature (January 2000). The standard deviation and range of normalized
+errors is reduced at the North Pole and in the Weddell and Ross Sea due to constraints
+imposed by the freezing point of seawater. 
