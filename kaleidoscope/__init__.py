@@ -5,8 +5,8 @@
 This Python package constitutes the Kaleidoscope processor.
 """
 
-__name__ = "kaleidoscope"
+__name__: str = "kaleidoscope"
 """The name of the Kaleidoscope processor."""
 
-__version__ = "2025.1.1"
+__version__: str = "2025.1.1"
 """The version of the Kaleidoscope processor."""
