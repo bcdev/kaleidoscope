@@ -10,7 +10,6 @@ from typing import Literal
 
 import dask.array as da
 import numpy as np
-from IPython.core.pylabtools import figsize
 from matplotlib import colors as plc
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes

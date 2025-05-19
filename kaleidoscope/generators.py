@@ -4,8 +4,6 @@
 """
 This module provides random number generators.
 """
-from typing import Any
-from typing import Any
 from typing import Literal
 
 import numpy as np
