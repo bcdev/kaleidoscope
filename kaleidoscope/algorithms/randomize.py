@@ -20,7 +20,7 @@ class Randomize(InformedBlockAlgorithm):
     The algorithm to randomize data.
     """
 
-    _dist: Literal["normal", "lognormal", "chlorophyll"] | str
+    _dist: str
     """The type of measurement error distribution."""
 
     _root_seed: np.ndarray
@@ -30,7 +30,7 @@ class Randomize(InformedBlockAlgorithm):
         self,
         dtype: np.dtype = np.single,
         m: int = 2,
-        dist: Literal["normal", "lognormal", "chlorophyll"] | str = "normal",
+        dist: Literal["normal", "lognormal", "chlorophyll"] = "normal",
         seed: np.ndarray | None = None,
     ):
         """
@@ -95,7 +95,7 @@ class Randomize(InformedBlockAlgorithm):
             case _:
                 y = x
         if clip is not None:
-            y = np.clip(y, a_min=clip[0], a_max=clip[1])
+            y = np.clip(y, clip[0], clip[1])
         return np.where(np.isfinite(y), y, x)
 
     compute_block = randomize
