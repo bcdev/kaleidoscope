@@ -272,26 +272,14 @@
     }
   },
   "esa-scope-pp-parameters": {
-      "rho": {
-        "uncertainty": 0.1,
-        "distribution": "lognormal"
-      },
-      "sigma": {
-        "uncertainty": 1.0,
-        "distribution": "lognormal"
-      },
-      "zm": {
-        "uncertainty": 1.0,
-        "distribution": "lognormal"
-      },
-      "alphaB": {
-        "uncertainty": 0.01,
-        "distribution": "lognormal"
-      },
-      "PmB": {
-        "uncertainty": 0.1,
-        "distribution": "normal"
-      }
+    "alphaB": {
+      "uncertainty": "alphaB_unc",
+      "distribution": "lognormal"
+    },
+    "PmB": {
+      "uncertainty": "PmB_unc",
+      "distribution": "normal"
+    }
   },
   "ghrsst": {
     "analysed_sst": {
