@@ -91,7 +91,7 @@ class RandomizeOp(Operator):
             if v not in config or self._args.selector == 0:
                 continue
             get_logger().info(f"starting graph for variable: {v}")
-            self.randomize(target, v, x, config[v])
+            self.randomize(source, target, v, x, config[v])
             get_logger().info(f"finished graph for variable: {v}")
         target.attrs["monte_carlo_software"] = __name__
         target.attrs["monte_carlo_software_version"] = __version__
@@ -110,6 +110,7 @@ class RandomizeOp(Operator):
 
     def randomize(
         self,
+        source: Dataset,
         target: Dataset,
         v: str,
         x: DataArray,
@@ -123,7 +124,18 @@ class RandomizeOp(Operator):
         :param x: The data of the variable.
         :param config: The randomization configuration.
         """
-        if "uncertainty" in config:
+        if "total" in config:
+            s = None
+            z = _decode(x.data, x.attrs)
+            for ref in config["total"]:
+                a = _decode(target[ref].data, target[ref].attrs)
+                b = _decode(source[ref].data, source[ref].attrs)
+                z = z + (a - b)
+            if "clip" in config:
+                z = da.clip(
+                    z, config["clip"][0], config["clip"][1]
+                )
+        elif "uncertainty" in config:
             s = self.seed(self.uuid(v))
             f = Randomize(m=x.ndim, dist=config["distribution"], seed=s)
             u = (
@@ -170,7 +182,8 @@ class RandomizeOp(Operator):
                 ],
                 dtype=z.dtype,
             )
-        target[v].attrs["seed"] = s
+        if s is not None:
+            target[v].attrs["seed"] = s
         if get_logger().is_enabled(Logging.DEBUG):
             get_logger().debug(f"seed: {s}")
             get_logger().debug(f"min:  {da.nanmin(z).compute() :.3f}")
