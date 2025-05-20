@@ -133,5 +133,5 @@ deviations implied by constraints on the error probability distribution and the
 Examples above illustrate the mean, the standard deviation and the minimum-to-maximum
 range of normalized simulated errors for an ensemble of ten variants of global monthly
 sea surface temperature (January 2000). The standard deviation and range of normalized
-errors is reduced at the North Pole and in the Weddell and Ross Sea due to constraints
-imposed by the freezing point of seawater. 
+errors is reduced at the North Pole and in the Weddell Sea due to constraints imposed
+by the freezing point of seawater. 

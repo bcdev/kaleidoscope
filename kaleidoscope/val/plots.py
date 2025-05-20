@@ -50,7 +50,7 @@ class WorldPlot(Plot):
         y: Literal["lat", "latitude"] | None = None,
     ) -> Figure:
         if projection is None:
-            projection = self.projection
+            projection = self.sinusoidal
         fig, ax = plt.subplots(
             figsize=plot_size,
             subplot_kw={"projection": projection},
@@ -99,13 +99,30 @@ class WorldPlot(Plot):
         )
 
     @property
-    def projection(self):
-        """Returns the default projection."""
+    def interrupted_goode_homolosine(self):
+        """
+        Returns the Interrupted Goode Homolosine projection
+        for ocean.
+
+        Plots using this projection do not show missing data
+        transparent (white).
+        """
         from cartopy.crs import InterruptedGoodeHomolosine
 
         return InterruptedGoodeHomolosine(
             central_longitude=-160.0,
             emphasis="ocean",
+        )
+
+    @property
+    def sinusoidal(self):
+        """
+        Returns the sinusoidal projection.
+        """
+        from cartopy.crs import Sinusoidal
+
+        return Sinusoidal(
+            central_longitude=0.0,
         )
 
     @property
