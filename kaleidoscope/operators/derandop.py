@@ -104,7 +104,9 @@ class DerandOp(Operator):
                 )
             if "standard_name" in target[v_unc].attrs:
                 standard_name = target[v_unc].attrs["standard_name"]
-                target[v_unc].attrs["standard_name"] = f"{standard_name} standard_error"
+                target[v_unc].attrs[
+                    "standard_name"
+                ] = f"{standard_name} standard_error"
         return target
 
     @property
