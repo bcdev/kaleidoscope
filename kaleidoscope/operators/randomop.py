@@ -54,7 +54,7 @@ def _encode(x: da.Array, a: dict[str:Any], dtype: np.dtype) -> da.Array:
     return y
 
 
-class RandomizeOp(Operator):
+class RandomOp(Operator):
     """The randomize operator."""
 
     _args: Namespace
@@ -62,7 +62,7 @@ class RandomizeOp(Operator):
 
     def __init__(self, args: Namespace):
         """
-        Creates a new forecast operator instance.
+        Creates a new operator instance.
 
         :param args: The configuration parameters.
         """
@@ -119,6 +119,7 @@ class RandomizeOp(Operator):
         """
         Creates the graph to randomize a variable.
 
+        :param source: The source dataset.
         :param target: The target dataset.
         :param v: The name of the variable.
         :param x: The data of the variable.
@@ -132,9 +133,7 @@ class RandomizeOp(Operator):
                 b = _decode(source[ref].data, source[ref].attrs)
                 z = z + (a - b)
             if "clip" in config:
-                z = da.clip(
-                    z, config["clip"][0], config["clip"][1]
-                )
+                z = da.clip(z, config["clip"][0], config["clip"][1])
         elif "uncertainty" in config:
             s = self.seed(self.uuid(v))
             f = Randomize(m=x.ndim, dist=config["distribution"], seed=s)

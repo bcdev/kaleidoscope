@@ -278,7 +278,7 @@
     },
     "PmB": {
       "uncertainty": "PmB_unc",
-      "distribution": "normal"
+      "distribution": "lognormal"
     }
   },
   "ghrsst": {

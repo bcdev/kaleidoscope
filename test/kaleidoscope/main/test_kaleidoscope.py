@@ -6,7 +6,7 @@
 import unittest
 
 from kaleidoscope.interface.exitcodes import ExitCodes
-from kaleidoscope.main import main
+from kaleidoscope.main import kaleidoscope
 
 
 class NoArgumentsTest(unittest.TestCase):
@@ -17,7 +17,7 @@ class NoArgumentsTest(unittest.TestCase):
         Tests missing command line arguments. Termination with
         nonzero exit code is expected.
         """
-        exit_code = main.run()
+        exit_code = kaleidoscope.run()
         self.assertEqual(ExitCodes.FAILURE_ARGUMENT_ERROR, exit_code)
 
 
@@ -27,12 +27,12 @@ class HelpTest(unittest.TestCase):
     def test_option_h(self):
         """Tests the `-h` command line option."""
 
-        exit_code = main.run(args=["-h"])
+        exit_code = kaleidoscope.run(args=["-h"])
         self.assertEqual(ExitCodes.SUCCESS, exit_code)
 
     def test_option_help(self):
         """Tests the `--help` command line option."""
-        exit_code = main.run(args=["--help"])
+        exit_code = kaleidoscope.run(args=["--help"])
         self.assertEqual(ExitCodes.SUCCESS, exit_code)
 
 
@@ -41,12 +41,12 @@ class VersionTest(unittest.TestCase):
 
     def test_option_v(self):
         """Tests the `-v` command line option."""
-        exit_code = main.run(args=["-v"])
+        exit_code = kaleidoscope.run(args=["-v"])
         self.assertEqual(ExitCodes.SUCCESS, exit_code)
 
     def test_option_version(self):
         """Tests the `--version` command line option."""
-        exit_code = main.run(args=["--version"])
+        exit_code = kaleidoscope.run(args=["--version"])
         self.assertEqual(ExitCodes.SUCCESS, exit_code)
 
 

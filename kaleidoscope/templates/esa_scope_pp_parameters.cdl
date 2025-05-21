@@ -1,4 +1,4 @@
-netcdf PE_mro_mean_prv_4km_120psummer_cor {
+netcdf PE_mro_mean_error_prv_4km_120p_spring_cor {
 dimensions:
 	lat = 4320 ;
 	lon = 8640 ;
@@ -13,21 +13,6 @@ variables:
 		longitude:units = "degrees east" ;
 		longitude:_Storage = "contiguous" ;
 		longitude:_Endianness = "little" ;
-	double sigma(lat, lon) ;
-		sigma:_FillValue = -999. ;
-		sigma:units = "mg m-3" ;
-		sigma:_Storage = "contiguous" ;
-		sigma:_Endianness = "little" ;
-	double zm(lat, lon) ;
-		zm:_FillValue = -999. ;
-		zm:units = "m" ;
-		zm:_Storage = "contiguous" ;
-		zm:_Endianness = "little" ;
-	double rho(lat, lon) ;
-		rho:_FillValue = -999. ;
-		rho:units = "dimensionless" ;
-		rho:_Storage = "contiguous" ;
-		rho:_Endianness = "little" ;
 	double alphaB(lat, lon) ;
 		alphaB:_FillValue = -999. ;
 		alphaB:units = "mgC mgChl-1 h-1 (W m-2)-1" ;
@@ -46,11 +31,21 @@ variables:
 		lon:_FillValue = NaN ;
 		lon:_Storage = "contiguous" ;
 		lon:_Endianness = "little" ;
+	double alphaB_unc(lat, lon) ;
+		alphaB_unc:_FillValue = -999. ;
+		alphaB_unc:units = "mgC mgChl-1 h-1 (W m-2)-1" ;
+		alphaB_unc:_Storage = "contiguous" ;
+		alphaB_unc:_Endianness = "little" ;
+	double PmB_unc(lat, lon) ;
+		PmB_unc:_FillValue = -999. ;
+		PmB_unc:units = "mgC mgChl-1 h-1" ;
+		PmB_unc:_Storage = "contiguous" ;
+		PmB_unc:_Endianness = "little" ;
 
 // global attributes:
-		:description = "Physio_parameters_summer" ;
+		:description = "Physio_parameters_spring" ;
 		:source = "netCDF3 python" ;
-		:history = "Created Thu Jul  4 09:46:47 2024" ;
+		:history = "Created Thu Jul  4 09:47:53 2024" ;
 		:_NCProperties = "version=2,netcdf=4.9.2,hdf5=1.14.3" ;
 		:_SuperblockVersion = 2 ;
 		:_IsNetcdf4 = 1 ;

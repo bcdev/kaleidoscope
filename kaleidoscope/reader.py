@@ -115,20 +115,39 @@ class Reader(Reading):
     def _open(self, data_id: str | Path) -> Dataset:
         """This method does not belong to public API."""
         kwargs = {}
-        return xr.open_dataset(
-            data_id,
-            chunks=self._chunks,
-            engine=self._auto_engine(data_id),
-            mask_and_scale=self._mask_and_scale,
-            decode_cf=self._decode_cf,
-            decode_coords=self._decode_coords,
-            decode_times=self._decode_times,
-            decode_timedelta=self._decode_timedelta,
-            use_cftime=self._use_cftime,
-            concat_characters=self._concat_characters,
-            inline_array=self._inline_array,
-            backend_kwargs=kwargs,
-        )
+        if isinstance(data_id, str) and "*" in data_id:
+            ds = xr.open_mfdataset(
+                data_id,
+                chunks=self._chunks,
+                engine=self._auto_engine(data_id),
+                mask_and_scale=self._mask_and_scale,
+                decode_cf=self._decode_cf,
+                decode_coords=self._decode_coords,
+                decode_times=self._decode_times,
+                decode_timedelta=self._decode_timedelta,
+                use_cftime=self._use_cftime,
+                concat_characters=self._concat_characters,
+                inline_array=self._inline_array,
+                backend_kwargs=kwargs,
+                combine="nested",
+                concat_dim="i",
+            )
+        else:
+            ds = xr.open_dataset(
+                data_id,
+                chunks=self._chunks,
+                engine=self._auto_engine(data_id),
+                mask_and_scale=self._mask_and_scale,
+                decode_cf=self._decode_cf,
+                decode_coords=self._decode_coords,
+                decode_times=self._decode_times,
+                decode_timedelta=self._decode_timedelta,
+                use_cftime=self._use_cftime,
+                concat_characters=self._concat_characters,
+                inline_array=self._inline_array,
+                backend_kwargs=kwargs,
+            )
+        return ds
 
     def _auto_engine(self, data_id: str | Path) -> str:
         """This method does not belong to public API."""

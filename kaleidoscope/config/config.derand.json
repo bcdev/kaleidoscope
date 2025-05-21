@@ -1,0 +1,38 @@
+{
+  "_comments_": {
+    "copyright": "Copyright (c) Brockmann Consult GmbH, 2025",
+    "license": "MIT",
+    "summary": "This JSON file provides configuration parameters and semantic mappings."
+  },
+  "DOC": {
+    "attrs": {
+      "long_name": "standard uncertainty of estimated DOC"
+    }
+  },
+  "PIC": {
+    "attrs": {
+      "long_name": "standard uncertainty of PIC"
+    }
+  },
+  "POC": {
+    "attrs": {
+      "long_name": "standard uncertainty of POC"
+    }
+  },
+  "pc": {
+    "attrs": {
+      "long_name": "standard uncertainty of Phytoplankton Carbon concentration in seawater"
+    }
+  },
+  "pp": {
+    "attrs": {
+      "long_name": "standard uncertainty of Phytoplankton Primary Production"
+    }
+  },
+  "Predicted_DOC": {
+    "attrs": {
+      "long_name": "standard uncertainty of Predicted Dissolved Organic Carbon",
+      "description": "standard uncertainty of Predicted DOC values"
+    }
+  }
+}
