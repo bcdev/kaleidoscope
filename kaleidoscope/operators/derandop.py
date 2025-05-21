@@ -103,9 +103,8 @@ class DerandOp(Operator):
                     dtype=x_unc.dtype,
                 )
             if "standard_name" in target[v_unc].attrs:
-                target[v_unc].attrs[
-                    "standard_name"
-                ] = f"{target[v_unc].attrs["standard_name"]} standard_error"
+                standard_name = target[v_unc].attrs["standard_name"]
+                target[v_unc].attrs["standard_name"] = f"{standard_name} standard_error"
         return target
 
     @property
