@@ -44,7 +44,7 @@ jobs:
         pytest --cov=.
     - name: Run integration tests
       run: |
-        kaleidoscope --help
-        kaleidoscope --version
-        epocsodielak --help
-        epocsodielak --version
+        kaleidoscope-scatter --help
+        kaleidoscope-scatter --version
+        epocsodielak-collect --help
+        epocsodielak-collect --version
