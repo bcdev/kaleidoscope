@@ -16,6 +16,7 @@ from xarray import Dataset
 
 from ..algorithms.codec import decode
 from ..algorithms.codec import encode
+from ..interface.logging import Logging
 from ..interface.operator import Operator
 from ..logger import get_logger
 
@@ -79,6 +80,13 @@ class CollectOp(Operator):
                 target[v_unc].attrs[
                     "standard_name"
                 ] = f"{standard_name} standard_error"
+            if get_logger().is_enabled(Logging.DEBUG):
+                get_logger().debug(f"min:  {da.nanmin(x_unc).compute() :.3f}")
+                get_logger().debug(f"max:  {da.nanmax(x_unc).compute() :.3f}")
+                get_logger().debug(
+                    f"mean: {da.nanmean(x_unc).compute() :.3f}"
+                )
+                get_logger().debug(f"std:  {da.nanstd(x_unc).compute() :.3f}")
         return target
 
     @property
