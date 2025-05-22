@@ -271,7 +271,7 @@
       ]
     }
   },
-  "esa-scope-pp-parameters": {
+  "esa-scope-pp": {
     "alphaB": {
       "uncertainty": "alphaB_unc",
       "distribution": "lognormal"
