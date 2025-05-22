@@ -41,7 +41,7 @@ will print a detailed usage messages to the screen, like
     
     options:
       -h, --help            show this help message and exit
-      --source-type {esa-cci-oc,esa-scope-cs,esa-scope-pp-parameters,ghrsst,glorys}
+      --source-type {esa-cci-oc,esa-scope-cs,esa-scope-pp,ghrsst,glorys}
                             the source type. (default: None)
       --selector {0,1,2,...,100}
                             the Monte Carlo stream selector. An integral number

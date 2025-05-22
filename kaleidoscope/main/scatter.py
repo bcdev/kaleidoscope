@@ -95,7 +95,7 @@ class Parser:
             choices=[
                 "esa-cci-oc",
                 "esa-scope-cs",
-                "esa-scope-pp-parameters",
+                "esa-scope-pp",
                 "ghrsst",
                 "glorys",
             ],
@@ -175,30 +175,6 @@ class Parser:
             action="version",
             version=f"%(prog)s {__version__}",
         )
-
-    class IntType:
-        """Callable to convert an argument into an integer value."""
-
-        def __init__(
-            self, min_int: int | None = None, max_int: int | None = None
-        ):
-            """
-            Creates a new instance of this class.
-
-            :param min_int: The lower bound (inclusive) of the value domain.
-            :param max_int: The upper bound (inclusive) of the value domain.
-            """
-            self._min = min_int
-            self._max = max_int
-
-        def __call__(self, arg: str) -> int:
-            """Converts an argument into an integer value."""
-            i = int(arg)
-            if self._min is not None and i < self._min:
-                raise TypeError("Argument is not a valid integer value")
-            if self._max is not None and i > self._max:
-                raise TypeError("Argument is not a valid integer value")
-            return i
 
 
 class Processor(Processing):
