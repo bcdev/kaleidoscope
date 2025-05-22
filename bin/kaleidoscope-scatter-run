@@ -6,7 +6,7 @@
 set -e
 ## Produces Monte Carlo variants. Usage example:
 #
-#  ./kaleidoscope-run --source-type ghrsst source.nc
+#  ./kaleidoscope-scatter-run --source-type ghrsst source.nc
 #
 #  will produce variants
 #
@@ -15,7 +15,7 @@ set -e
 #  ...
 #  source.010.nc
 #
-for selector in 000 001 002 003 004 005 006 007 008 009 010; do
+for selector in seq -w 000 010; do
   echo "$(tput setaf 2)$(date -u "+%Y-%m-%dT%H:%M:%S") [INFO] Selector ${selector} ...$(tput sgr0)"
   source_type="${1}"
   source_file="${2}"
@@ -23,7 +23,7 @@ for selector in 000 001 002 003 004 005 006 007 008 009 010; do
   if [ -f "${target_file}" ]; then
     continue
   fi
-  kaleidoscope \
+  kaleidoscope-scatter \
     --selector ${selector} \
     --source-type "${source_type}" \
     --log-level warning \
