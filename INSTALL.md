@@ -60,7 +60,8 @@ not require repeated installation.
 
 To verify the software installation, open a terminal window and type
 
-    kaleidoscope --help
+    kaleidoscope-scatter --help
+    kaleidoscope-collect --help
 
 which will print usage messages. To execute unit level tests `cd` into 
 the `kaleidoscope` directory and type
@@ -69,17 +70,17 @@ the `kaleidoscope` directory and type
 
 The `pytest` output will be printed to the console and will read like, e.g.:
 
-    ============================ test session starts =============================
+    ============================ test session starts ============================
     platform ...
-    rootdir: Developer/github/kaleidoscope
+    rootdir: github/kaleidoscope
     configfile: pyproject.toml
     testpaths: test
     plugins: ...
-    collected 14 items                                                           
+    collected 19 items                                                           
 
-    test/kaleidoscope/main/test_processor.py .....                         [ 35%]
-    test/kaleidoscope/test_generators.py .                                 [ 42%]
-    test/kaleidoscope/test_reader.py ....                                  [ 71%]
+    test/kaleidoscope/main/test_collect.py .....                           [ 26%]
+    test/kaleidoscope/main/test_scatter.py .....                           [ 52%]
+    test/kaleidoscope/test_generators.py .                                 [ 57%]
+    test/kaleidoscope/test_reader.py ....                                  [ 78%]
     test/kaleidoscope/test_writer.py ....                                  [100%]
-
-    ======================= 14 passed in 145.04s (0:02:25) =======================
+    ======================= 19 passed in 153.61s (0:02:33) ======================
