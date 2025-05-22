@@ -13,6 +13,34 @@ import numpy as np
 from ..interface.algorithm import BlockAlgorithm
 
 
+def decode(x: da.Array, a: dict[str:Any]) -> da.Array:
+    """Returns decoded data."""
+    f = Decode(np.single if x.dtype == np.single else np.double, x.ndim)
+    y = f.apply_to(
+        x,
+        add_offset=a.get("add_offset", None),
+        scale_factor=a.get("scale_factor", None),
+        fill_value=a.get("_FillValue", None),
+        valid_min=a.get("valid_min", None),
+        valid_max=a.get("valid_max", None),
+    )
+    return y
+
+
+def encode(x: da.Array, a: dict[str:Any], dtype: np.dtype) -> da.Array:
+    """Returns encoded data."""
+    f = Encode(dtype, x.ndim)
+    y = f.apply_to(
+        x,
+        add_offset=a.get("add_offset", None),
+        scale_factor=a.get("scale_factor", None),
+        fill_value=a.get("_FillValue", None),
+        valid_min=a.get("valid_min", None),
+        valid_max=a.get("valid_max", None),
+    )
+    return y
+
+
 class Decode(BlockAlgorithm):
     """
     The algorithm to decode data according to CF conventions.

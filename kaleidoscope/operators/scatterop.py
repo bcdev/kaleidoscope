@@ -2,7 +2,7 @@
 #  License: MIT
 
 """
-This module provides the randomize operator.
+This module provides the scatter operator.
 """
 import json
 import uuid
@@ -17,8 +17,8 @@ from xarray import Dataset
 
 from .. import __name__
 from .. import __version__
-from ..algorithms.codec import Decode
-from ..algorithms.codec import Encode
+from ..algorithms.codec import decode
+from ..algorithms.codec import encode
 from ..algorithms.randomize import Randomize
 from ..generators import DefaultGenerator
 from ..interface.logging import Logging
@@ -26,36 +26,8 @@ from ..interface.operator import Operator
 from ..logger import get_logger
 
 
-def _decode(x: da.Array, a: dict[str:Any]) -> da.Array:
-    """Returns decoded data."""
-    f = Decode(np.single if x.dtype == np.single else np.double, x.ndim)
-    y = f.apply_to(
-        x,
-        add_offset=a.get("add_offset", None),
-        scale_factor=a.get("scale_factor", None),
-        fill_value=a.get("_FillValue", None),
-        valid_min=a.get("valid_min", None),
-        valid_max=a.get("valid_max", None),
-    )
-    return y
-
-
-def _encode(x: da.Array, a: dict[str:Any], dtype: np.dtype) -> da.Array:
-    """Returns encoded data."""
-    f = Encode(dtype, x.ndim)
-    y = f.apply_to(
-        x,
-        add_offset=a.get("add_offset", None),
-        scale_factor=a.get("scale_factor", None),
-        fill_value=a.get("_FillValue", None),
-        valid_min=a.get("valid_min", None),
-        valid_max=a.get("valid_max", None),
-    )
-    return y
-
-
-class RandomOp(Operator):
-    """The randomize operator."""
+class ScatterOp(Operator):
+    """The scatter operator."""
 
     _args: Namespace
     """The configuration parameters."""
@@ -70,7 +42,7 @@ class RandomOp(Operator):
 
     @property
     def name(self) -> str:  # noqa: D102
-        return "randomize"
+        return "scatter"
 
     def run(self, source: Dataset) -> Dataset:  # noqa: D102
         """
@@ -101,7 +73,7 @@ class RandomOp(Operator):
     def config(self) -> dict[str : dict[str:Any]]:
         """Returns the randomization configuration."""
         package = "kaleidoscope.config"
-        name = "config.random.json"
+        name = "config.scatter.json"
         with resources.path(package, name) as resource:
             get_logger().debug(f"reading resource: {resource}")
             with open(resource) as r:
@@ -127,10 +99,10 @@ class RandomOp(Operator):
         """
         if "total" in config:
             s = None
-            z = _decode(x.data, x.attrs)
+            z = decode(x.data, x.attrs)
             for ref in config["total"]:
-                a = _decode(target[ref].data, target[ref].attrs)
-                b = _decode(source[ref].data, source[ref].attrs)
+                a = decode(target[ref].data, target[ref].attrs)
+                b = decode(source[ref].data, source[ref].attrs)
                 z = z + (a - b)
             if "clip" in config:
                 z = da.clip(z, config["clip"][0], config["clip"][1])
@@ -150,8 +122,8 @@ class RandomOp(Operator):
                 )
             )
             z = f.apply_to(
-                _decode(x.data, x.attrs),
-                _decode(u.data, u.attrs),
+                decode(x.data, x.attrs),
+                decode(u.data, u.attrs),
                 coverage=config.get("coverage", 1.0),
                 relative=config.get("relative", False),
                 clip=config.get("clip", None),
@@ -162,13 +134,13 @@ class RandomOp(Operator):
             b = target[config["bias"]]
             r = target[config["rmsd"]]
             z = f.apply_to(
-                _decode(x.data, x.attrs),
-                _decode(r.data, r.attrs),
-                _decode(b.data, b.attrs),
+                decode(x.data, x.attrs),
+                decode(r.data, r.attrs),
+                decode(b.data, b.attrs),
                 clip=config.get("clip", None),
             )
         target[v] = DataArray(
-            data=_encode(z, x.attrs, x.dtype),
+            data=encode(z, x.attrs, x.dtype),
             coords=x.coords,
             dims=x.dims,
             attrs=x.attrs,

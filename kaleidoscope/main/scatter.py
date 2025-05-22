@@ -3,7 +3,8 @@
 #  License: MIT
 
 """
-This module provides a main function.
+This module provides the Kaleidoscope scatter main function
+to produce a Monte Carlo ensemble from given uncertainties.
 """
 
 import json
@@ -17,7 +18,6 @@ from argparse import Namespace
 from importlib import resources
 from pathlib import Path
 from typing import Any
-from typing import Literal
 from typing import TextIO
 
 import yaml
@@ -29,7 +29,7 @@ from kaleidoscope.interface.processing import Processing
 from kaleidoscope.interface.reading import Reading
 from kaleidoscope.interface.writing import Writing
 from kaleidoscope.logger import get_logger
-from kaleidoscope.operators.randomop import RandomOp
+from kaleidoscope.operators.scatterop import ScatterOp
 from kaleidoscope.readerfactory import ReaderFactory
 from kaleidoscope.runner import Runner
 from kaleidoscope.signalhandler import AbortHandler
@@ -59,9 +59,9 @@ class Parser:
         :return: The parser.
         """
         parser = _ArgumentParser(
-            prog=f"{__name__}",
-            description="This scientific processor simulates measurement "
-            "errors.",
+            prog=f"{__name__}-scatter",
+            description="This scientific processor produces a Monte Carlo "
+            "ensemble from given uncertainties.",
             epilog="Copyright (c) Brockmann Consult GmbH, 2025. "
             "License: MIT",
             exit_on_error=False,
@@ -78,12 +78,12 @@ class Parser:
         parser.add_argument(
             "source_file",
             help="the file path of the source dataset.",
-            type=Parser.FileType("r"),
+            type=Path,
         )
         parser.add_argument(
             "target_file",
             help="the file path of the target dataset.",
-            type=Parser.FileType("w"),
+            type=Path,
         )
 
     @staticmethod
@@ -106,7 +106,8 @@ class Parser:
             "--selector",
             help="the Monte Carlo stream selector. An integral number which "
             "must not be negative.",
-            type=Parser.IntType(0),
+            choices=[i for i in range(101)],
+            type=int,
             required=True,
             dest="selector",
         )
@@ -158,32 +159,11 @@ class Parser:
             dest="progress",
         )
         parser.add_argument(
-            "--no-progress",
-            help="disable progress bar display.",
-            action="store_false",
-            required=False,
-            dest="progress",
-        )
-        parser.add_argument(
             "--stack-traces",
             help="enable Python stack traces.",
             action="store_true",
             required=False,
             dest="stack_traces",
-        )
-        parser.add_argument(
-            "--no-stack-traces",
-            help="disable Python stack traces.",
-            action="store_false",
-            required=False,
-            dest="stack_traces",
-        )
-        parser.add_argument(
-            "--tmpdir",
-            help="specify the path to the temporary directory.",
-            type=Parser.DirType(),
-            required=False,
-            dest="tmpdir",
         )
 
     @staticmethod
@@ -220,50 +200,6 @@ class Parser:
                 raise TypeError("Argument is not a valid integer value")
             return i
 
-    class DirType:
-        """Callable to convert an argument into a directory path."""
-
-        def __call__(self, arg: str) -> Path:
-            """Converts an argument into a directory path."""
-            path = Path(arg)
-            if not path.is_dir():
-                raise TypeError("Path does not refer to a directory")
-            try:
-                path = path.resolve()
-            except RuntimeError:
-                raise TypeError(f"Directory path {path} cannot be resolved")
-            return path
-
-    class FileType:
-        """! Callable to convert an argument into a file path."""
-
-        def __init__(self, mode: Literal["r", "w"] = "r"):
-            """
-            Creates a new instance of this class.
-
-            @param mode The file mode required.
-            """
-            self._mode = mode
-
-        def __call__(self, arg: str):
-            """Converts an argument into a file path."""
-            path = Path(arg)
-            if self._mode == "r":
-                if not path.is_file():
-                    raise TypeError(
-                        f"Path {path} does not refer to an existing file"
-                    )
-            if self._mode == "w":
-                if path.is_dir() or not path.parent.is_dir():
-                    raise TypeError(
-                        f"Path {path} does not refer to a writeable file"
-                    )
-            try:
-                path = path.resolve()
-            except RuntimeError:
-                raise TypeError(f"File path {path} cannot be resolved")
-            return path
-
 
 class Processor(Processing):
     """! The Kaleidoscope processor."""
@@ -291,7 +227,7 @@ class Processor(Processing):
                 return config
 
     def get_name(self):  # noqa: D102
-        return __name__
+        return f"{__name__}-scatter"
 
     def get_version(self):  # noqa: D102
         return __version__
@@ -333,7 +269,7 @@ class Processor(Processing):
     def get_result(  # noqa: D102
         self, args: Namespace, *inputs: Dataset
     ) -> Dataset:
-        return RandomOp(args).run(inputs[0])
+        return ScatterOp(args).run(inputs[0])
 
     def _create_reader(self, args) -> Reading:
         """This method does not belong to public API."""

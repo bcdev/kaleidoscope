@@ -3,7 +3,8 @@
 #  License: MIT
 
 """
-This module provides a main function.
+This module provides the Kaleidoscope collect main function
+to produce uncertainties from a given Monte Carlo ensemble.
 """
 
 import json
@@ -17,7 +18,6 @@ from argparse import Namespace
 from importlib import resources
 from pathlib import Path
 from typing import Any
-from typing import Literal
 from typing import TextIO
 
 import yaml
@@ -29,7 +29,7 @@ from kaleidoscope.interface.processing import Processing
 from kaleidoscope.interface.reading import Reading
 from kaleidoscope.interface.writing import Writing
 from kaleidoscope.logger import get_logger
-from kaleidoscope.operators.derandop import DerandOp
+from kaleidoscope.operators.collectop import CollectOp
 from kaleidoscope.readerfactory import ReaderFactory
 from kaleidoscope.runner import Runner
 from kaleidoscope.signalhandler import AbortHandler
@@ -59,9 +59,9 @@ class Parser:
         :return: The parser.
         """
         parser = _ArgumentParser(
-            prog=__name__[::-1],
+            prog=f"{__name__}-collect",
             description="This scientific processor computes standard "
-            "uncertainty from simulated measurement errors.",
+            "uncertainty from a given Monte Carlo ensemble.",
             epilog="Copyright (c) Brockmann Consult GmbH, 2025. "
             "License: MIT",
             exit_on_error=False,
@@ -87,7 +87,7 @@ class Parser:
         parser.add_argument(
             "target_file",
             help="the file path of the target dataset.",
-            type=Parser.FileType("w"),
+            type=Path,
         )
 
     @staticmethod
@@ -141,23 +141,9 @@ class Parser:
             dest="progress",
         )
         parser.add_argument(
-            "--no-progress",
-            help="disable progress bar display.",
-            action="store_false",
-            required=False,
-            dest="progress",
-        )
-        parser.add_argument(
             "--stack-traces",
             help="enable Python stack traces.",
             action="store_true",
-            required=False,
-            dest="stack_traces",
-        )
-        parser.add_argument(
-            "--no-stack-traces",
-            help="disable Python stack traces.",
-            action="store_false",
             required=False,
             dest="stack_traces",
         )
@@ -172,39 +158,9 @@ class Parser:
             version=f"%(prog)s {__version__}",
         )
 
-    class FileType:
-        """! Callable to convert an argument into a file path."""
-
-        def __init__(self, mode: Literal["r", "w"] = "r"):
-            """
-            Creates a new instance of this class.
-
-            @param mode The file mode required.
-            """
-            self._mode = mode
-
-        def __call__(self, arg: str):
-            """Converts an argument into a file path."""
-            path = Path(arg)
-            if self._mode == "r":
-                if not path.is_file():
-                    raise TypeError(
-                        f"Path {path} does not refer to an existing file"
-                    )
-            if self._mode == "w":
-                if path.is_dir() or not path.parent.is_dir():
-                    raise TypeError(
-                        f"Path {path} does not refer to a writeable file"
-                    )
-            try:
-                path = path.resolve()
-            except RuntimeError:
-                raise TypeError(f"File path {path} cannot be resolved")
-            return path
-
 
 class Processor(Processing):
-    """! The Epocsodielak processor."""
+    """! The Kaleidoscope reduce processor."""
 
     def __init__(self, config_package: str = "kaleidoscope.config"):
         """
@@ -229,7 +185,7 @@ class Processor(Processing):
                 return config
 
     def get_name(self):  # noqa: D102
-        return __name__[::-1]
+        return f"{__name__}-collect"
 
     def get_version(self):  # noqa: D102
         return __version__
@@ -271,7 +227,7 @@ class Processor(Processing):
     def get_result(  # noqa: D102
         self, args: Namespace, *inputs: Dataset
     ) -> Dataset:
-        return DerandOp(args).run(inputs[0])
+        return CollectOp(args).run(inputs[0])
 
     def _create_reader(self, args) -> Reading:
         """This method does not belong to public API."""

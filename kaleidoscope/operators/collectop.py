@@ -2,7 +2,7 @@
 #  License: MIT
 
 """
-This module provides the derandomize operator.
+This module provides the collect operator.
 """
 import json
 from argparse import Namespace
@@ -14,42 +14,14 @@ import numpy as np
 from xarray import DataArray
 from xarray import Dataset
 
-from ..algorithms.codec import Decode
-from ..algorithms.codec import Encode
+from ..algorithms.codec import decode
+from ..algorithms.codec import encode
 from ..interface.operator import Operator
 from ..logger import get_logger
 
 
-def _decode(x: da.Array, a: dict[str:Any]) -> da.Array:
-    """Returns decoded data."""
-    f = Decode(np.single if x.dtype == np.single else np.double, x.ndim)
-    y = f.apply_to(
-        x,
-        add_offset=a.get("add_offset", None),
-        scale_factor=a.get("scale_factor", None),
-        fill_value=a.get("_FillValue", None),
-        valid_min=a.get("valid_min", None),
-        valid_max=a.get("valid_max", None),
-    )
-    return y
-
-
-def _encode(x: da.Array, a: dict[str:Any], dtype: np.dtype) -> da.Array:
-    """Returns encoded data."""
-    f = Encode(dtype, x.ndim)
-    y = f.apply_to(
-        x,
-        add_offset=a.get("add_offset", None),
-        scale_factor=a.get("scale_factor", None),
-        fill_value=a.get("_FillValue", None),
-        valid_min=a.get("valid_min", None),
-        valid_max=a.get("valid_max", None),
-    )
-    return y
-
-
-class DerandOp(Operator):
-    """The derandomize operator."""
+class CollectOp(Operator):
+    """The collect operator."""
 
     _args: Namespace
     """The configuration parameters."""
@@ -64,7 +36,7 @@ class DerandOp(Operator):
 
     @property
     def name(self) -> str:  # noqa: D102
-        return "derandomize"
+        return "collect"
 
     def run(self, source: Dataset) -> Dataset:  # noqa: D102
         """
@@ -83,10 +55,10 @@ class DerandOp(Operator):
             if v_unc in target:
                 continue
             get_logger().info(f"starting graph for variable: {v_unc}")
-            x_unc = da.nanstd(_decode(subset[v].data, x.attrs), axis=0)
+            x_unc = da.nanstd(decode(subset[v].data, x.attrs), axis=0)
             get_logger().info(f"finished graph for variable: {v_unc}")
             target[v_unc] = DataArray(
-                data=_encode(x_unc, x.attrs, x.dtype),
+                data=encode(x_unc, x.attrs, x.dtype),
                 coords=x.coords,
                 dims=x.dims,
                 attrs=x.attrs,
@@ -113,7 +85,7 @@ class DerandOp(Operator):
     def config(self) -> dict[str : dict[str:Any]]:
         """Returns the randomization configuration."""
         package = "kaleidoscope.config"
-        name = "config.derand.json"
+        name = "config.collect.json"
         with resources.path(package, name) as resource:
             get_logger().debug(f"reading resource: {resource}")
             with open(resource) as r:

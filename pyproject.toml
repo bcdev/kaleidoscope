@@ -60,8 +60,8 @@ lint = [
 
 
 [project.scripts]
-kaleidoscope = "kaleidoscope.main.kaleidoscope:main"
-epocsodielak = "kaleidoscope.main.epocsodielak:main"
+kaleidoscope-scatter = "kaleidoscope.main.scatter:main"
+kaleidoscope-collect = "kaleidoscope.main.collect:main"
 
 [project.urls]
 Repository = "https://github.com/bcdev/kaleidoscope/"
