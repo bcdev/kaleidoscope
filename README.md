@@ -22,7 +22,7 @@ processors. The processors are invoked from the command line. Typing
 will print a detailed usage messages to the screen, like
 
     usage: kaleidoscope-scatter [-h] --source-type
-                                {esa-cci-oc,esa-scope-cs,esa-scope-pp-parameters,ghrsst,glorys}
+                                {esa-cci-oc,esa-scope-cs,esa-scope-pp,ghrsst,glorys}
                                 --selector {0,1,2,...,100}
                                 [--engine-reader {h5netcdf,netcdf4,zarr}]
                                 [--engine-writer {h5netcdf,netcdf4,zarr}]
