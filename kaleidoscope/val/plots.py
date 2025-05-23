@@ -107,7 +107,7 @@ class WorldPlot(Plot):
             "land",
             "110m",
             edgecolor="face",
-            facecolor=COLORS["land"],
+            facecolor=COLORS["land_alt1"],
         )
 
     @property
