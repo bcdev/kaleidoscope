@@ -41,7 +41,7 @@ class WorldPlot(Plot):
         cbar_label: str | None = None,
         cmap: str = "viridis",
         norm: plc.Normalize | None = None,
-        projection: Any = None,
+        projection: Any | None = None,
         xlocs: tuple[Any, ...] | None = None,
         ylocs: tuple[Any, ...] | None = None,
         vmin: Any | None = None,
@@ -70,16 +70,8 @@ class WorldPlot(Plot):
             cmap=cmap,
             cbar_kwargs=cbar_kwargs,
         )
-        ax.add_feature(self.land)
         ax.autoscale_view()
-        ax.gridlines(
-            alpha=0.1,
-            draw_labels={"bottom": "x", "left": "y"},
-            x_inline=False,
-            y_inline=False,
-            xlocs=xlocs,
-            ylocs=ylocs,
-        )
+        self.decorate(ax, xlocs, ylocs)
         if title is not None:
             ax.set_title(title)
         if fn is not None:
@@ -88,6 +80,21 @@ class WorldPlot(Plot):
             fig.show()
         plt.close()
         return fig
+
+    def decorate(self, ax, xlocs, ylocs):
+        """Decorates the map with land features and grid lines."""
+        from cartopy.mpl.geoaxes import GeoAxes
+
+        if isinstance(ax, GeoAxes):
+            ax.add_feature(self.land)
+            ax.gridlines(
+                alpha=0.1,
+                draw_labels={"bottom": "x", "left": "y"},
+                x_inline=False,
+                y_inline=False,
+                xlocs=xlocs,
+                ylocs=ylocs,
+            )
 
     @property
     def land(self):
@@ -113,6 +120,13 @@ class WorldPlot(Plot):
             central_longitude=-160.0,
             emphasis="ocean",
         )
+
+    @property
+    def plate_carree(self):
+        """Returns the Plate Carree projection."""
+        from cartopy.crs import PlateCarree
+
+        return PlateCarree(central_longitude=-160.0)
 
     @property
     def robinson(self):
