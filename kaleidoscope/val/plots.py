@@ -99,10 +99,15 @@ class WorldPlot(Plot):
     @property
     def land(self):
         """Returns the cartographic land feature."""
+        from cartopy.feature import COLORS
         from cartopy.feature import NaturalEarthFeature
 
         return NaturalEarthFeature(
-            "physical", "land", "10m", edgecolor="face", facecolor="#e8e5db"
+            "physical",
+            "land",
+            "110m",
+            edgecolor="face",
+            facecolor=COLORS["land"],
         )
 
     @property
