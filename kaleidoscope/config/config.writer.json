@@ -19,6 +19,12 @@
       "lat": 720,
       "lon": 720
     },
+    "glorys": {
+      "time": 0,
+      "latitude": 0,
+      "longitude": 0,
+      "depth": 1
+    },
     "_": {
       "time": 0,
       "lat": 0,
