@@ -15,6 +15,12 @@
       "latitude": 0,
       "longitude": 0
     },
+    "esa-scope-dic": {
+      "time": 12,
+      "latitude": 0,
+      "longitude": 0,
+      "depth": 0
+    },
     "_": {
       "time": 0,
       "lat": 0,

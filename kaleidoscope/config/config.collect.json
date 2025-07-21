@@ -4,6 +4,11 @@
     "license": "MIT",
     "summary": "This JSON file provides configuration parameters and semantic mappings."
   },
+  "dic": {
+    "attrs": {
+      "long_name": "standard uncertainty of Dissolved Inorganic Carbon in seawater"
+    }
+  },
   "DOC": {
     "attrs": {
       "long_name": "standard uncertainty of estimated DOC"

@@ -94,6 +94,20 @@ class Parser:
     def _add_options(parser):
         """This method does not belong to public API."""
         parser.add_argument(
+            "--source-type",
+            help="the source type.",
+            choices=[
+                "esa-cci-oc",
+                "esa-scope-cs",
+                "esa-scope-dic",
+                "esa-scope-pp",
+                "ghrsst",
+                "glorys",
+            ],
+            required=True,
+            dest="source_type",
+        )
+        parser.add_argument(
             "--engine-reader",
             help="specify the engine used to read the source product file.",
             choices=["h5netcdf", "netcdf4", "zarr"],
