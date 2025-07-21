@@ -22,7 +22,7 @@ processors. The processors are invoked from the command line. Typing
 will print a detailed usage messages to the screen, like
 
     usage: kaleidoscope-scatter [-h] --source-type
-                                {esa-cci-oc,esa-scope-cs,esa-scope-pp,ghrsst,glorys}
+                                {esa-cci-oc,esa-scope-cs,esa-scope-dic,esa-scope-pp,ghrsst,glorys}
                                 --selector {0,1,2,...,100}
                                 [--engine-reader {h5netcdf,netcdf4,zarr}]
                                 [--engine-writer {h5netcdf,netcdf4,zarr}]
@@ -41,7 +41,7 @@ will print a detailed usage messages to the screen, like
     
     options:
       -h, --help            show this help message and exit
-      --source-type {esa-cci-oc,esa-scope-cs,esa-scope-pp,ghrsst,glorys}
+      --source-type {esa-cci-oc,esa-scope-cs,esa-scope-dic,esa-scope-pp,ghrsst,glorys}
                             the source type. (default: None)
       --selector {0,1,2,...,100}
                             the Monte Carlo stream selector. An integral number
@@ -70,7 +70,9 @@ will print a detailed usage messages to the screen, like
 
 and
 
-    usage: kaleidoscope-collect [-h] [--engine-reader {h5netcdf,netcdf4,zarr}]
+    usage: kaleidoscope-collect [-h] --source-type
+                                {esa-cci-oc,esa-scope-cs,esa-scope-dic,esa-scope-pp,ghrsst,glorys}
+                                [--engine-reader {h5netcdf,netcdf4,zarr}]
                                 [--engine-writer {h5netcdf,netcdf4,zarr}]
                                 [--log-level {debug,info,warning,error,off}]
                                 [--mode {multithreading,synchronous}]
@@ -92,6 +94,8 @@ and
     
     options:
       -h, --help            show this help message and exit
+      --source-type {esa-cci-oc,esa-scope-cs,esa-scope-dic,esa-scope-pp,ghrsst,glorys}
+                            the source type. (default: None)
       --engine-reader {h5netcdf,netcdf4,zarr}
                             specify the engine used to read the source product
                             file. (default: None)
