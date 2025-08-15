@@ -21,6 +21,10 @@
       "longitude": 0,
       "depth": 0
     },
+    "esa-scope-pp": {
+      "lat": 720,
+      "lon": 720
+    },
     "_": {
       "time": 0,
       "lat": 0,
