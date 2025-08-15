@@ -21,6 +21,15 @@ from ..interface.operator import Operator
 from ..logger import get_logger
 
 
+def _std(x: da.Array) -> da.Array:
+    """Returns the standard deviation."""
+    return da.where(
+        da.count_nonzero(da.isfinite(x), axis=0) > 0,
+        da.nanstd(x, axis=0),
+        np.nan,
+    )
+
+
 class CollectOp(Operator):
     """The collect operator."""
 
@@ -56,7 +65,7 @@ class CollectOp(Operator):
             if v_unc in target:
                 continue
             get_logger().info(f"starting graph for variable: {v_unc}")
-            x_unc = da.nanstd(decode(subset[v].data, x.attrs), axis=0)
+            x_unc = _std(decode(subset[v].data, x.attrs))
             get_logger().info(f"finished graph for variable: {v_unc}")
             target[v_unc] = DataArray(
                 data=encode(x_unc, x.attrs, x.dtype),
