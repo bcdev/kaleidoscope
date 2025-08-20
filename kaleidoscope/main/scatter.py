@@ -95,7 +95,6 @@ class Parser:
             choices=[
                 "esa-cci-oc",
                 "esa-scope-cs",
-                "esa-scope-dic",
                 "esa-scope-pp",
                 "ghrsst",
                 "glorys",
