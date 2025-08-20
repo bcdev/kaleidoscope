@@ -8,6 +8,7 @@ dependencies:
   # Imports
   - dask
   - dask-image
+  - numpy
   - xarray
   # Runtime
   - h5netcdf
