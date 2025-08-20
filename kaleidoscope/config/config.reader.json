@@ -21,6 +21,25 @@
       "longitude": 0,
       "depth": 0
     },
+    "esa-scope-doc": {
+      "lat": 720,
+      "lon": 720
+    },
+    "esa-scope-pc": {
+      "time": 1,
+      "lat": 720,
+      "lon": 720
+    },
+    "esa-scope-pic": {
+      "time": 1,
+      "lat": 720,
+      "lon": 720
+    },
+    "esa-scope-poc": {
+      "time": 1,
+      "lat": 720,
+      "lon": 720
+    },
     "esa-scope-pp": {
       "lat": 720,
       "lon": 720
