@@ -271,13 +271,6 @@
       ]
     }
   },
-  "esa-scope-dic": {
-    "dic": {
-      "uncertainty": 0.1,
-      "relative": true,
-      "distribution": "lognormal"
-    }
-  },
   "esa-scope-pp": {
     "alphaB": {
       "uncertainty": "alphaB_unc",
