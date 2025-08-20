@@ -16,16 +16,45 @@ from xarray import Dataset
 
 from ..algorithms.codec import decode
 from ..algorithms.codec import encode
+from ..algorithms.filter import Gaussian
 from ..interface.logging import Logging
 from ..interface.operator import Operator
 from ..logger import get_logger
 
 
-def _std(x: da.Array) -> da.Array:
-    """Returns the standard deviation."""
+def _filter(x: da.Array, dims: tuple) -> da.Array:
+    """
+    Applies a lateral low pass filter to suppress statistical
+    fluctuations caused by finite sampling of error probability
+    density functions.
+    """
+    return Gaussian(dtype=x.dtype, m=x.ndim, n=x.ndim).apply_to(
+        x, dims=dims, fwhm=4.0
+    )
+
+
+def _std(x: da.Array, dims: tuple, filtered: bool = False) -> da.Array:
+    """
+    Returns the standard deviation of simulated errors.
+
+    Here, the standard deviation corresponds to the root
+    mean squared error, since the mean simulated error
+    vanishes. The standard deviation can be low-pass filtered
+    to suppress statistical fluctuations resulting from the
+    Monte Carlo method.
+    """
+    return da.sqrt(
+        _filter(_mse(x[1:] - x[:1]), dims)
+        if filtered
+        else _mse(x[1:] - x[:1])
+    )
+
+
+def _mse(errors: da.Array) -> da.Array:
+    """Returns the mean squared error."""
     return da.where(
-        da.count_nonzero(da.isfinite(x), axis=0) > 0,
-        da.nanstd(x, axis=0),
+        da.count_nonzero(da.isfinite(errors), axis=0) > 0,
+        da.nanmean(da.square(errors), axis=0),
         np.nan,
     )
 
@@ -57,46 +86,67 @@ class CollectOp(Operator):
         """
         config: dict[str : dict[str:Any]] = self.config
         target: Dataset = source.isel(i=0)
-        subset: Dataset = source.isel(i=slice(1, None))
         for v, x in target.data_vars.items():
             if v not in config:
                 continue
-            v_unc = config[v].get("uncertainty", f"{v}_unc")
-            if v_unc in target:
-                continue
-            get_logger().info(f"starting graph for variable: {v_unc}")
-            x_unc = _std(decode(subset[v].data, x.attrs))
-            get_logger().info(f"finished graph for variable: {v_unc}")
-            target[v_unc] = DataArray(
-                data=encode(x_unc, x.attrs, x.dtype),
-                coords=x.coords,
-                dims=x.dims,
-                attrs=x.attrs,
-            )
-            for name in config[v].get("attrs_pop", []):
-                target[v_unc].attrs.pop(name, None)
-            target[v_unc].attrs.update(config[v].get("attrs", {}))
-            if "actual_range" in target[v_unc].attrs:
-                target[v_unc].attrs["actual_range"] = np.array(
-                    [
-                        da.nanmin(x_unc).compute(),
-                        da.nanmax(x_unc).compute(),
-                    ],
-                    dtype=x_unc.dtype,
-                )
-            if "standard_name" in target[v_unc].attrs:
-                standard_name = target[v_unc].attrs["standard_name"]
-                target[v_unc].attrs[
-                    "standard_name"
-                ] = f"{standard_name} standard_error"
-            if get_logger().is_enabled(Logging.DEBUG):
-                get_logger().debug(f"min:  {da.nanmin(x_unc).compute() :.3f}")
-                get_logger().debug(f"max:  {da.nanmax(x_unc).compute() :.3f}")
-                get_logger().debug(
-                    f"mean: {da.nanmean(x_unc).compute() :.3f}"
-                )
-                get_logger().debug(f"std:  {da.nanstd(x_unc).compute() :.3f}")
+            self.add_uncertainty(target, source, v, x)
+            self.add_uncertainty(target, source, v, x, filtered=True)
         return target
+
+    def add_uncertainty(self, target, source, v, x, filtered: bool = False):
+        """
+        Adds an uncertainty variable to the target dataset.
+
+        :param target: The target dataset.
+        :param source: The source dataset.
+        :param v: The name of the source variable.
+        :param x: The data of the source variable.
+        :param filtered: To apply a low-pass filter to the error variance.
+        """
+        config: dict[str : dict[str:Any]] = self.config
+        v_unc = config[v].get("uncertainty", f"{v}_unc")
+        if filtered:
+            v_unc = f"{v_unc}_filtered"
+        if v_unc in target:
+            return
+        get_logger().info(f"starting graph for variable: {v_unc}")
+        x_unc = _std(decode(source[v].data, x.attrs), x.dims, filtered)
+        get_logger().info(f"finished graph for variable: {v_unc}")
+        target[v_unc] = DataArray(
+            data=encode(x_unc, x.attrs, x.dtype),
+            coords=x.coords,
+            dims=x.dims,
+            attrs=x.attrs,
+        )
+        for attr in config[v].get("attrs_pop", []):
+            target[v_unc].attrs.pop(attr, None)
+        if "actual_range" in target[v_unc].attrs:
+            target[v_unc].attrs["actual_range"] = np.array(
+                [
+                    da.nanmin(x_unc).compute(),
+                    da.nanmax(x_unc).compute(),
+                ],
+                dtype=x_unc.dtype,
+            )
+        if "standard_name" in target[v_unc].attrs:
+            standard_name = target[v_unc].attrs["standard_name"]
+            target[v_unc].attrs[
+                "standard_name"
+            ] = f"{standard_name} standard_error"
+        if "title" in target[v_unc].attrs:
+            title = target[v_unc].attrs["title"]
+            target[v_unc].attrs["title"] = f"standard uncertainty of {title}"
+        target[v_unc].attrs.update(config[v].get("attrs", {}))
+        if filtered:
+            target[v_unc].attrs["comment"] = (
+                "filtered variant of standard uncertainty using a lateral "
+                "low-pass filter"
+            )
+        if get_logger().is_enabled(Logging.DEBUG):
+            get_logger().debug(f"min:  {da.nanmin(x_unc).compute() :.3f}")
+            get_logger().debug(f"max:  {da.nanmax(x_unc).compute() :.3f}")
+            get_logger().debug(f"mean: {da.nanmean(x_unc).compute() :.3f}")
+            get_logger().debug(f"std:  {da.nanstd(x_unc).compute() :.3f}")
 
     @property
     def config(self) -> dict[str : dict[str:Any]]:
