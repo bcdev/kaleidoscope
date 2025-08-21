@@ -59,6 +59,26 @@ def _mse(errors: da.Array) -> da.Array:
     )
 
 
+def _set_coordinate_attr(x: DataArray):
+    """Sets the coordinate attribute, if applicable."""
+    if x.coords.keys():
+        x.attrs["coordinates"] = " ".join(map(str, x.coords.keys()))
+
+
+def _set_standard_name_attr(x: DataArray):
+    """Sets the standard name attribute, if applicable"""
+    if "standard_name" in x.attrs:
+        standard_name = x.attrs["standard_name"]
+        x.attrs["standard_name"] = f"{standard_name} standard_error"
+
+
+def _set_title_attr(x: DataArray):
+    """Sets the title attribute, if applicable."""
+    if "title" in x.attrs:
+        title = x.attrs["title"]
+        x.attrs["title"] = f"standard uncertainty of {title}"
+
+
 class CollectOp(Operator):
     """The collect operator."""
 
@@ -118,8 +138,6 @@ class CollectOp(Operator):
             dims=x.dims,
             attrs=x.attrs,
         )
-        for attr in config[v].get("attrs_pop", []):
-            target[v_unc].attrs.pop(attr, None)
         if "actual_range" in target[v_unc].attrs:
             target[v_unc].attrs["actual_range"] = np.array(
                 [
@@ -128,20 +146,16 @@ class CollectOp(Operator):
                 ],
                 dtype=x_unc.dtype,
             )
-        if "standard_name" in target[v_unc].attrs:
-            standard_name = target[v_unc].attrs["standard_name"]
-            target[v_unc].attrs[
-                "standard_name"
-            ] = f"{standard_name} standard_error"
-        if "title" in target[v_unc].attrs:
-            title = target[v_unc].attrs["title"]
-            target[v_unc].attrs["title"] = f"standard uncertainty of {title}"
-        target[v_unc].attrs.update(config[v].get("attrs", {}))
         if filtered:
-            target[v_unc].attrs["comment"] = (
-                "filtered variant of standard uncertainty using a lateral "
-                "low-pass filter"
-            )
+            target[v_unc].attrs[
+                "comment"
+            ] = "filtered variant of standard uncertainty"
+        _set_coordinate_attr(target[v_unc])
+        _set_standard_name_attr(target[v_unc])
+        _set_title_attr(target[v_unc])
+        for attr in config[v].get("attrs_pop", []):
+            target[v_unc].attrs.pop(attr, None)
+        target[v_unc].attrs.update(config[v].get("attrs", {}))
         if get_logger().is_enabled(Logging.DEBUG):
             get_logger().debug(f"min:  {da.nanmin(x_unc).compute() :.3f}")
             get_logger().debug(f"max:  {da.nanmax(x_unc).compute() :.3f}")
