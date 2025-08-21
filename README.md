@@ -167,11 +167,13 @@ There are no recovery operations.
 
 ## Expected output
 
-Kaleidoscope generates variants of source data which exhibit simulated errors.
-At present, only uncorrelated random errors are simulated. Normalized errors
-will have a mean value of zero and a standard deviation of unity, with statistical
-deviations implied by constraints on the error probability distribution and the
-(limited) number of variants generated.
+### Scatter
+
+Kaleidoscope Scatter generates Monte Carlo variants of source data which exhibit
+simulated errors. At present, only uncorrelated random errors are simulated.
+Normalized errors will have a mean value of zero and a standard deviation of unity,
+with statistical deviations implied by constraints on the error probability
+distribution and the (limited) number of variants generated.
 
 ![Map](/doc/map-mean-Sea%20surface%20temperature.png)
 ![Map](/doc/map-std-Sea%20surface%20temperature.png)
@@ -182,3 +184,15 @@ range of normalized simulated errors for an ensemble of ten variants of global m
 sea surface temperature (January 2000). The standard deviation and range of normalized
 errors is reduced at the North Pole and in the Weddell Sea due to constraints imposed
 by the freezing point of seawater. 
+
+### Collect
+
+Kaleidoscope Collect generates standard uncertainty from Monte Carlo variants.
+Examples below illustrate the nominal primary production and its uncertainty.
+Standard uncertainty typically exhibits statistical fluctuation, n artifact of
+the Monte Carlo method. Therefore, a low-pass filtered standard uncertainty is
+produced in addition.
+
+![Map](/doc/pp.png)
+![Map](/doc/pp_unc.png)
+![Map](/doc/pp_unc_filtered.png)
