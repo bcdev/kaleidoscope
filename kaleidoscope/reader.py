@@ -116,6 +116,7 @@ class Reader(Reading):
         """This method does not belong to public API."""
         kwargs = {}
         if isinstance(data_id, str) and "*" in data_id:
+            pr = Preprocessor()
             ds = xr.open_mfdataset(
                 data_id,
                 chunks=self._chunks,
@@ -131,7 +132,9 @@ class Reader(Reading):
                 backend_kwargs=kwargs,
                 combine="nested",
                 concat_dim="i",
+                preprocess=pr,
             )
+            ds = pr.drop(ds)
         else:
             ds = xr.open_dataset(
                 data_id,
@@ -206,3 +209,91 @@ class Reader(Reading):
     def _inline_array(self) -> bool:
         """This method does not belong to public API."""
         return self._config[_KEY_INLINE_ARRAY] == "true"
+
+
+class Preprocessor:
+    """
+    A preprocessor to find the names of global attributes and data
+    variables, which are not common to all datasets.
+    """
+
+    _all_attrs: list[str]
+    """The list of all global attributes."""
+    _all_vars: list[str]
+    """The list of all data variables."""
+    _drop_attrs: list[str]
+    """The list of non-common global attributes to drop."""
+    _drop_vars: list[str]
+    """The list of non-common data variables to drop."""
+
+    def __init__(self):
+        """Creates a preprocessor instance."""
+        self._all_vars = []
+        self._all_attrs = []
+        self._drop_vars = []
+        self._drop_attrs = []
+
+    def __call__(self, ds: Dataset) -> Dataset:
+        """
+        Returns the dataset supplied as argument unmodified.
+
+        When consecutively called for multiple datasets, finds the names
+        of global attributes and data variables, which are not common to
+        all datasets.
+        """
+        self._process_attrs(ds)
+        self._process_vars(ds)
+        return ds
+
+    def _process_attrs(self, ds):
+        """This method does not belong to public API."""
+        if self._all_attrs:
+            for a in self._all_attrs:
+                if a not in ds.attrs and a not in self._drop_attrs:
+                    self._drop_attrs.append(a)
+            for a, _ in ds.attrs.items():
+                if a not in self._all_attrs:
+                    self._all_attrs.append(a)
+                    if a not in self._drop_attrs:
+                        self._drop_attrs.append(a)
+        else:
+            for a, _ in ds.attrs.items():
+                self._all_attrs.append(a)
+
+    def _process_vars(self, ds):
+        """This method does not belong to public API."""
+        if self._all_vars:
+            for v in self._all_vars:
+                if v not in ds.data_vars and v not in self._drop_vars:
+                    self._drop_vars.append(v)
+            for v, _ in ds.data_vars.items():
+                if v not in self._all_vars:
+                    self._all_vars.append(v)
+                    if v not in self._drop_vars:
+                        self._drop_vars.append(v)
+        else:
+            for v, _ in ds.data_vars.items():
+                self._all_vars.append(v)
+
+    def drop(self, ds: Dataset) -> Dataset:
+        """
+        Returns a dataset with all non-common attributes
+        and data variables dropped.
+        """
+        return self.drop_attrs(self.drop_vars(ds))
+
+    def drop_attrs(self, ds: Dataset) -> Dataset:
+        """
+        Returns a dataset with all non-common attributes
+        dropped.
+        """
+        for attr in self._drop_attrs:
+            ds.attrs.pop(attr, None)
+        return ds
+
+    def drop_vars(self, ds: Dataset) -> Dataset:
+        """
+        Returns a dataset with all non-common data variables
+        dropped.
+        """
+        return ds.drop_vars(self._drop_vars) if self._drop_vars else ds
