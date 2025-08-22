@@ -112,6 +112,13 @@ class Parser:
             dest="selector",
         )
         parser.add_argument(
+            "--antithetic",
+            help="enable pairwise antithetic Monte Carlo simulation.",
+            action="store_true",
+            required=False,
+            dest="antithetic",
+        )
+        parser.add_argument(
             "--engine-reader",
             help="specify the engine used to read the source product file.",
             choices=["h5netcdf", "netcdf4", "zarr"],

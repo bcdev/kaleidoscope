@@ -108,7 +108,12 @@ class ScatterOp(Operator):
                 z = da.clip(z, config["clip"][0], config["clip"][1])
         elif "uncertainty" in config:
             s = self.seed(self.uuid(v))
-            f = Randomize(m=x.ndim, dist=config["distribution"], seed=s)
+            f = Randomize(
+                m=x.ndim,
+                dist=config["distribution"],
+                seed=s,
+                antithetic=self._args.antithetic,
+            )
             u = (
                 target[config["uncertainty"]]
                 if isinstance(config["uncertainty"], str)
@@ -130,7 +135,12 @@ class ScatterOp(Operator):
             )
         else:
             s = self.seed(self.uuid(v))
-            f = Randomize(m=x.ndim, dist=config["distribution"], seed=s)
+            f = Randomize(
+                m=x.ndim,
+                dist=config["distribution"],
+                seed=s,
+                antithetic=self._args.antithetic,
+            )
             b = target[config["bias"]]
             r = target[config["rmsd"]]
             z = f.apply_to(
@@ -177,7 +187,11 @@ class ScatterOp(Operator):
         """
         from numpy.random import Philox
 
-        seed = uuid.int + self._args.selector
+        seed = uuid.int + (
+            self._args.selector
+            if not self._args.antithetic
+            else (self._args.selector + 1) // 2
+        )
         g = DefaultGenerator(Philox(seed))
         return np.array([g.next() for _ in range(n)], dtype=np.int64)
 

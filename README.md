@@ -24,6 +24,7 @@ will print a detailed usage messages to the screen, like
     usage: kaleidoscope-scatter [-h] --source-type
                                 {esa-cci-oc,esa-scope-cs,esa-scope-pp,ghrsst,glorys}
                                 --selector {0,1,2,...,100}
+                                [--antithetic]
                                 [--engine-reader {h5netcdf,netcdf4,zarr}]
                                 [--engine-writer {h5netcdf,netcdf4,zarr}]
                                 [--log-level {debug,info,warning,error,off}]
@@ -46,6 +47,8 @@ will print a detailed usage messages to the screen, like
       --selector {0,1,2,...,100}
                             the Monte Carlo stream selector. An integral number
                             which must not be negative. (default: None)
+      --antithetic          enable pairwise antithetic Monte Carlo simulation.
+                            (default: False)
       --engine-reader {h5netcdf,netcdf4,zarr}
                             specify the engine used to read the source product
                             file. (default: None)
