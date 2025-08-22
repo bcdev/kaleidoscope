@@ -4,7 +4,6 @@
 """
 This module provides random number generators.
 """
-from typing import Literal
 
 import numpy as np
 from numpy.random import BitGenerator
@@ -41,6 +40,24 @@ def default_generator(seed) -> Generator:
         if isinstance(seed, BitGenerator)
         else default_bit_generator(seed)
     )
+
+
+def conditional_negate(
+    randoms: np.ndarray | float, condition: bool
+) -> np.ndarray | float:
+    """
+    Negates the given random numbers when a condition is met.
+
+    :param randoms: The random numbers.
+    :param condition: The condition.
+    :return: The negated or original random numbers.
+    """
+    if condition:
+        if isinstance(randoms, np.ndarray):
+            randoms[:] = -randoms[:]
+        else:
+            randoms = -randoms
+    return randoms
 
 
 class DefaultGenerator(Generating):
@@ -86,80 +103,25 @@ class DefaultNormal(Normal):
     """The default normal random deviate."""
 
     _g: Generator
-
-    def __init__(self, seed: int | np.ndarray | BitGenerator | None = None):
-        """
-        Creates a new random deviate.
-
-        :param seed: The seed.
-        """
-        self._g = default_generator(seed)
-
-    def random(self) -> float:
-        return self._g.standard_normal()
-
-    def randoms(self, randoms: np.ndarray) -> np.ndarray:
-        self._g.standard_normal(dtype=randoms.dtype, out=randoms)
-        return randoms
-
-
-class DecileNormal(Normal):
-    """
-    The decile normal random deviate.
-
-    Generates random deviates, which are uniformly distributed in a
-    selected decile of the standard normal distribution.
-    """
-
-    _g: Generator
-
-    _q: np.ndarray
-    """The deciles of the normal distribution."""
-    _s: int | Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    """The decile selector."""
+    _antithetic: bool
 
     def __init__(
-        self, s: int, seed: int | np.ndarray | BitGenerator | None = None
+        self,
+        seed: int | np.ndarray | BitGenerator | None = None,
+        antithetic: bool = False,
     ):
         """
         Creates a new random deviate.
 
-        :param s: The decile selector.
         :param seed: The seed.
+        :param antithetic: To generate antithetic pairs of random numbers.
         """
-        self._s = s % 10
         self._g = default_generator(seed)
-        self._q = np.array(
-            [
-                -3.09023,
-                -1.28155,
-                -0.841621,
-                -0.524401,
-                -0.253347,
-                0.0,
-                0.253347,
-                0.524401,
-                0.841621,
-                1.28155,
-                3.09023,
-            ]
-        )
+        self._antithetic = antithetic
 
     def random(self) -> float:
-        return (self.sup - self.inf) * self._g.random() + self.inf
+        return conditional_negate(self._g.standard_normal(), self._antithetic)
 
     def randoms(self, randoms: np.ndarray) -> np.ndarray:
-        self._g.random(dtype=randoms.dtype, out=randoms)
-        randoms *= self.sup - self.inf
-        randoms += self.inf
-        return randoms
-
-    @property
-    def sup(self) -> float:
-        """Returns the supremum of the selected decile."""
-        return self._q[self._s + 1]
-
-    @property
-    def inf(self) -> float:
-        """Returns the infimum of the selected decile."""
-        return self._q[self._s]
+        self._g.standard_normal(dtype=randoms.dtype, out=randoms)
+        return conditional_negate(randoms, self._antithetic)

@@ -32,6 +32,7 @@ class Randomize(InformedBlockAlgorithm):
         m: int = 2,
         dist: Literal["normal", "lognormal", "chlorophyll"] = "normal",
         seed: np.ndarray | None = None,
+        antithetic: bool = False,
     ):
         """
         Creates a new algorithm instance.
@@ -40,10 +41,12 @@ class Randomize(InformedBlockAlgorithm):
         :param m: The number of input data dimensions.
         :param dist: The type of measurement error distribution.
         :param seed: The root seed.
+        :param antithetic: To generate antithetic pairs of random numbers.
         """
         super().__init__(dtype, m, m)
         self._dist = dist
         self._root_seed = seed
+        self._antithetic = antithetic
 
     def chunks(self, *inputs: da.Array) -> tuple[int, ...] | None:
         return None
@@ -133,7 +136,7 @@ class Randomize(InformedBlockAlgorithm):
         """
         Returns randomized values for normally distributed errors.
         """
-        z: Normal = DefaultNormal(seed)
+        z: Normal = DefaultNormal(seed, self._antithetic)
         return x + u * z.randoms(np.empty(x.shape, x.dtype))
 
     @property
