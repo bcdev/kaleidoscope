@@ -7,7 +7,6 @@ This module provides random number generators.
 from typing import Literal
 
 import numpy as np
-from numpy import ndarray
 from numpy.random import BitGenerator
 from numpy.random import Generator
 
@@ -114,7 +113,7 @@ class DecileNormal(Normal):
 
     _g: Generator
 
-    _q: ndarray[float, float]
+    _q: np.ndarray
     """The deciles of the normal distribution."""
     _s: int | Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     """The decile selector."""
@@ -130,7 +129,7 @@ class DecileNormal(Normal):
         """
         self._s = s % 10
         self._g = default_generator(seed)
-        self._q = np.ndarray(
+        self._q = np.array(
             [
                 -3.09023,
                 -1.28155,
