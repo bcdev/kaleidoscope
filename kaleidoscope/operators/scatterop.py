@@ -112,7 +112,7 @@ class ScatterOp(Operator):
                 m=x.ndim,
                 dist=config["distribution"],
                 seed=s,
-                antithetic=self._args.antithetic,
+                antithetic=self.antithetic,
             )
             u = (
                 target[config["uncertainty"]]
@@ -139,7 +139,7 @@ class ScatterOp(Operator):
                 m=x.ndim,
                 dist=config["distribution"],
                 seed=s,
-                antithetic=self._args.antithetic,
+                antithetic=self.antithetic,
             )
             b = target[config["bias"]]
             r = target[config["rmsd"]]
@@ -172,6 +172,11 @@ class ScatterOp(Operator):
             get_logger().debug(f"mean: {da.nanmean(z).compute() :.3f}")
             get_logger().debug(f"std:  {da.nanstd(z).compute() :.3f}")
 
+    @property
+    def antithetic(self) -> bool:
+        """Returns `True` if this Monte Carlo simulation is antithetic."""
+        return self._args.antithetic and self._args.selector % 2 == 0
+
     # noinspection PyShadowingNames
     def seed(self, uuid: uuid.UUID, n: int = 4) -> np.ndarray:
         """
@@ -187,13 +192,18 @@ class ScatterOp(Operator):
         """
         from numpy.random import Philox
 
-        seed = uuid.int + (
+        seed = uuid.int + self.selector
+        g = DefaultGenerator(Philox(seed))
+        return np.array([g.next() for _ in range(n)], dtype=np.int64)
+
+    @property
+    def selector(self) -> int:
+        """Returns the effective random stream selector."""
+        return (
             self._args.selector
             if not self._args.antithetic
             else (self._args.selector + 1) // 2
         )
-        g = DefaultGenerator(Philox(seed))
-        return np.array([g.next() for _ in range(n)], dtype=np.int64)
 
     def uuid(self, v: str) -> uuid.UUID:
         """
