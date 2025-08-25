@@ -110,7 +110,8 @@ class CollectOp(Operator):
             if v not in config:
                 continue
             self.add_uncertainty(target, source, v, x)
-            self.add_uncertainty(target, source, v, x, filtered=True)
+            if config[v].get("filter", False):
+                self.add_uncertainty(target, source, v, x, filtered=True)
         return target
 
     def add_uncertainty(self, target, source, v, x, filtered: bool = False):

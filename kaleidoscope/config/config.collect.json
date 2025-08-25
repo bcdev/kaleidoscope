@@ -12,32 +12,38 @@
   "DOC": {
     "attrs": {
       "long_name": "standard uncertainty of estimated DOC"
-    }
+    },
+    "filter": true
   },
   "PIC": {
     "attrs": {
       "long_name": "standard uncertainty of PIC"
-    }
+    },
+    "filter": true
   },
   "POC": {
     "attrs": {
       "long_name": "standard uncertainty of POC"
-    }
+    },
+    "filter": true
   },
   "pc": {
     "attrs": {
       "long_name": "standard uncertainty of Phytoplankton Carbon concentration in seawater"
-    }
+    },
+    "filter": true
   },
   "pp": {
     "attrs": {
       "long_name": "standard uncertainty of Phytoplankton Primary Production"
-    }
+    },
+    "filter": true
   },
   "Predicted_DOC": {
     "attrs": {
       "long_name": "standard uncertainty of Predicted Dissolved Organic Carbon",
       "description": "standard uncertainty of Predicted DOC values"
-    }
+    },
+    "filter": true
   }
 }
