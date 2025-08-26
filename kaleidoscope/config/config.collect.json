@@ -7,43 +7,65 @@
   "dic": {
     "attrs": {
       "long_name": "standard uncertainty of Dissolved Inorganic Carbon in seawater"
+    },
+    "filter": {
+      "kind": "Gaussian",
+      "fwhm": 1.0
     }
   },
   "DOC": {
     "attrs": {
       "long_name": "standard uncertainty of estimated DOC"
     },
-    "filter": true
+    "filter": {
+      "kind": "Gaussian",
+      "fwhm": 4.0
+    }
   },
   "PIC": {
     "attrs": {
       "long_name": "standard uncertainty of PIC"
     },
-    "filter": true
+    "filter": {
+      "kind": "Gaussian",
+      "fwhm": 4.0
+    }
   },
   "POC": {
     "attrs": {
       "long_name": "standard uncertainty of POC"
     },
-    "filter": true
+    "filter": {
+      "kind": "Gaussian",
+      "fwhm": 4.0
+    }
   },
   "pc": {
     "attrs": {
       "long_name": "standard uncertainty of Phytoplankton Carbon concentration in seawater"
     },
-    "filter": true
+    "filter": {
+      "kind": "Gaussian",
+      "fwhm": 4.0
+    }
   },
   "pp": {
     "attrs": {
       "long_name": "standard uncertainty of Phytoplankton Primary Production"
     },
-    "filter": true
+    "filter": {
+      "kind": "Gaussian",
+      "fwhm": 4.0
+    }
   },
   "Predicted_DOC": {
     "attrs": {
       "long_name": "standard uncertainty of Predicted Dissolved Organic Carbon",
       "description": "standard uncertainty of Predicted DOC values"
     },
-    "filter": true
+    "filter": {
+      "kind": "Gaussian",
+      "fwhm": 4.0
+    }
   }
 }

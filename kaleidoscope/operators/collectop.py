@@ -22,18 +22,23 @@ from ..interface.operator import Operator
 from ..logger import get_logger
 
 
-def _filter(x: da.Array, dims: tuple) -> da.Array:
+def _filter(x: da.Array, dims: tuple, filter_config: dict) -> da.Array:
     """
     Applies a lateral low pass filter to suppress statistical
     fluctuations caused by finite sampling of error probability
     density functions.
     """
     return Gaussian(dtype=x.dtype, m=x.ndim, n=x.ndim).apply_to(
-        x, dims=dims, fwhm=4.0
+        x, dims=dims, fwhm=filter_config.get("fwhm", 1.0)
     )
 
 
-def _std(x: da.Array, dims: tuple, filtered: bool = False) -> da.Array:
+def _std(
+    x: da.Array,
+    dims: tuple,
+    filtered: bool = False,
+    filter_config: dict | None = None,
+) -> da.Array:
     """
     Returns the standard deviation of simulated errors.
 
@@ -44,7 +49,7 @@ def _std(x: da.Array, dims: tuple, filtered: bool = False) -> da.Array:
     Monte Carlo method.
     """
     return da.sqrt(
-        _filter(_mse(x[1:] - x[:1]), dims)
+        _filter(_mse(x[1:] - x[:1]), dims, filter_config)
         if filtered
         else _mse(x[1:] - x[:1])
     )
@@ -110,7 +115,7 @@ class CollectOp(Operator):
             if v not in config:
                 continue
             self.add_uncertainty(target, source, v, x)
-            if config[v].get("filter", False):
+            if config[v].get("filter", {}):
                 self.add_uncertainty(target, source, v, x, filtered=True)
         return target
 
@@ -131,7 +136,12 @@ class CollectOp(Operator):
         if v_unc in target:
             return
         get_logger().info(f"starting graph for variable: {v_unc}")
-        x_unc = _std(decode(source[v].data, x.attrs), x.dims, filtered)
+        x_unc = _std(
+            decode(source[v].data, x.attrs),
+            x.dims,
+            filtered,
+            config[v].get("filter", {}),
+        )
         get_logger().info(f"finished graph for variable: {v_unc}")
         target[v_unc] = DataArray(
             data=encode(x_unc, x.attrs, x.dtype),
