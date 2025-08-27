@@ -17,6 +17,8 @@ from xarray import Dataset
 from ..algorithms.codec import decode
 from ..algorithms.codec import encode
 from ..algorithms.filter import Gaussian
+from ..algorithms.filter import Median
+from ..algorithms.filter import Uniform
 from ..interface.logging import Logging
 from ..interface.operator import Operator
 from ..logger import get_logger
@@ -28,9 +30,27 @@ def _filter(x: da.Array, dims: tuple, filter_config: dict) -> da.Array:
     fluctuations caused by finite sampling of error probability
     density functions.
     """
-    return Gaussian(dtype=x.dtype, m=x.ndim, n=x.ndim).apply_to(
-        x, dims=dims, fwhm=filter_config.get("fwhm", 1.0)
-    )
+    match filter_config.get("kind", "_"):
+        case "gaussian":
+            return Gaussian(dtype=x.dtype, m=x.ndim, n=x.ndim).apply_to(
+                x, dims=dims, fwhm=filter_config.get("fwhm", 4.0)
+            )
+        case "median":
+            # noinspection PyTypeChecker
+            return Median(dtype=x.dtype, m=x.ndim, n=x.ndim).apply_to(
+                x,
+                dims=dims,
+                size=filter_config.get("size", 3),
+                mode=filter_config.get("mode", "constant"),
+            )
+        case "uniform":
+            return Uniform(dtype=x.dtype, m=x.ndim, n=x.ndim).apply_to(
+                x, dims=dims, size=filter_config.get("size", 3)
+            )
+        case _:
+            return Uniform(dtype=x.dtype, m=x.ndim, n=x.ndim).apply_to(
+                x, dims=dims, size=3
+            )
 
 
 def _std(
@@ -50,7 +70,7 @@ def _std(
     """
     return da.sqrt(
         _filter(_mse(x[1:] - x[:1]), dims, filter_config)
-        if filtered
+        if filtered and filter_config
         else _mse(x[1:] - x[:1])
     )
 

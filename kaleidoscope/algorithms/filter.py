@@ -6,6 +6,7 @@ This module provides the algorithm to apply low-pass filters.
 """
 
 from numbers import Real
+from typing import Literal
 
 from dask import array as da
 from dask_image.ndfilters import gaussian_filter
@@ -69,7 +70,12 @@ class Median(Algorithm):
 
     @override
     def apply_to(
-        self, data: da.Array, *, dims: tuple[str, ...], size: int = 3
+        self,
+        data: da.Array,
+        *,
+        dims: tuple[str, ...],
+        size: int = 3,
+        mode: Literal["constant", "wrap"] = "constant",
     ) -> da.Array:
         """
         Applies a lateral median filter to data.
@@ -77,6 +83,7 @@ class Median(Algorithm):
         :param data: The data.
         :param dims: The dimension names.
         :param size: The size of the uniform kernel (pixels).
+        :param mode: How to extend the image.
         :return: The filtered data.
         """
         sizes = [
@@ -86,8 +93,8 @@ class Median(Algorithm):
         m = da.isnan(data)
         v = da.where(m, 0.0, data)
         w = da.where(m, 0.0, 1.0)
-        v = median_filter(v, sizes, mode="constant")
-        w = median_filter(w, sizes, mode="constant")
+        v = median_filter(v, sizes, mode=mode)
+        w = median_filter(w, sizes, mode=mode)
         return da.where(m, data, v / w)
 
     @property
