@@ -87,7 +87,7 @@ class Randomize(InformedBlockAlgorithm):
         if coverage != 1.0:
             u = u / coverage
         if relative:
-            u = u * x
+            u = np.abs(u * x)
         match self._dist:
             case "normal":
                 y = self._normal(seed, x, u)
