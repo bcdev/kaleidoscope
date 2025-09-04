@@ -71,7 +71,7 @@ class WorldPlot(Plot):
             cbar_kwargs=cbar_kwargs,
         )
         ax.autoscale_view()
-        self.decorate(ax, xlocs, ylocs)
+        self.decorate(ax, xlocs, ylocs, xlim, ylim)
         if title is not None:
             ax.set_title(title)
         if fn is not None:
@@ -81,7 +81,7 @@ class WorldPlot(Plot):
         plt.close()
         return fig
 
-    def decorate(self, ax, xlocs, ylocs):
+    def decorate(self, ax, xlocs, ylocs, xlim, ylim):
         """Decorates the map with land features and grid lines."""
         from cartopy.mpl.geoaxes import GeoAxes
 
@@ -95,6 +95,10 @@ class WorldPlot(Plot):
                 xlocs=xlocs,
                 ylocs=ylocs,
             )
+        if xlim is not None:
+            ax.set_xlim(xlim)
+        if ylim is not None:
+            ax.set_ylim(ylim)
 
     @property
     def land(self):
