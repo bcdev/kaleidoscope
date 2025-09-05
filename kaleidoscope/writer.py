@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 from typing import Literal
 
+import dask.array as da
 import numpy as np
 from xarray import Dataset
 
@@ -42,6 +43,18 @@ _KEY_SHUFFLE: str = "config.writer.shuffle"
 """
 The key to configure shuffling. The default is `true`.
 """
+
+
+def chunksize(data: da.Array | np.ndarray, i: int = 0) -> int:
+    """
+    Returns the chunk size of given data along a given dimension.
+
+    @param x The data.
+    @param i The dimension enumerator.
+    @return The chunk size along the given dimension or the shape along
+    the given dimension, if the data are not chunked.
+    """
+    return data.chunksize[i] if hasattr(data, "chunksize") else data.shape[i]
 
 
 class Writer(Writing):
@@ -108,28 +121,29 @@ class Writer(Writing):
         """This method does not belong to public API."""
         encodings: dict[str, dict[str, Any]] = {}
 
-        for name, array in dataset.data_vars.items():
+        for name, array in dataset.variables.items():
             data = array.data
             dims: list = list(array.dims)
             if array.ndim == 0:  # not an array
                 continue
             if name in dims:  # a coordinate dimension
-                continue
-            chunks: list[int] = []
-            for i, dim in enumerate(dims):
-                if dim in self._chunks:
-                    chunk_size = self._chunks[dim]
-                    assert isinstance(chunk_size, int), (
-                        f"Invalid chunk size specified for "
-                        f"dimension '{dim}'"
-                    )
-                    if chunk_size == -1:
-                        chunk_size = data.shape[i]
-                    if chunk_size == 0:
-                        chunk_size = data.chunksize[i]
-                    chunks.append(chunk_size)
-                else:
-                    chunks.append(data.chunksize[i])
+                chunks: list[int] = [chunksize(data)]
+            else:
+                chunks: list[int] = []
+                for i, dim in enumerate(dims):
+                    if dim in self._chunks:
+                        chunk_size = self._chunks[dim]
+                        assert isinstance(chunk_size, int), (
+                            f"Invalid chunk size specified for "
+                            f"dimension '{dim}'"
+                        )
+                        if chunk_size == -1:
+                            chunk_size = data.shape[i]
+                        if chunk_size == 0:
+                            chunk_size = chunksize(data, i)
+                        chunks.append(chunk_size)
+                    else:
+                        chunks.append(chunksize(data, i))
             encodings[name] = self._encode_compress(
                 data.dtype, chunks, to_zarr
             )
