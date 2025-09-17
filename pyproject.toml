@@ -65,6 +65,7 @@ kaleidoscope-scatter = "kaleidoscope.main.scatter:main"
 kaleidoscope-collect = "kaleidoscope.main.collect:main"
 
 [project.urls]
+Homepage = "https://bcdev.github.io/kaleidoscope/"
 Repository = "https://github.com/bcdev/kaleidoscope/"
 
 [tool.black]
