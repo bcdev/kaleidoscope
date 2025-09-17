@@ -1,6 +1,6 @@
 # ![Kaleidoscope](/assets/img/kaleidoscope.png)
 
-Monte Carlo simulation of errors for ESA SCOPE.
+Monte Carlo simulation of errors for [ESA SCOPE](https://oceancarbon-scope.org).
 
 ## Installing and testing
 
