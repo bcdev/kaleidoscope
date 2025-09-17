@@ -178,9 +178,9 @@ Normalized errors will have a mean value of zero and a standard deviation of uni
 with statistical deviations implied by constraints on the error probability
 distribution and the (limited) number of variants generated.
 
-![Map](/doc/map-mean-sst.png)
-![Map](/doc/map-std-sst.png)
-![Map](/doc/map-range-sst.png)
+![Map](/assets/img/map-mean-sst.png)
+![Map](/assets/img/map-std-sst.png)
+![Map](/assets/img/map-range-sst.png)
 
 Examples above illustrate the mean, the standard deviation and the minimum-to-maximum
 range of normalized simulated errors for an ensemble of ten variants of global monthly
@@ -196,6 +196,6 @@ Standard uncertainty typically exhibits statistical fluctuation, which is an
 artifact of the Monte Carlo method. Therefore, a low-pass filtered standard
 uncertainty is produced in addition.
 
-![Map](/doc/pp.png)
-![Map](/doc/pp_unc.png)
-![Map](/doc/pp_unc_filtered.png)
+![Map](/assets/img/pp.png)
+![Map](/assets/img/pp_unc.png)
+![Map](/assets/img/pp_unc_filtered.png)
