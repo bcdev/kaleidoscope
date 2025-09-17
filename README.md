@@ -178,9 +178,9 @@ Normalized errors will have a mean value of zero and a standard deviation of uni
 with statistical deviations implied by constraints on the error probability
 distribution and the (limited) number of variants generated.
 
-![Map](/doc/map-mean-Sea%20surface%20temperature.png)
-![Map](/doc/map-std-Sea%20surface%20temperature.png)
-![Map](/doc/map-range-Sea%20surface%20temperature.png)
+![Map](/doc/map-mean-sst.png)
+![Map](/doc/map-std-sst.png)
+![Map](/doc/map-range-sst.png)
 
 Examples above illustrate the mean, the standard deviation and the minimum-to-maximum
 range of normalized simulated errors for an ensemble of ten variants of global monthly
