@@ -13,5 +13,7 @@ authors:
 license: MIT
 repository-code: >-
   https://github.com/bcdev/kaleidoscope/
+url: >-
+  https://bcdev.github.io/kaleidoscope/
 abstract: >-
   Monte Carlo simulation of errors for ESA SCOPE.
