@@ -192,9 +192,9 @@ by the freezing point of seawater.
 
 Kaleidoscope Collect generates standard uncertainty from Monte Carlo variants.
 Examples below illustrate the nominal primary production and its uncertainty.
-Standard uncertainty typically exhibits statistical fluctuation, n artifact of
-the Monte Carlo method. Therefore, a low-pass filtered standard uncertainty is
-produced in addition.
+Standard uncertainty typically exhibits statistical fluctuation, which is an
+artifact of the Monte Carlo method. Therefore, a low-pass filtered standard
+uncertainty is produced in addition.
 
 ![Map](/doc/pp.png)
 ![Map](/doc/pp_unc.png)
