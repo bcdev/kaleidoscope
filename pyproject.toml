@@ -63,6 +63,7 @@ lint = [
 [project.scripts]
 kaleidoscope-scatter = "kaleidoscope.main.scatter:main"
 kaleidoscope-collect = "kaleidoscope.main.collect:main"
+kaleidoscope-resolve = "kaleidoscope.main.resolve:main"
 
 [project.urls]
 Homepage = "https://bcdev.github.io/kaleidoscope/"
