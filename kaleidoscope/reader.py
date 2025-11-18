@@ -161,7 +161,7 @@ class Reader(Reading):
         return self._engine
 
     @property
-    def _chunks(self) -> dict[str:int]:
+    def _chunks(self) -> dict[str, int]:
         """This method does not belong to public API."""
         return self._config[_KEY_CHUNKS]
 
