@@ -188,7 +188,7 @@ class Processor(Processing):
     def get_config_package(self):  # noqa: D102
         return self._config_package
 
-    def get_default_config(self) -> dict[str:Any]:  # noqa: D102
+    def get_default_config(self) -> dict[str, Any]:  # noqa: D102
         package = self.get_config_package()
         name = "config.yml"
         with resources.path(package, name) as resource:
