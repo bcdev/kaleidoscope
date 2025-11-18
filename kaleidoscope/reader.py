@@ -81,7 +81,7 @@ class Reader(Reading):
     _config: dict[Any, Any]
     """The reader configuration."""
 
-    def __init__(self, config: dict[str:Any] | None = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         """
         Creates a new reader instance.
 
