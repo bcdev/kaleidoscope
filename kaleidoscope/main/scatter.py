@@ -185,7 +185,7 @@ class Parser:
 
 
 class Processor(Processing):
-    """! The Kaleidoscope processor."""
+    """! The Kaleidoscope scatter processor."""
 
     def __init__(self, config_package: str = "kaleidoscope.config"):
         """
