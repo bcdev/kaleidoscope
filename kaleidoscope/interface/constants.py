@@ -22,3 +22,6 @@ VID_LAT = "lat"
 
 VID_LON = "lon"
 """The longitude variable identifier."""
+
+VID_DEP = "depth"
+"""The depth variable identifier."""

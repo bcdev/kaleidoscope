@@ -26,6 +26,7 @@ from xarray import decode_cf
 
 from kaleidoscope import __name__
 from kaleidoscope import __version__
+from kaleidoscope.interface.constants import VID_DEP
 from kaleidoscope.interface.constants import VID_TIM
 from kaleidoscope.interface.processing import Processing
 from kaleidoscope.interface.reading import Reading
@@ -63,7 +64,7 @@ class Parser:
             prog=f"{__name__}-resolve",
             description="This scientific processor transforms a time series "
             "dataset into separate datasets, each of which corresponds to a "
-            "different time step.",
+            "different time step, and depth level if present.",
             epilog="Copyright (c) Brockmann Consult GmbH, 2025. "
             "License: MIT",
             exit_on_error=False,
@@ -84,9 +85,10 @@ class Parser:
         )
         parser.add_argument(
             "target_file",
-            help="the file path of the target datasets. The pattern "
-            "YYYYMMDD is replaced with the date associated with the "
-            "time step extracted.",
+            help="the file path pattern of target datasets. Patterns "
+            "YYYY/MM and YYYYMMDD are replaced with the date associated "
+            "with the time step extracted. The pattern ZZZZ is replaced "
+            "with the depth level, if applicable.",
             type=Path,
         )
 
@@ -165,6 +167,27 @@ def time(d: Dataset) -> DataArray:
     return t[VID_TIM]
 
 
+def depth(d: Dataset) -> DataArray:
+    """
+    Extracts the depth data from a dataset.
+
+    :param d: The dataset.
+    :return: The depth data.
+    """
+    return d[VID_DEP]
+
+
+def index(k: int, w: int = 4) -> str:
+    """
+    Converts an index number into an index string.
+
+    :param k: The index number.
+    :param w: The width of the index string.
+    :return: The index string
+    """
+    return str(k).rjust(w, "0")
+
+
 class Processor(Processing):
     """! The Kaleidoscope resolve processor."""
 
@@ -207,25 +230,42 @@ class Processor(Processing):
             source: Dataset = reader.read(args.source_file)
             t: DataArray = time(source)
             for i in range(t.size):
-                target: Dataset = source.isel(time=slice(i, i + 1))
-                try:
-                    get_logger().info(
-                        f"starting writing time step: {date(t[i])}"
-                    )
+                get_logger().info(f"starting writing time step: {date(t[i])}")
+                if VID_DEP in source:
+                    z: DataArray = depth(source)
+                    for k in range(z.size):
+                        target: Dataset = source.isel(
+                            {VID_TIM: i, VID_DEP: k}
+                        )
+                        writer: Writing = self._create_writer(args)
+                        target_path: Path = Path(
+                            f"{args.target_file}".replace(
+                                "YYYY/MM", date(t[i], "%Y/%m")
+                            )
+                            .replace("YYYYMMDD", date(t[i]))
+                            .replace("ZZZZ", index(k))
+                        )
+                        if not target_path.parent.exists():
+                            target_path.parent.mkdir(parents=True)
+                        try:
+                            writer.write(target, target_path)
+                        finally:
+                            target.close()
+                else:
+                    target: Dataset = source.isel({VID_TIM: i})
                     writer: Writing = self._create_writer(args)
                     target_path: Path = Path(
-                        f"{args.target_file}".replace("YYYYMMDD", date(t[i]))
-                        .replace("YYYY", date(t[i], "%Y"))
-                        .replace("MM", date(t[i], "%m"))
-                        .replace("DD", date(t[i], "%d"))
+                        f"{args.target_file}".replace(
+                            "YYYY/MM", date(t[i], "%Y/%m")
+                        ).replace("YYYYMMDD", date(t[i]))
                     )
                     if not target_path.parent.exists():
                         target_path.parent.mkdir(parents=True)
-                    writer.write(target, target_path)
-                    get_logger().info(f"finished writing time step")
-                finally:
-                    if target is not None:
+                    try:
+                        writer.write(target, target_path)
+                    finally:
                         target.close()
+                get_logger().info(f"finished writing time step")
         finally:
             if source is not None:
                 source.close()
