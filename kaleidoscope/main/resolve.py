@@ -115,6 +115,13 @@ class Parser:
             dest="log_level",
         )
         parser.add_argument(
+            "--progress",
+            help="enable progress bar display.",
+            action="store_true",
+            required=False,
+            dest="progress",
+        )
+        parser.add_argument(
             "--stack-traces",
             help="enable Python stack traces.",
             action="store_true",
@@ -251,7 +258,9 @@ class Processor(Processing):
             chunks[k] = v
         if args.engine_writer:
             config["config.writer.engine"] = args.engine_writer
-        return WriterFactory.create_writer(config=config)
+        return WriterFactory.create_writer(
+            config=config, progress=args.progress
+        )
 
 
 def main() -> int:
