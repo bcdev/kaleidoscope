@@ -227,8 +227,10 @@ class Processor(Processing):
     def get_result(  # noqa: D102
         self, args: Namespace, *inputs: Dataset
     ) -> Dataset:
-        """Not used."""
-        pass
+        """
+        Returns the input dataset.
+        """
+        return inputs[0]
 
     def _create_reader(self, args) -> Reading:
         """This method does not belong to public API."""
