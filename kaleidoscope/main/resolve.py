@@ -140,14 +140,15 @@ class Parser:
         )
 
 
-def date(t: DataArray) -> str:
+def date(t: DataArray, f: str = "%Y%m%d") -> str:
     """
-    Converts a time stamp into a date (YYYYMMDD).
+    Converts a time stamp into a formatted date.
 
     :param t: The time stamp.
-    :return: The date.
+    :param f: A date format.
+    :return: The formatted date.
     """
-    return t.dt.strftime("%Y%m%d").item()
+    return t.dt.strftime(f).item()
 
 
 def time(d: Dataset) -> DataArray:
