@@ -213,10 +213,15 @@ class Processor(Processing):
                         f"starting writing time step: {date(t[i])}"
                     )
                     writer: Writing = self._create_writer(args)
-                    writer.write(
-                        target,
-                        f"{args.target_file}".replace("YYYYMMDD", date(t[i])),
+                    target_path: Path = Path(
+                        f"{args.target_file}".replace("YYYYMMDD", date(t[i]))
+                        .replace("YYYY", date(t[i], "%Y"))
+                        .replace("MM", date(t[i], "%m"))
+                        .replace("DD", date(t[i], "%d"))
                     )
+                    if not target_path.parent.exists():
+                        target_path.parent.mkdir(parents=True)
+                    writer.write(target, target_path)
                     get_logger().info(f"finished writing time step")
                 finally:
                     if target is not None:
