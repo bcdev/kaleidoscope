@@ -20,7 +20,9 @@ from typing import Any
 from typing import TextIO
 
 import yaml
+from xarray import DataArray
 from xarray import Dataset
+from xarray import decode_cf
 
 from kaleidoscope import __name__
 from kaleidoscope import __version__
@@ -82,8 +84,9 @@ class Parser:
         )
         parser.add_argument(
             "target_file",
-            help="the file path of the target datasets. The pattern TTT is "
-            "replaced with the index value of the time slice extracted.",
+            help="the file path of the target datasets. The pattern "
+            "YYYYMMDD is replaced with the date associated with the "
+            "time step extracted.",
             type=Path,
         )
 
@@ -130,15 +133,28 @@ class Parser:
         )
 
 
-def index(i: int, w: int = 3) -> str:
+def date(t: DataArray) -> str:
     """
-    Converts an index number into an index string.
+    Converts a time stamp into a date (YYYYMMDD).
 
-    :param i: The index number.
-    :param w: The width of the index string.
-    :return: The index string
+    :param t: The time stamp.
+    :return: The date.
     """
-    return str(i).rjust(w, "0")
+    return t.dt.strftime("%Y%m%d").item()
+
+
+def time(d: Dataset) -> DataArray:
+    """
+    Extracts the time data from a dataset.
+
+    :param d: The dataset.
+    :return: The time data.
+    """
+    t = decode_cf(
+        d,
+        drop_variables=[v for v in d.variables if v != VID_TIM],
+    )
+    return t[VID_TIM]
 
 
 class Processor(Processing):
@@ -180,20 +196,20 @@ class Processor(Processing):
         source: Dataset | None = None
         try:
             reader: Reading = self._create_reader(args)
-            get_logger().debug(f"opening source dataset: {args.source_file}")
-            source = reader.read(args.source_file)
-            n = source[VID_TIM].size
-            for i in range(n):
-                writer: Writing = self._create_writer(args)
+            source: Dataset = reader.read(args.source_file)
+            t: DataArray = time(source)
+            for i in range(t.size):
                 target: Dataset = source.isel(time=slice(i, i + 1))
-                get_logger().info(
-                    f"writing time step: {index(i)} ({index(n - 1)})"
-                )
                 try:
+                    get_logger().info(
+                        f"starting writing time step: {date(t[i])}"
+                    )
+                    writer: Writing = self._create_writer(args)
                     writer.write(
                         target,
-                        f"{args.target_file}".replace("TTT", f"{index(i)}"),
+                        f"{args.target_file}".replace("YYYYMMDD", date(t[i])),
                     )
+                    get_logger().info(f"finished writing time step")
                 finally:
                     if target is not None:
                         target.close()
