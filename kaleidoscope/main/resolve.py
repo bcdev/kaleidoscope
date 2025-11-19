@@ -86,7 +86,7 @@ class Parser:
         parser.add_argument(
             "target_file",
             help="the file path pattern of target datasets. Patterns "
-            "YYYY/MM and YYYYMMDD are replaced with the date associated "
+            "YYYY/MM and YYYYMM are replaced with the date associated "
             "with the time step extracted. The pattern ZZZZ is replaced "
             "with the depth level, if applicable.",
             type=Path,
@@ -142,7 +142,7 @@ class Parser:
         )
 
 
-def date(t: DataArray, f: str = "%Y%m%d") -> str:
+def date(t: DataArray, f: str = "%Y%m") -> str:
     """
     Converts a time stamp into a formatted date.
 
@@ -237,38 +237,38 @@ class Processor(Processing):
                         target: Dataset = source.isel(
                             {VID_TIM: i, VID_DEP: k}
                         )
-                        writer: Writing = self._create_writer(args)
                         target_path: Path = Path(
                             f"{args.target_file}".replace(
                                 "YYYY/MM", date(t[i], "%Y/%m")
                             )
-                            .replace("YYYYMMDD", date(t[i]))
+                            .replace("YYYYMM", date(t[i]))
                             .replace("ZZZZ", index(k))
                         )
-                        if not target_path.parent.exists():
-                            target_path.parent.mkdir(parents=True)
-                        try:
-                            writer.write(target, target_path)
-                        finally:
-                            target.close()
+                        self._write_target(args, target, target_path)
                 else:
                     target: Dataset = source.isel({VID_TIM: i})
-                    writer: Writing = self._create_writer(args)
                     target_path: Path = Path(
                         f"{args.target_file}".replace(
                             "YYYY/MM", date(t[i], "%Y/%m")
-                        ).replace("YYYYMMDD", date(t[i]))
+                        ).replace("YYYYMM", date(t[i]))
                     )
-                    if not target_path.parent.exists():
-                        target_path.parent.mkdir(parents=True)
-                    try:
-                        writer.write(target, target_path)
-                    finally:
-                        target.close()
+                    self._write_target(args, target, target_path)
                 get_logger().info(f"finished writing time step")
         finally:
             if source is not None:
                 source.close()
+
+    def _write_target(
+        self, args: Namespace, target: Dataset, target_path: Path
+    ):
+        """This method does not belong to public API."""
+        if not target_path.parent.exists():
+            target_path.parent.mkdir(parents=True)
+        writer: Writing = self._create_writer(args)
+        try:
+            writer.write(target, target_path)
+        finally:
+            target.close()
 
     def get_result(  # noqa: D102
         self, args: Namespace, *inputs: Dataset
