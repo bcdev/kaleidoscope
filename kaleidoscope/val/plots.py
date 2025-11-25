@@ -38,10 +38,14 @@ class WorldPlot(Plot):
         plot_size: tuple[Any, Any] | None = None,
         show: bool = False,
         *,
+        cbar_aspect: int | None = None,
         cbar_label: str | None = None,
+        cbar_location: str | None = None,
         cmap: str = "viridis",
         norm: plc.Normalize | None = None,
-        projection: Any | None = None,
+        projection: (
+            Literal["geographic", "igh", "mollweide", "robinson"] | None
+        ) = None,
         xlocs: tuple[Any, ...] | None = None,
         ylocs: tuple[Any, ...] | None = None,
         vmin: Any | None = None,
@@ -49,15 +53,28 @@ class WorldPlot(Plot):
         x: Literal["lon", "longitude"] | None = None,
         y: Literal["lat", "latitude"] | None = None,
     ) -> Figure:
-        if projection is None:
-            projection = self.robinson
+        match projection:
+            case "geographic":
+                projection = self.geographic
+            case "igh":
+                projection = self.interrupted_goode_homolosine
+            case "mollweide":
+                projection = self.mollweide
+            case "robinson":
+                projection = self.robinson
+            case _:
+                projection = self.robinson
         fig, ax = plt.subplots(
             figsize=plot_size,
             subplot_kw={"projection": projection},
         )
         cbar_kwargs = {}
+        if cbar_aspect is not None:
+            cbar_kwargs["aspect"] = cbar_aspect
         if cbar_label is not None:
             cbar_kwargs["label"] = cbar_label
+        if cbar_location is not None:
+            cbar_kwargs["location"] = cbar_location
         data.plot(
             ax=ax,
             x=x,
@@ -115,6 +132,22 @@ class WorldPlot(Plot):
         )
 
     @property
+    def geographic(self):
+        """Returns the Plate Carree projection."""
+        from cartopy.crs import PlateCarree
+
+        return PlateCarree(central_longitude=-160.0)
+
+    @property
+    def mollweide(self):
+        """
+        Returns the Mollweide projection (used by Toming et al., 2025).
+        """
+        from cartopy.crs import Mollweide
+
+        return Mollweide()
+
+    @property
     def interrupted_goode_homolosine(self):
         """
         Returns the Interrupted Goode Homolosine projection
@@ -129,13 +162,6 @@ class WorldPlot(Plot):
             central_longitude=-160.0,
             emphasis="ocean",
         )
-
-    @property
-    def plate_carree(self):
-        """Returns the Plate Carree projection."""
-        from cartopy.crs import PlateCarree
-
-        return PlateCarree(central_longitude=-160.0)
 
     @property
     def robinson(self):
