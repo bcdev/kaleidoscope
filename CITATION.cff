@@ -10,7 +10,16 @@ authors:
     email: ralf.quast@brockmann-consult.de
     affiliation: Brockmann Consult GmbH
     orcid: 'https://orcid.org/0000-0002-6857-6503'
-license: MIT
+  - given-names: Roman
+    family-names: Shevchuk
+    email: roman.shevchuk@brockmann-consult.de
+    affiliation: Brockmann Consult GmbH
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.17544960
+    description: >-
+      This DOI represents all versions of the software, and
+      will always resolve to the latest one.license: MIT
 repository-code: >-
   https://github.com/bcdev/kaleidoscope/
 url: >-
