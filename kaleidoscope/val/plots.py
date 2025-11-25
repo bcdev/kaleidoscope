@@ -212,7 +212,7 @@ class HistogramPlot(Plot):
         )
         decorate(ax, xlabel, ylabel, xlim, ylim, title)
         if fn is not None:
-            fig.savefig(f"{fn}.pdf")
+            fig.savefig(f"{fn}.png", bbox_inches="tight", dpi=300)
         if show:
             fig.show()
         plt.close()
