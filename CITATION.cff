@@ -25,4 +25,4 @@ repository-code: >-
 url: >-
   https://bcdev.github.io/kaleidoscope/
 abstract: >-
-  Monte Carlo simulation of errors for ESA SCOPE.
+  Monte Carlo uncertainty propagation for ESA SCOPE.
