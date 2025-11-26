@@ -2,6 +2,10 @@
 
 Monte Carlo uncertainty propagation for [ESA SCOPE](https://oceancarbon-scope.org).
 
+[![Package](https://github.com/bcdev/kaleidoscope/actions/workflows/python-package.yml/badge.svg)](https://github.com/bcdev/kaleidoscope/actions/workflows/python-package.yml)
+[![CodeQL Advanced](https://github.com/bcdev/kaleidoscope/actions/workflows/codeql.yml/badge.svg)](https://github.com/bcdev/kaleidoscope/actions/workflows/codeql.yml)
+
+
 ## Installing and testing
 
 Read [INSTALL.md](INSTALL.md) for detailed instructions on installation
