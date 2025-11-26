@@ -4,6 +4,10 @@
 
 """
 This module provides the Kaleidoscope resolve main function.
+
+The module is an undocumented feature, which enables generating
+matchup data for time series data with and without depths levels
+by means of the Multi-sensor Matchup System (MMS).
 """
 
 import json
