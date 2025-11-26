@@ -253,7 +253,7 @@ class Processor(Processing):
                         ).replace("YYYYMM", date(t[i]))
                     )
                     self._write_target(args, target, target_path)
-                get_logger().info(f"finished writing time step")
+                get_logger().info("finished writing time step")
         finally:
             if source is not None:
                 source.close()
