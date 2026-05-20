@@ -51,7 +51,7 @@ class ScatterOp(Operator):
         :param source: The source dataset.
         :return: The result dataset.
         """
-        config: dict[str : dict[str:Any]] = self.config.get(
+        config: dict[str, dict[str, Any]] = self.config.get(
             self._args.source_type, {}
         )
         target: Dataset = Dataset(
@@ -70,7 +70,7 @@ class ScatterOp(Operator):
         return target
 
     @property
-    def config(self) -> dict[str : dict[str:Any]]:
+    def config(self) -> dict[str, dict[str, Any]]:
         """Returns the randomization configuration."""
         package = "kaleidoscope.config"
         name = "config.scatter.json"
@@ -86,7 +86,7 @@ class ScatterOp(Operator):
         target: Dataset,
         v: str,
         x: DataArray,
-        config: dict[str:Any],
+        config: dict[str, Any],
     ):
         """
         Creates the graph to randomize a variable.

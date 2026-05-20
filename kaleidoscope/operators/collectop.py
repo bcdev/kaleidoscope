@@ -129,7 +129,7 @@ class CollectOp(Operator):
         :param source: The source dataset.
         :return: The result dataset.
         """
-        config: dict[str : dict[str:Any]] = self.config
+        config: dict[str, dict[str, Any]] = self.config
         target: Dataset = source.isel(i=0)
         for v, x in target.data_vars.items():
             if v not in config:
@@ -149,7 +149,7 @@ class CollectOp(Operator):
         :param x: The data of the source variable.
         :param filtered: To apply a low-pass filter to the error variance.
         """
-        config: dict[str : dict[str:Any]] = self.config
+        config: dict[str, dict[str, Any]] = self.config
         v_unc = config[v].get("uncertainty", f"{v}_unc")
         if filtered:
             v_unc = f"{v_unc}_filtered"
@@ -194,7 +194,7 @@ class CollectOp(Operator):
             get_logger().debug(f"std:  {da.nanstd(x_unc).compute() :.3f}")
 
     @property
-    def config(self) -> dict[str : dict[str:Any]]:
+    def config(self) -> dict[str, dict[str, Any]]:
         """Returns the randomization configuration."""
         package = "kaleidoscope.config"
         name = "config.collect.json"
