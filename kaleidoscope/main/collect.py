@@ -77,12 +77,14 @@ class Parser:
         """This method does not belong to public API."""
         parser.add_argument(
             "source_glob",
-            help="the file path glob of the source datasets. The first "
-            "entry in the expanded list of file paths shall refer to the "
-            "nominal (i.e., not randomized) source dataset. The remaining "
-            "entries shall refer to randomized variants of the nominal "
-            "source. Only the '*' character shall be used for globbing.",
-            type=str,
+        help="glob pattern identifying the source datasets. The '*' wildcard "
+        "is expanded to matching file paths, which are processed in sorted "
+        "order. The first matching file is the nominal (non-randomized) "
+        "source dataset; all subsequent files are randomized variants of "
+        "that source. Only '*' is supported as a glob wildcard. To ensure "
+        "the desired processing order, name the datasets using zero-padded "
+        "numeric identifiers such as '000', '001', '002', ... .",
+        type=str,
         )
         parser.add_argument(
             "target_file",

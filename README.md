@@ -91,12 +91,15 @@ and
     Carlo ensemble.
     
     positional arguments:
-      source_glob           the file path glob of the source datasets. The first
-                            entry in the expanded list of file paths shall refer
-                            to the nominal (i.e., not randomized) source dataset.
-                            The remaining entries shall refer to randomized
-                            variants of the nominal source. Only the '*' character
-                            shall be used for globbing.
+      source_glob           glob pattern identifying the source datasets. The 
+                            '*' wildcard is expanded to matching file paths,
+                            which are processed in sorted order. The first
+                            matching file is the nominal (non-randomized) source
+                            dataset; all subsequent files are randomized variants
+                            of that source. Only '*' is supported as a glob
+                            wildcard. To ensure the desired processing order,
+                            name the datasets using zero-padded numeric
+                            identifiers such as '000', '001', '002', ... ."
       target_file           the file path of the target dataset.
     
     options:
